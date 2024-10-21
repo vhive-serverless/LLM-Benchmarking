@@ -102,7 +102,7 @@ if __name__ == "__main__":
     available_providers = {
         "TogetherAI": TogetherAI(),
         "Cloudflare": Cloudflare(),
-        # "OpenAI": Open_AI(),
+        "OpenAI": Open_AI(),
         "PerplexityAI": PerplexityAI()
     }
     run_benchmark(available_providers)
