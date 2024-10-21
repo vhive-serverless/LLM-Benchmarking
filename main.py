@@ -6,16 +6,8 @@ from providers import *
 # Load environment variables
 load_dotenv()
 
-# Available providers
-available_providers = {
-    "TogetherAI": TogetherAI(),
-    "Cloudflare": Cloudflare(),
-    # "OpenAI": Open_AI(),
-    "PerplexityAI": PerplexityAI()
-}
-
 # Function to get user input for providers
-def get_providers():
+def get_providers(available_providers):
     selected_providers = []
     print("Available Providers:")
     for provider in available_providers.keys():
@@ -79,9 +71,9 @@ def get_models(common_models):
     return selected_models
 
 # Main function to run the benchmark
-def run_benchmark():
+def run_benchmark(available_providers):
     # Get user-selected providers
-    selected_providers = get_providers()
+    selected_providers = get_providers(available_providers)
     print(f"\nSelected Providers: {[provider.__class__.__name__ for provider in selected_providers]}")
     
     # Get common models from selected providers
@@ -106,4 +98,11 @@ def run_benchmark():
     b.run()
 
 if __name__ == "__main__":
-    run_benchmark()
+    # Available providers can be passed as a parameter
+    available_providers = {
+        "TogetherAI": TogetherAI(),
+        "Cloudflare": Cloudflare(),
+        # "OpenAI": Open_AI(),
+        "PerplexityAI": PerplexityAI()
+    }
+    run_benchmark(available_providers)
