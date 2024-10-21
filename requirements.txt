@@ -1,0 +1,9 @@
+ipython
+openai
+together
+python-dotenv
+requests
+matplotlib
+numpy
+pytest 
+pytest-cov

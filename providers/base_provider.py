@@ -4,12 +4,16 @@ from timeit import default_timer as timer
 import numpy as np
 
 class BaseProvider(ProviderInterface):
-    def __init__(self, api_key, client_class):
+    def __init__(self, api_key, client_class, base_url=None):
         super().__init__()
 
         if not api_key:
             raise ValueError("API key must be provided as an environment variable.")
-        self.client = client_class(api_key=api_key)
+        if base_url:
+            self.client = client_class(api_key=api_key, base_url=base_url)
+        else:
+            self.client = client_class(api_key=api_key)
+            
         self.model_map = {}
 
     def get_model_name(self, model):
