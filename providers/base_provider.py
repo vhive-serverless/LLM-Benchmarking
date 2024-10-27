@@ -3,6 +3,7 @@ from providers.provider_interface import ProviderInterface
 from timeit import default_timer as timer
 import numpy as np
 
+
 class BaseProvider(ProviderInterface):
     def __init__(self, api_key, client_class, base_url=None):
         super().__init__()
@@ -13,7 +14,7 @@ class BaseProvider(ProviderInterface):
             self.client = client_class(api_key=api_key, base_url=base_url)
         else:
             self.client = client_class(api_key=api_key)
-            
+
         self.model_map = {}
 
     def get_model_name(self, model):
@@ -28,9 +29,9 @@ class BaseProvider(ProviderInterface):
             model=model_id,
             messages=[
                 {"role": "system", "content": self.system_prompt},
-                {"role": "user", "content": prompt}
+                {"role": "user", "content": prompt},
             ],
-            max_tokens= self.max_tokens
+            max_tokens=self.max_tokens,
         )
         elapsed = timer() - start
         self.log_metrics(model, "response_times", elapsed)
@@ -49,10 +50,10 @@ class BaseProvider(ProviderInterface):
             model=model_id,
             messages=[
                 {"role": "system", "content": self.system_prompt},
-                {"role": "user", "content": prompt}
+                {"role": "user", "content": prompt},
             ],
             stream=True,
-            max_tokens= self.max_tokens,
+            max_tokens=self.max_tokens,
         )
 
         for chunk in response:
@@ -74,7 +75,7 @@ class BaseProvider(ProviderInterface):
             inter_token_latencies.append(inter_token_latency)
             print(chunk.choices[0].delta.content or "", end="", flush=True)
 
-        print(f'\nNumber of output tokens/chunks: {len(inter_token_latencies) + 1}')
+        print(f"\nNumber of output tokens/chunks: {len(inter_token_latencies) + 1}")
         self.log_metrics(model, "timetofirsttoken", TTFT)
         self.log_metrics(model, "response_times", elapsed)
         self.log_metrics(model, "timebetweentokens", inter_token_latencies)
@@ -83,8 +84,8 @@ class BaseProvider(ProviderInterface):
         self.log_metrics(model, "timebetweentokens_median", median)
         self.log_metrics(model, "timebetweentokens_p95", p95)
         self.log_metrics(model, "totaltokens", len(inter_token_latencies) + 1)
-        self.log_metrics(model, "tps", (len(inter_token_latencies) + 1)/elapsed)
-        
+        self.log_metrics(model, "tps", (len(inter_token_latencies) + 1) / elapsed)
+
     def display_response(self, response, elapsed):
         print(response.choices[0].message.content)
         print(f"\nGenerated in {elapsed:.2f} seconds")

@@ -35,3 +35,19 @@ jobs:
         run: |
           pytest --cov=providers --cov=main --cov-report=xml --cov-report=term-missing
 
+     # Step 5: Run pylint
+      - name: Run pylint
+        run: |
+          pylint --fail-under=8 ./
+        continue-on-error: false  # Fail if score is below 8
+
+      # Step 6: Run flake8
+      - name: Run flake8
+        run: |
+          flake8 ./  # Run flake8 on specified directories
+
+      # Step 7: Run codespell
+      - name: Run codespell
+        run: |
+          codespell ./ # Run codespell on specified directories
+
