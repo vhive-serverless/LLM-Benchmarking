@@ -1,6 +1,6 @@
 from providers.provider_interface import ProviderInterface
 import os
-from IPython.display import display, Image, Markdown, Audio
+from IPython.display import display, Markdown
 from timeit import default_timer as timer
 import requests
 import time
