@@ -8,8 +8,8 @@ class Open_AI(BaseProvider):
         super().__init__(api_key=open_ai_api, client_class=OpenAI)
         # model names 
         self.model_map = {
-            "meta-llama-3.2-3b-instruct": "gpt-4o-mini", # speculative: 8-40b
-            "mistral-7b-instruct-v0.1": "gpt-4o", # speculative: 200-1000b
-            "meta-llama-3.1-70b-instruct" : "gpt-4" # 1000-1800b
+            "3b-instruct": "gpt-4o-mini", # speculative: 8-40b
+            "7b-instruct": "gpt-4o", # speculative: 200-1000b
+            "70b-instruct" : "gpt-4" # 1000-1800b
         }
 

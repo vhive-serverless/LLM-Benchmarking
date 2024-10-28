@@ -1,16 +1,18 @@
 import matplotlib.pyplot as plt
-from IPython.display import display, Markdown
+# from IPython.display import display, Markdown
+import logging
 import numpy as np
 import os
 from datetime import datetime
 
 class Benchmark:
-    def __init__(self, providers, num_requests, models, prompt, streaming=False):
+    def __init__(self, providers, num_requests, models, max_output, prompt, streaming=False):
         self.providers = providers
         self.num_requests = num_requests
         self.models = models
         self.prompt = prompt
         self.streaming = streaming
+        self.max_output = max_output
 
         base_dir = "streaming" if streaming else "end_to_end"
 
@@ -57,17 +59,21 @@ class Benchmark:
 
     def run(self):
         for provider in self.providers:
-            display(Markdown(f"### {provider.__class__.__name__}"))
+            provider_name = provider.__class__.__name__
+            # logging.debug(f"{provider_name}")
+            print(f"{provider_name}")
             for model in self.models:
                 model_name = provider.get_model_name(model)
-                display(Markdown(f"#### Model: {model_name}\n #### Prompt: {self.prompt}"))
+                print(f"Model: {model_name}\nPrompt: {self.prompt}")
 
-                for _ in range(self.num_requests):
-                    display(Markdown(f'Request {_}'))
+                for i in range(self.num_requests):
+                    # logging.info(f'Request {i+1}/{self.num_requests}')
+                    if i%10==0 or i==self.num_requests-1:
+                        print(f'\nRequest {i+1}/{self.num_requests}')
                     if self.streaming:
-                        provider.perform_inference_streaming(model, self.prompt)
+                        provider.perform_inference_streaming(model, self.prompt, self.max_output)
                     else:
-                        provider.perform_inference(model, self.prompt)
+                        provider.perform_inference(model, self.prompt, self.max_output)
 
         if not self.streaming:
             self.plot_metrics("response_times", "response_times")

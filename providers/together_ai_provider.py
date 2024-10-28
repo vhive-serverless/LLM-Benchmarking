@@ -9,8 +9,9 @@ class TogetherAI(BaseProvider):
 
         # model names 
         self.model_map = {
-            "google-gemma-2b-it": "google/gemma-2b-it",
-            "meta-llama-3.2-3b-instruct": "meta-llama/Llama-3.2-3B-Instruct-Turbo",
-            "mistral-7b-instruct-v0.1": "mistralai/Mistral-7B-Instruct-v0.1",
-            "meta-llama-3.1-70b-instruct": "meta-llama/Meta-Llama-3.1-70B-Instruct-Turbo"
+            "2b-it": "google/gemma-2b-it",
+            "3b-instruct": "meta-llama/Llama-3.2-3B-Instruct-Turbo",
+            "7b-instruct": "mistralai/Mistral-7B-Instruct-v0.1",
+            "70b-instruct": "meta-llama/Meta-Llama-3.1-70B-Instruct-Turbo",
+            "405b-instruct": "meta-llama/Meta-Llama-3.1-405B-Instruct-Turbo"
         }

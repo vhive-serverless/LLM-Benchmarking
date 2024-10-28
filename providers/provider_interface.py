@@ -6,8 +6,8 @@ class ProviderInterface(ABC):
     
     def __init__(self):
         # experiment constants
-        self.max_tokens = 100
-        self.system_prompt = "Please provide a detailed response of at least 1,000 words"
+        self.min_tokens = 10000
+        self.system_prompt = f"Please provide a detailed response of MORE THAN {self.min_tokens} words"
 
         # metrics
         self.metrics = {
