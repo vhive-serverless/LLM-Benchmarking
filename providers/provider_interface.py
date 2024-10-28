@@ -6,6 +6,9 @@ from abc import ABC, abstractmethod
 class ProviderInterface(ABC):
 
     def __init__(self):
+        """
+        Initializes the AnthropicProvider with the necessary API key and client.
+        """
         # experiment constants
         self.max_tokens = 100
         self.system_prompt = (

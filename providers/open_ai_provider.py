@@ -5,6 +5,9 @@ import os
 
 class Open_AI(BaseProvider):
     def __init__(self):
+        """
+        Initializes the OPENAI with the necessary API key and client.
+        """
         open_ai_api = os.environ["OPEN_AI_API"]
         super().__init__(api_key=open_ai_api, client_class=OpenAI)
         # model names

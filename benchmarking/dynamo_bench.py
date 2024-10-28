@@ -18,11 +18,11 @@ class Benchmark:
 
         # Initialize DynamoDB
         self.dynamodb = boto3.resource(
-            'dynamodb',
+            "dynamodb",
             endpoint_url=os.getenv("DYNAMODB_ENDPOINT_URL"),
             region_name=os.getenv("AWS_REGION"),
             aws_access_key_id=os.getenv("AWS_ACCESS_KEY_ID"),
-            aws_secret_access_key=os.getenv("AWS_SECRET_ACCESS_KEY")
+            aws_secret_access_key=os.getenv("AWS_SECRET_ACCESS_KEY"),
         )
         self.table_name = "BenchmarkMetrics"  # Replace with your DynamoDB table name
 
@@ -31,7 +31,7 @@ class Benchmark:
             "run_id": self.run_id,
             "timestamp": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
             "prompt": self.prompt,
-            "providers": {}
+            "providers": {},
         }
 
     def clean_data(self, data):
@@ -40,9 +40,13 @@ class Benchmark:
         from a dictionary to ensure compatibility with DynamoDB.
         """
         if isinstance(data, dict):
-            return {k: self.clean_data(v) for k, v in data.items() if v not in [None, '', [], {}]}
+            return {
+                k: self.clean_data(v)
+                for k, v in data.items()
+                if v not in [None, "", [], {}]
+            }
         elif isinstance(data, list):
-            return [self.clean_data(v) for v in data if v not in [None, '', [], {}]]
+            return [self.clean_data(v) for v in data if v not in [None, "", [], {}]]
         elif isinstance(data, float):
             return Decimal(str(data))  # Convert float to Decimal for DynamoDB
         return data
@@ -52,13 +56,13 @@ class Benchmark:
         Store the complete benchmark data in DynamoDB for future visualization.
         """
         table = self.dynamodb.Table(self.table_name)
-        
+
         # Clean the data before storing
         clean_benchmark_data = self.clean_data(self.benchmark_data)
-        
+
         # Print for debugging
         print("Storing the following data in DynamoDB:", clean_benchmark_data)
-        
+
         try:
             table.put_item(Item=clean_benchmark_data)
             print(f"Stored benchmark data for run ID {self.run_id}")
@@ -92,14 +96,14 @@ class Benchmark:
         # Add metric data
         self.benchmark_data["providers"][provider_name][model_name][metric] = {
             "latencies": latencies_sorted,
-            "cdf": cdf
+            "cdf": cdf,
         }
 
     def plot_metrics(self, metric):
         """
         Collects latency and CDF data points for each provider and model,
         and adds them to the benchmark data structure instead of plotting.
-        
+
         Args:
             metric (str): The metric type to plot (e.g., response_times).
         """

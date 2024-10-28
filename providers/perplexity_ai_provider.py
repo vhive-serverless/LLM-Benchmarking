@@ -5,6 +5,9 @@ import os
 
 class PerplexityAI(BaseProvider):
     def __init__(self):
+        """
+        Initializes the AnthropicProvider with the necessary API key and client.
+        """
         perplexity_api = os.environ.get("PERPLEXITY_AI_API")
 
         if not perplexity_api:

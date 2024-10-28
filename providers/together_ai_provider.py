@@ -5,6 +5,9 @@ from together import Together
 
 class TogetherAI(BaseProvider):
     def __init__(self):
+        """
+        Initializes the AnthropicProvider with the necessary API key and client.
+        """
         together_api = os.environ["TOGETHER_AI_API"]
         super().__init__(api_key=together_api, client_class=Together)
 

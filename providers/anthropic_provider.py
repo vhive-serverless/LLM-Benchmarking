@@ -12,12 +12,12 @@ class Anthropic(ProviderInterface):
         Initializes the AnthropicProvider with the necessary API key and client.
         """
         super().__init__()
-        
+
         # Load API key from environment
         self.api_key = os.getenv("ANTHROPIC_API_KEY")
         if not self.api_key:
             raise ValueError("API key must be provided as an environment variable.")
-        
+
         # Initialize the Anthropic client
         self.client = anthropic.Anthropic(api_key=self.api_key)
 
@@ -61,7 +61,7 @@ class Anthropic(ProviderInterface):
             max_tokens=self.max_tokens,
             messages=[{"role": "user", "content": prompt}],
             temperature=0.7,
-            stop_sequences=["\nUser:"]
+            stop_sequences=["\nUser:"],
         )
         elapsed = timer() - start
         self.log_metrics(model, "response_times", elapsed)
@@ -79,7 +79,7 @@ class Anthropic(ProviderInterface):
         model_id = self.get_model_name(model)
         if model_id is None:
             raise ValueError(f"Model {model} not available for Anthropic.")
-        
+
         first_token_time = None
         inter_token_latencies = []
 
@@ -98,7 +98,7 @@ class Anthropic(ProviderInterface):
                     prev_token_time = first_token_time
                     self.log_metrics(model, "timetofirsttoken", TTFT)
                     print(f"\nTime to First Token (TTFT): {TTFT:.4f} seconds\n")
-                
+
                 # Calculate inter-token latencies
                 time_to_next_token = timer()
                 inter_token_latency = time_to_next_token - prev_token_time
@@ -115,8 +115,12 @@ class Anthropic(ProviderInterface):
         self.log_metrics(model, "timebetweentokens", inter_token_latencies)
         self.log_metrics(model, "totaltokens", len(inter_token_latencies) + 1)
         self.log_metrics(model, "tps", (len(inter_token_latencies) + 1) / elapsed)
-        self.log_metrics(model, "timebetweentokens_median", np.percentile(inter_token_latencies, 50))
-        self.log_metrics(model, "timebetweentokens_p95", np.percentile(inter_token_latencies, 95))
+        self.log_metrics(
+            model, "timebetweentokens_median", np.percentile(inter_token_latencies, 50)
+        )
+        self.log_metrics(
+            model, "timebetweentokens_p95", np.percentile(inter_token_latencies, 95)
+        )
 
     def display_response(self, response, elapsed):
         """

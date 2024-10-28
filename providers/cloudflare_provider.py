@@ -9,7 +9,11 @@ import numpy as np
 
 class Cloudflare(ProviderInterface):
     def __init__(self):
+        """
+        Initializes the Cloudflare with the necessary API key and client.
+        """
         super().__init__()
+    
         cloudflare_account_id = os.environ.get("CLOUDFLARE_ACCOUNT_ID")
         cloudflare_api_token = os.environ.get("CLOUDFLARE_AI_TOKEN")
 

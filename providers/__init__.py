@@ -13,6 +13,6 @@ __all__ = [
     "Open_AI",
     "Cloudflare",
     "TogetherAI",
-    "Anthropic"
+    "Anthropic",
     "ProviderInterface",
 ]
