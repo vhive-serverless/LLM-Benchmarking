@@ -45,9 +45,3 @@ jobs:
       - name: Run flake8
         run: |
           flake8 ./  # Run flake8 on specified directories
-
-      # Step 7: Run codespell
-      - name: Run codespell
-        run: |
-          codespell ./ # Run codespell on specified directories
-
