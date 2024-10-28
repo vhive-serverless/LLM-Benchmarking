@@ -1,6 +1,6 @@
 from dotenv import load_dotenv
-from benchmarking.dynamo_bench import Benchmark
-from providers import TogetherAI, Cloudflare, PerplexityAI, Open_AI, Anthropic
+from benchmarking.benchmark_main import Benchmark
+from providers import TogetherAI, Cloudflare, PerplexityAI, Open_AI
 
 # Load environment variables
 load_dotenv()
@@ -159,7 +159,7 @@ if __name__ == "__main__":
     available_providers = {
         "TogetherAI": TogetherAI(),
         "Cloudflare": Cloudflare(),
-        #"OpenAI": Open_AI(),
+        "OpenAI": Open_AI(),
         "PerplexityAI": PerplexityAI(),
     }
     run_benchmark(available_providers)
