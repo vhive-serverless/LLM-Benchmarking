@@ -17,10 +17,10 @@ class TestMain(unittest.TestCase):
         ],
     )
     @patch(
-        "benchmarking.benchmark_main.Benchmark.run"
+        "benchmarking.benchmark_graph.Benchmark.run"
     )  # Mock the run method of Benchmark
     @patch(
-        "benchmarking.benchmark_main.Benchmark.__init__", return_value=None
+        "benchmarking.benchmark_graph.Benchmark.__init__", return_value=None
     )  # Mock the initialization of Benchmark
     @patch(
         "dotenv.load_dotenv"

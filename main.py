@@ -1,6 +1,6 @@
 from dotenv import load_dotenv
-from benchmarking.benchmark_main import Benchmark
-from providers import TogetherAI, Cloudflare, PerplexityAI, Open_AI
+from benchmarking.benchmark_graph import Benchmark
+from providers import TogetherAI, Cloudflare, PerplexityAI, Open_AI, Hyperbolic, GroqProvider
 
 # Load environment variables
 load_dotenv()
@@ -44,7 +44,7 @@ def get_providers(available_providers):
 # Function to get common models between the selected providers
 def get_common_models(selected_providers):
     """
-    Finds common models available across the selected providers.
+    Finds common models available across all selected providers.
 
     Args:
         selected_providers (list): A list of selected provider instances.
@@ -52,14 +52,12 @@ def get_common_models(selected_providers):
     Returns:
         list or None: A list of common model names if found; otherwise, None.
     """
-    model_sets = []
+    if not selected_providers:
+        return None
 
-    for provider in selected_providers:
-        if hasattr(provider, "model_map"):
-            models = set(provider.model_map.keys())  # Fetch model names from model_map
-            model_sets.append(models)
-
-    # Find common models across selected providers
+    model_sets = [set(provider.model_map.keys()) for provider in selected_providers if hasattr(provider, "model_map")]
+    
+    # Intersect all model sets to get only common models among all providers
     common_models = set.intersection(*model_sets) if model_sets else set()
 
     if not common_models:
@@ -161,5 +159,7 @@ if __name__ == "__main__":
         "Cloudflare": Cloudflare(),
         "OpenAI": Open_AI(),
         "PerplexityAI": PerplexityAI(),
+        "Groq": GroqProvider(),
+        "Hyperbolic": Hyperbolic(),
     }
     run_benchmark(available_providers)

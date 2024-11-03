@@ -1,7 +1,6 @@
+import os
 from openai import OpenAI
 from providers.base_provider import BaseProvider
-import os
-
 
 class PerplexityAI(BaseProvider):
     def __init__(self):

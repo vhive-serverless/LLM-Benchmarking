@@ -6,3 +6,4 @@ __pycache__/
 *.pyc
 dynamodb/docker/docker/dynamodb/shared-local-instance.db
 .coverage
+benchmark_graph/*

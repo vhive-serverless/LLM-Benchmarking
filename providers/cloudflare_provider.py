@@ -1,11 +1,10 @@
-from providers.provider_interface import ProviderInterface
 import os
-from IPython.display import display, Markdown
-from timeit import default_timer as timer
+from providers.provider_interface import ProviderInterface
 import requests
 import time
 import numpy as np
-
+from timeit import default_timer as timer
+from IPython.display import display, Markdown
 
 class Cloudflare(ProviderInterface):
     def __init__(self):

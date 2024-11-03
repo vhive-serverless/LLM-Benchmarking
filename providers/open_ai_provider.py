@@ -1,7 +1,6 @@
+import os
 from openai import OpenAI
 from providers.base_provider import BaseProvider
-import os
-
 
 class Open_AI(BaseProvider):
     def __init__(self):

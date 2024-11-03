@@ -7,7 +7,7 @@ class ProviderInterface(ABC):
 
     def __init__(self):
         """
-        Initializes the AnthropicProvider with the necessary API key and client.
+        Initializes the Provider with the necessary API key and client.
         """
         # experiment constants
         self.max_tokens = 100
@@ -27,6 +27,9 @@ class ProviderInterface(ABC):
         }
 
     def log_metrics(self, model_name, metric, value):
+        """
+        Logs metrics
+        """
         if metric not in self.metrics:
             raise ValueError(f"Metric type '{metric}' is not defined.")
         if model_name not in self.metrics[metric]:
@@ -39,12 +42,21 @@ class ProviderInterface(ABC):
 
     @abstractmethod
     def perform_inference(self, model, prompt):
+        """
+        perform_inference
+        """
         pass
 
     @abstractmethod
     def perform_inference_streaming(self, model, prompt):
+        """
+        perform_inference_streaming
+        """
         pass
 
     @abstractmethod
     def get_model_name(self, model):
+        """
+        get model names
+        """
         pass
