@@ -18,6 +18,16 @@ from main import (
 class TestMain(unittest.TestCase):
     def setUp(self):
         """Set up test fixtures before each test method."""
+        
+        self.env_patcher = patch.dict(os.environ, {
+            "CLOUDFLARE_ACCOUNT_ID": "test_account_id",
+            "CLOUDFLARE_AI_TOKEN": "test_api_token",
+            "TOGETHER_AI_API": "test_together_api",
+            "OPEN_AI_API": "test_openai_api"
+        })
+        
+        self.env_patcher.start()
+        
         self.sample_config = {
             "providers": ["TogetherAI", "OpenAI"],
             "num_requests": 2,
@@ -160,7 +170,6 @@ class TestMain(unittest.TestCase):
         
         self.assertEqual(valid_models, [])  # Ensure valid_models is empty
         
-    @patch.dict(os.environ, {'TOGETHER_AI_API': 'test_api_key'})
     def test_input_size_validation(self):
         """Test input size validation."""
         self.assertIn(self.sample_config["input_tokens"], input_sizes)
