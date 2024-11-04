@@ -8,6 +8,7 @@ from .provider_interface import ProviderInterface
 from .anthropic_provider import Anthropic
 from .groq_provider import GroqProvider
 from .hyperbolic_provider import Hyperbolic
+from .google_provider import GoogleGemini
 
 __all__ = [
     "BaseProvider",
@@ -18,5 +19,6 @@ __all__ = [
     "Anthropic",
     "ProviderInterface",
     "GroqProvider",
-    "Hyperbolic"
+    "Hyperbolic",
+    "GoogleGemini"
 ]

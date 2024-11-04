@@ -1,6 +1,6 @@
 from dotenv import load_dotenv
-from benchmarking.benchmark_graph import Benchmark
-from providers import TogetherAI, Cloudflare, PerplexityAI, Open_AI, Hyperbolic, GroqProvider
+from benchmarking.dynamo_bench import Benchmark
+from providers import TogetherAI, Cloudflare, PerplexityAI, Open_AI, Hyperbolic, GroqProvider, GoogleGemini
 
 # Load environment variables
 load_dotenv()
@@ -161,5 +161,6 @@ if __name__ == "__main__":
         "PerplexityAI": PerplexityAI(),
         "Groq": GroqProvider(),
         "Hyperbolic": Hyperbolic(),
+        "Google": GoogleGemini(),
     }
     run_benchmark(available_providers)
