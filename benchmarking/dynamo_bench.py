@@ -8,12 +8,14 @@ from decimal import Decimal
 
 
 class Benchmark:
-    def __init__(self, providers, num_requests, models, prompt, streaming=False):
+    def __init__(self, providers, num_requests, models, max_output, prompt, streaming=False, verbosity=False):
         self.providers = providers
         self.num_requests = num_requests
         self.models = models
         self.prompt = prompt
         self.streaming = streaming
+        self.max_output = max_output
+        self.verbosity = verbosity
         self.run_id = str(uuid.uuid4())  # Generate a unique ID for each benchmark run
 
         # Initialize DynamoDB
@@ -121,9 +123,9 @@ class Benchmark:
             for model in self.models:
                 for _ in range(self.num_requests):
                     if self.streaming:
-                        provider.perform_inference_streaming(model, self.prompt)
+                        provider.perform_inference_streaming(model, self.prompt, self.max_output, self.verbosity)
                     else:
-                        provider.perform_inference(model, self.prompt)
+                        provider.perform_inference(model, self.prompt, self.max_output, self.verbosity)
 
         # Collect and store metrics in the data structure
         if not self.streaming:

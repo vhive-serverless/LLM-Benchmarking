@@ -1,11 +1,10 @@
 import pytest
 import matplotlib
-matplotlib.use('Agg') 
+matplotlib.use('Agg')
 import os
-from unittest.mock import patch
-from benchmarking.benchmark_graph import Benchmark
+from unittest.mock import patch, MagicMock
+from benchmarking.benchmark_main import Benchmark
 from datetime import datetime
-
 
 class MockProvider:
     """Mock provider class to simulate provider behavior."""
@@ -23,10 +22,10 @@ class MockProvider:
     def get_model_name(self, model):
         return self.model_map.get(model, None)
 
-    def perform_inference(self, model, prompt):
+    def perform_inference(self, model, prompt, max_output, verbosity):
         pass
 
-    def perform_inference_streaming(self, model, prompt):
+    def perform_inference_streaming(self, model, prompt, max_output, verbosity):
         pass
 
 
@@ -40,20 +39,21 @@ def setup_benchmark():
     num_requests = 2
     models = ["model_a", "model_b"]
     prompt = "Test prompt"
-    return Benchmark(providers, num_requests, models, prompt, streaming=False)
+    max_output = 100
+    verbosity = True
+    return Benchmark(providers, num_requests, models, max_output, prompt, streaming=False, verbosity=verbosity)
 
 
 def test_benchmark_initialization(setup_benchmark):
     """Test the initialization of Benchmark, including directory creation."""
     benchmark = setup_benchmark
     base_dir = "end_to_end"
-    provider_dir_name = "mockprovider_mockprovider"  # Adjusted to match the actual directory name
+    provider_dir_name = "mockprovider_mockprovider"
     expected_graph_dir = os.path.join("benchmark_graph", base_dir, provider_dir_name)
 
     # Verify graph directory is created correctly
     assert benchmark.graph_dir == expected_graph_dir
     assert os.path.exists(benchmark.graph_dir)
-
 
 
 @patch.object(MockProvider, "perform_inference_streaming", return_value=None)
@@ -69,7 +69,6 @@ def test_benchmark_run_non_streaming(mock_perform_inference, mock_perform_infere
     assert mock_perform_inference_streaming.call_count == 0  # Should not be called
 
 
-
 @patch.object(MockProvider, "perform_inference_streaming", return_value=None)
 @patch.object(MockProvider, "perform_inference", return_value=None)
 def test_benchmark_run_streaming(mock_perform_inference, mock_perform_inference_streaming):
@@ -78,7 +77,7 @@ def test_benchmark_run_streaming(mock_perform_inference, mock_perform_inference_
         MockProvider("Provider1", {"model_a": "Model A"}),
         MockProvider("Provider2", {"model_a": "Model A"})
     ]
-    benchmark = Benchmark(providers, 2, ["model_a"], "Test prompt", streaming=True)
+    benchmark = Benchmark(providers, 2, ["model_a"], 100, "Test prompt", streaming=True, verbosity=True)
     benchmark.run()
 
     # Ensure perform_inference_streaming was called for each provider, model, and request
@@ -87,8 +86,8 @@ def test_benchmark_run_streaming(mock_perform_inference, mock_perform_inference_
     assert mock_perform_inference.call_count == 0  # Should not be called in streaming mode
 
 
-@patch("benchmarking.benchmark_graph.datetime")
-@patch("benchmarking.benchmark_graph.plt")
+@patch("benchmarking.benchmark_main.datetime")
+@patch("benchmarking.benchmark_main.plt")
 def test_plot_metrics(mock_plt, mock_datetime, setup_benchmark):
     """Test the plot_metrics method, ensuring plots are saved with the correct filename."""
     benchmark = setup_benchmark
@@ -102,4 +101,3 @@ def test_plot_metrics(mock_plt, mock_datetime, setup_benchmark):
     expected_filename = os.path.join(benchmark.graph_dir, "response_times_231101_1200.png")
     mock_plt.savefig.assert_called_once_with(expected_filename)
     mock_plt.close.assert_called_once()
-

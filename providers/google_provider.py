@@ -7,7 +7,7 @@ import numpy as np
 class GoogleGemini(ProviderInterface):
     def __init__(self):
         """
-        Initializes the GoogleGeminiProvider with model mappings and API configuration.
+        Initializes the GoogleGeminiProvider with model mapping and API configuration.
         """
         super().__init__()
 
@@ -38,7 +38,7 @@ class GoogleGemini(ProviderInterface):
         """
         self.model = genai.GenerativeModel(model_id)
 
-    def perform_inference(self, model, prompt):
+    def perform_inference(self, model, prompt, max_output=100, verbosity=True):
         """
         Performs inference on a single prompt and returns the time taken for response generation.
         """
@@ -49,15 +49,21 @@ class GoogleGemini(ProviderInterface):
         self._initialize_model(model_id)
 
         start_time = timer()
-        response = self.model.generate_content(prompt)
+        response = self.model.generate_content(
+            prompt,
+            generation_config=genai.types.GenerationConfig(
+                max_output_tokens=max_output
+            )
+        )
         elapsed = timer() - start_time
 
         self.log_metrics(model, "response_times", elapsed)
-        print(response.text)
-        print(f"\nGenerated in {elapsed:.2f} seconds")
+        if verbosity:
+            print(response.text)
+            print(f"\nGenerated in {elapsed:.2f} seconds")
         return elapsed
 
-    def perform_inference_streaming(self, model, prompt):
+    def perform_inference_streaming(self, model, prompt, max_output=100, verbosity=True):
         """
         Performs streaming inference on a single prompt, capturing latency metrics and output.
         """
@@ -69,7 +75,13 @@ class GoogleGemini(ProviderInterface):
         
         inter_token_latencies = []
         start_time = timer()
-        response = self.model.generate_content(prompt, stream=True)
+        response = self.model.generate_content(
+            prompt,
+            generation_config=genai.types.GenerationConfig(
+                max_output_tokens=max_output
+            ),
+            stream=True
+        )
 
         first_token_time = None
         prev_token_time = start_time
@@ -81,17 +93,19 @@ class GoogleGemini(ProviderInterface):
                 first_token_time = current_time
                 TTFT = first_token_time - start_time
                 prev_token_time = first_token_time
-                print(f"Time to First Token (TTFT): {TTFT:.4f} seconds")
+                if verbosity:
+                    print(f"Time to First Token (TTFT): {TTFT:.4f} seconds")
 
             inter_token_latency = current_time - prev_token_time
             inter_token_latencies.append(inter_token_latency)
             prev_token_time = current_time
-            
-            print(chunk.text, end="", flush=True)
+            if verbosity:
+                print(chunk.text, end="", flush=True)
             streamed_output.append(chunk.text)
 
         total_time = timer() - start_time
-        print(f"\nTotal Response Time: {total_time:.4f} seconds")
+        if verbosity:
+            print(f"\nTotal Response Time: {total_time:.4f} seconds")
 
         self.log_metrics(model, "timetofirsttoken", TTFT)
         self.log_metrics(model, "response_times", total_time)

@@ -40,7 +40,7 @@ class Anthropic(ProviderInterface):
         """
         return self.model_map.get(model, None)
 
-    def perform_inference(self, model, prompt):
+    def perform_inference(self, model, prompt, max_output=100, verbosity=True):
         """
         Performs a synchronous inference call to the Anthropic API.
 
@@ -58,17 +58,19 @@ class Anthropic(ProviderInterface):
         start = timer()
         response = self.client.messages.create(
             model=model_id,
-            max_tokens=self.max_tokens,
+            max_tokens=max_output,
             messages=[{"role": "user", "content": prompt}],
             temperature=0.7,
             stop_sequences=["\nUser:"],
         )
         elapsed = timer() - start
         self.log_metrics(model, "response_times", elapsed)
-        self.display_response(response, elapsed)
+        # Process and display the response
+        if verbosity:
+            self.display_response(response, elapsed)
         return elapsed
 
-    def perform_inference_streaming(self, model, prompt):
+    def perform_inference_streaming(self, model, prompt, max_output=100, verbosity=True):
         """
         Performs a streaming inference call to the Anthropic API.
 
@@ -86,7 +88,7 @@ class Anthropic(ProviderInterface):
         start = timer()
         with self.client.messages.stream(
             model=model_id,
-            max_tokens=self.max_tokens,
+            max_tokens=max_output,
             messages=[{"role": "user", "content": prompt}],
             temperature=0.7,
             stop_sequences=["\nUser:"],
@@ -97,7 +99,8 @@ class Anthropic(ProviderInterface):
                     TTFT = first_token_time - start
                     prev_token_time = first_token_time
                     self.log_metrics(model, "timetofirsttoken", TTFT)
-                    print(f"\nTime to First Token (TTFT): {TTFT:.4f} seconds\n")
+                    if verbosity:
+                        print(f"\nTime to First Token (TTFT): {TTFT:.4f} seconds\n")
 
                 # Calculate inter-token latencies
                 time_to_next_token = timer()
@@ -105,10 +108,12 @@ class Anthropic(ProviderInterface):
                 prev_token_time = time_to_next_token
 
                 inter_token_latencies.append(inter_token_latency)
-                print(chunk, end="", flush=True)
+                if verbosity:
+                    print(chunk, end="", flush=True)
 
             elapsed = timer() - start
-            print(f"\nTotal Response Time: {elapsed:.4f} seconds")
+            if verbosity:
+                print(f"\nTotal Response Time: {elapsed:.4f} seconds")
 
         # Log remaining metrics
         self.log_metrics(model, "response_times", elapsed)

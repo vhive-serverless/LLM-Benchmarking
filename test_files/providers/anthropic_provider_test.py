@@ -37,13 +37,13 @@ def test_perform_inference(mock_anthropic_client_class, setup_anthropic_provider
     mock_client_instance.messages.create.return_value = mock_response
     provider.client = mock_client_instance  # Directly set the mock client
 
-    # Call the method
-    elapsed_time = provider.perform_inference("claude-3.5-sonnet", "Test prompt")
+    # Call the method with verbosity enabled
+    elapsed_time = provider.perform_inference("claude-3.5-sonnet", "Test prompt", max_output=100, verbosity=True)
 
     # Verify messages.create is called with correct parameters
     provider.client.messages.create.assert_called_once_with(
         model="claude-3-5-sonnet-20241022",
-        max_tokens=provider.max_tokens,
+        max_tokens=100,
         messages=[{"role": "user", "content": "Test prompt"}],
         temperature=0.7,
         stop_sequences=["\nUser:"],
@@ -64,20 +64,22 @@ def test_perform_inference_streaming(mock_anthropic_client_class, setup_anthropi
     mock_client_instance.messages.stream.return_value.__enter__.return_value = mock_stream
     provider.client = mock_client_instance  # Directly set the mock client
 
-    # Call the method and capture the output
-    provider.perform_inference_streaming("claude-3.5-sonnet", "Test prompt")
+    # Call the method and capture the output with verbosity enabled
+    provider.perform_inference_streaming("claude-3.5-sonnet", "Test prompt", max_output=100, verbosity=True)
     captured = capfd.readouterr()
 
     # Verify messages.stream is called with correct parameters
     provider.client.messages.stream.assert_called_once_with(
         model="claude-3-5-sonnet-20241022",
-        max_tokens=provider.max_tokens,
+        max_tokens=100,
         messages=[{"role": "user", "content": "Test prompt"}],
         temperature=0.7,
         stop_sequences=["\nUser:"],
     )
 
-    # Verify the output contains expected chunks
+    # Verify the output contains expected chunks and latency information
     assert "chunk1" in captured.out
     assert "chunk2" in captured.out
     assert "chunk3" in captured.out
+    assert "Time to First Token" in captured.out
+    assert "Total Response Time" in captured.out

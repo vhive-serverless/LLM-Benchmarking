@@ -1,7 +1,8 @@
 import pytest
 import os
 from unittest.mock import patch, MagicMock
-from providers import GoogleGemini
+from providers.google_provider import GoogleGemini
+import google.generativeai as genai 
 
 @pytest.fixture
 def setup_google_gemini():
@@ -38,11 +39,14 @@ def test_perform_inference(mock_gen_model_class, setup_google_gemini):
     mock_gen_model_instance.generate_content.return_value = mock_response
     mock_gen_model_class.return_value = mock_gen_model_instance
 
-    # Call the method
-    elapsed_time = provider.perform_inference("gemini-1.5-flash", "Test prompt")
+    # Call the method with max_output and verbosity enabled
+    elapsed_time = provider.perform_inference("gemini-1.5-flash", "Test prompt", max_output=100, verbosity=True)
 
     # Verify generate_content is called with correct parameters
-    mock_gen_model_instance.generate_content.assert_called_once_with("Test prompt")
+    mock_gen_model_instance.generate_content.assert_called_once_with(
+        "Test prompt",
+        generation_config=genai.types.GenerationConfig(max_output_tokens=100)
+    )
 
     # Check if elapsed_time is a float (indicating the timer was used)
     assert isinstance(elapsed_time, float)
@@ -59,14 +63,20 @@ def test_perform_inference_streaming(mock_gen_model_class, setup_google_gemini, 
     mock_gen_model_instance.generate_content.return_value = mock_stream
     mock_gen_model_class.return_value = mock_gen_model_instance
 
-    # Call the method and capture the output
-    provider.perform_inference_streaming("gemini-1.5-flash", "Test prompt")
+    # Call the method and capture the output with verbosity enabled
+    provider.perform_inference_streaming("gemini-1.5-flash", "Test prompt", max_output=100, verbosity=True)
     captured = capfd.readouterr()
 
     # Verify generate_content is called with correct parameters for streaming
-    mock_gen_model_instance.generate_content.assert_called_once_with("Test prompt", stream=True)
+    mock_gen_model_instance.generate_content.assert_called_once_with(
+        "Test prompt",
+        generation_config=genai.types.GenerationConfig(max_output_tokens=100),
+        stream=True
+    )
 
-    # Verify the output contains expected chunks
+    # Verify the output contains expected chunks and latency information
     assert "chunk1" in captured.out
     assert "chunk2" in captured.out
     assert "chunk3" in captured.out
+    assert "Time to First Token" in captured.out
+    assert "Total Response Time" in captured.out

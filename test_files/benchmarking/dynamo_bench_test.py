@@ -2,26 +2,28 @@ import pytest
 from unittest.mock import MagicMock
 from decimal import Decimal
 import os
-from benchmarking.dynamo_bench import Benchmark  # Replace with the actual module name
+from benchmarking.dynamo_bench import Benchmark
 
 # Mock data for testing
 class MockProvider:
     def __init__(self):
         self.metrics = {
-            "response_times": {
-                "mock_model": [0.123, 0.456, 0.789]
-            }
+            "response_times": {"mock_model": [0.123, 0.456, 0.789]},
+            "timetofirsttoken": {"mock_model": [0.05, 0.07, 0.09]},
+            "timebetweentokens": {"mock_model": [0.02, 0.03, 0.04]},
+            "timebetweentokens_median": {"mock_model": [0.02]},
+            "timebetweentokens_p95": {"mock_model": [0.04]}
         }
     def get_model_name(self, model):
         return model
-    def perform_inference(self, model, prompt):
+    def perform_inference(self, model, prompt, max_output, verbosity):
         pass
-    def perform_inference_streaming(self, model, prompt):
+    def perform_inference_streaming(self, model, prompt, max_output, verbosity):
         pass
 
 @pytest.fixture
 def benchmark_instance():
-        # Set the necessary environment variables for boto3
+    # Set necessary environment variables for boto3
     os.environ["AWS_REGION"] = "us-east-1"
     os.environ["DYNAMODB_ENDPOINT_URL"] = "http://localhost:8000"
 
@@ -29,16 +31,20 @@ def benchmark_instance():
     num_requests = 1
     models = ["mock_model"]
     prompt = "test prompt"
+    max_output = 100
+    verbosity = True
     
     # Mock boto3 DynamoDB resource
     mock_dynamodb = MagicMock()
     Benchmark.dynamodb = mock_dynamodb
     
-    return Benchmark(providers, num_requests, models, prompt)
+    return Benchmark(providers, num_requests, models, max_output, prompt, streaming=False, verbosity=verbosity)
 
 def test_initialization(benchmark_instance):
     assert benchmark_instance.prompt == "test prompt"
     assert benchmark_instance.num_requests == 1
+    assert benchmark_instance.max_output == 100
+    assert benchmark_instance.verbosity is True
     assert isinstance(benchmark_instance.run_id, str)
     assert benchmark_instance.benchmark_data["prompt"] == "test prompt"
 
