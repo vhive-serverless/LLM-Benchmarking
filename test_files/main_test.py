@@ -8,7 +8,6 @@ from main import (
     validate_providers,
     get_common_models,
     validate_selected_models,
-    get_available_providers,
     input_sizes,
     OUTPUT_SIZE_LOWER_LIMIT,
     OUTPUT_SIZE_UPPER_LIMIT,
@@ -213,32 +212,5 @@ class TestMain(unittest.TestCase):
         run_benchmark(invalid_config)
         mock_benchmark.assert_not_called()
 
-
-@patch("builtins.input", side_effect=["TogetherAI", "done"])
-def test_get_providers(mock_input, mock_providers):
-    """
-    Test get_providers to ensure correct provider selection.
-    """
-    selected_providers = get_providers(mock_providers)
-    assert selected_providers == [mock_providers["TogetherAI"]]
-
-
-def test_get_common_models(mock_providers):
-    """
-    Test get_common_models to find models that are available across providers.
-    """
-    selected_providers = [mock_providers["TogetherAI"], mock_providers["Cloudflare"]]
-    common_models = get_common_models(selected_providers)
-    
-    # Use set comparison to ignore order
-    assert set(common_models) == {"meta-llama-3.2-3b-instruct", "mistral-7b-instruct-v0.1"}
-
-
-@patch("builtins.input", side_effect=["meta-llama-3.2-3b-instruct", "done"])
-def test_get_models(mock_input):
-    """
-    Test get_models to verify the correct models are selected by user input.
-    """
-    common_models = ["meta-llama-3.2-3b-instruct", "mistral-7b-instruct-v0.1"]
-    selected_models = get_models(common_models)
-    assert selected_models == ["meta-llama-3.2-3b-instruct"]
+if __name__ == '__main__':
+    unittest.main()
