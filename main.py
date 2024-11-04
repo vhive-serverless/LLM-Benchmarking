@@ -37,12 +37,22 @@ output_size_upper_limit = 5000
 output_size_lower_limit = 100
 
 # Available providers dictionary for easy access
-AVAILABLE_PROVIDERS = {
-    "TogetherAI": TogetherAI(),
-    "Cloudflare": Cloudflare(),
-    "OpenAI": Open_AI(),
-    # TODO Add more providers (Perplexity, Anthropic)
-}
+# AVAILABLE_PROVIDERS = {
+#     "TogetherAI": TogetherAI(),
+#     "Cloudflare": Cloudflare(),
+#     "OpenAI": Open_AI(),
+#     # TODO Add more providers (Perplexity, Anthropic)
+# }
+
+def get_available_providers():
+    available_providers = {
+        "TogetherAI": TogetherAI(),
+        "Cloudflare": Cloudflare(),
+        "OpenAI": Open_AI(),
+        # "PerplexityAI": PerplexityAI(),
+    }
+
+    return available_providers
 
 # Function to load JSON configuration
 def load_config(file_path):
@@ -60,7 +70,7 @@ def load_config(file_path):
 # Function to display available providers and their models
 def display_available_providers():
     print("\nAvailable Providers and Models:")
-    for provider_name, provider_instance in AVAILABLE_PROVIDERS.items():
+    for provider_name, provider_instance in get_available_providers().items():
         print(f"\n{provider_name}")
         if hasattr(provider_instance, 'model_map'):
             for common_name, model_name in provider_instance.model_map.items():
@@ -73,8 +83,8 @@ def display_available_providers():
 def validate_providers(selected_providers):
     valid_providers = []
     for provider_name in selected_providers:
-        if provider_name in AVAILABLE_PROVIDERS:
-            valid_providers.append(AVAILABLE_PROVIDERS[provider_name])
+        if provider_name in get_available_providers():
+            valid_providers.append(get_available_providers()[provider_name])
         else:
             # logging.warning(f"Warning: {provider_name} is not a valid provider name.")
             print(f"Warning: {provider_name} is not a valid provider name.")

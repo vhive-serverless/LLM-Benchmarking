@@ -8,7 +8,7 @@ from main import (
     validate_providers,
     get_common_models,
     validate_selected_models,
-    AVAILABLE_PROVIDERS,
+    get_available_providers,
     input_sizes,
     output_size_upper_limit,
     output_size_lower_limit,
