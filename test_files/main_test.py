@@ -159,7 +159,8 @@ class TestMain(unittest.TestCase):
         valid_models = validate_selected_models(selected_models, common_models, [provider1, provider2])
         
         self.assertEqual(valid_models, [])  # Ensure valid_models is empty
-
+        
+    @patch.dict(os.environ, {'TOGETHER_AI_API': 'test_api_key'})
     def test_input_size_validation(self):
         """Test input size validation."""
         self.assertIn(self.sample_config["input_tokens"], input_sizes)
