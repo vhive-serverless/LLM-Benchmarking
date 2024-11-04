@@ -20,7 +20,7 @@ def test_create_dynamodb_table():
         ProvisionedThroughput={"ReadCapacityUnits": 5, "WriteCapacityUnits": 5},
     )
 
-    # Wait until the table exists
+    # Wait until the table exist
     table.meta.client.get_waiter("table_exists").wait(TableName="Testtable")
 
     # Assertions
