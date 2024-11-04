@@ -9,27 +9,33 @@ from providers.provider_interface import ProviderInterface
 
 class Cloudflare(ProviderInterface):
     def __init__(self):
+        """
+        Initializes the Cloudflare with the necessary API key and client.
+        """
         super().__init__()
+    
         cloudflare_account_id = os.environ.get("CLOUDFLARE_ACCOUNT_ID")
         cloudflare_api_token = os.environ.get("CLOUDFLARE_AI_TOKEN")
-        
+
         if not cloudflare_account_id or not cloudflare_api_token:
-            raise ValueError("Cloudflare account ID and API token must be provided either as arguments or environment variables.")
-        
+            raise ValueError(
+                "Cloudflare account ID and API token must be provided either as arguments or environment variables."
+            )
+
         self.cloudflare_account_id = cloudflare_account_id
         self.cloudflare_api_token = cloudflare_api_token
 
-        # model names 
+        # model names
         self.model_map = {
             "google-gemma-2b-it": "@cf/google/gemma-2b-it-lora",
             "phi-2": "@cf/microsoft/phi-2",
             "meta-llama-3.2-3b-instruct": "@cf/meta/llama-3.2-3b-instruct",
             "mistral-7b-instruct-v0.1": "@cf/mistral/mistral-7b-instruct-v0.1",
-            "meta-llama-3.1-70b-instruct": "@cf/meta/llama-3.1-70b-instruct"
+            "meta-llama-3.1-70b-instruct": "@cf/meta/llama-3.1-70b-instruct",
         }
-    
+
     def get_model_name(self, model):
-        return self.model_map.get(model, None) # or model
+        return self.model_map.get(model, None)  # or model
 
     def perform_inference(self, model, prompt, max_output=100, verbosity=True):
         model_id = self.get_model_name(model)
@@ -49,7 +55,7 @@ class Cloudflare(ProviderInterface):
             },
             timeout=1800
         )
-        
+
         elapsed = timer() - start_time
         print("request sucess")
         #log response times metric
@@ -71,7 +77,10 @@ class Cloudflare(ProviderInterface):
 
         response = requests.post(
             f"https://api.cloudflare.com/client/v4/accounts/{self.cloudflare_account_id}/ai/run/{model_id}",
-            headers={"Authorization": f"Bearer {self.cloudflare_api_token}",     'Content-Type': 'application/json' },
+            headers={
+                "Authorization": f"Bearer {self.cloudflare_api_token}",
+                "Content-Type": "application/json",
+            },
             json={
             "stream" : True,
             "messages": [
@@ -94,7 +103,7 @@ class Cloudflare(ProviderInterface):
                     if verbosity:
                         print(f"##### Time to First Token (TTFT): {ttft:.4f} seconds\n")
 
-                line_str = line.decode('utf-8').strip()
+                line_str = line.decode("utf-8").strip()
 
                 # Check if the stream is done
                 if line_str == "data: [DONE]":
@@ -127,5 +136,4 @@ class Cloudflare(ProviderInterface):
         self.log_metrics(model, "timebetweentokens_median", median)
         self.log_metrics(model, "timebetweentokens_p95", p95)
         self.log_metrics(model, "totaltokens", len(inter_token_latencies) + 1)
-        self.log_metrics(model, "tps", (len(inter_token_latencies) + 1)/total_time)
-    
+        self.log_metrics(model, "tps", (len(inter_token_latencies) + 1) / total_time)

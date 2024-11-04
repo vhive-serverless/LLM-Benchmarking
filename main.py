@@ -10,6 +10,7 @@ from utils.prompt_generator import get_prompt
 # Load environment variables
 load_dotenv()
 
+
 # Define input parser
 parser = argparse.ArgumentParser(
     description="Run a benchmark on selected AI providers and models.",
@@ -106,6 +107,7 @@ def validate_selected_models(selected_models, common_models, selected_providers)
                     print(f"Warning: Model '{model}' not available for all selected providers.")
     return valid_models
 
+
 # Main function to run the benchmark
 def run_benchmark(config):
     """Runs the benchmark based on the given configuration."""
@@ -171,6 +173,7 @@ def main():
             run_benchmark(config)
     else:
         parser.print_help()
+
 
 if __name__ == "__main__":
     main()

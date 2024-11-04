@@ -1,13 +1,17 @@
 import os
 from together import Together
 from providers.base_provider import BaseProvider
+from providers.base_provider import BaseProvider
 
 class TogetherAI(BaseProvider):
     def __init__(self):
+        """
+        Initializes the AnthropicProvider with the necessary API key and client.
+        """
         together_api = os.environ["TOGETHER_AI_API"]
         super().__init__(api_key=together_api, client_class=Together)
 
-        # model names 
+        # model names
         self.model_map = {
             "google-gemma-2b-it": "google/gemma-2b-it",
             "meta-llama-3.2-3b-instruct": "meta-llama/Llama-3.2-3B-Instruct-Turbo",

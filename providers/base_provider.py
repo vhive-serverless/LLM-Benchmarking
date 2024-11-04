@@ -14,7 +14,7 @@ class BaseProvider(ProviderInterface):
             self.client = client_class(api_key=api_key, base_url=base_url)
         else:
             self.client = client_class(api_key=api_key)
-            
+
         self.model_map = {}
 
     def get_model_name(self, model):
@@ -29,7 +29,7 @@ class BaseProvider(ProviderInterface):
             model=model_id,
             messages=[
                 {"role": "system", "content": self.system_prompt},
-                {"role": "user", "content": prompt}
+                {"role": "user", "content": prompt},
             ],
             max_tokens= max_output #self.max_tokens
         )
@@ -51,7 +51,7 @@ class BaseProvider(ProviderInterface):
             model=model_id,
             messages=[
                 {"role": "system", "content": self.system_prompt},
-                {"role": "user", "content": prompt}
+                {"role": "user", "content": prompt},
             ],
             stream=True,
             # max_tokens= self.max_tokens,
@@ -93,8 +93,8 @@ class BaseProvider(ProviderInterface):
         self.log_metrics(model, "timebetweentokens_median", median)
         self.log_metrics(model, "timebetweentokens_p95", p95)
         self.log_metrics(model, "totaltokens", len(inter_token_latencies) + 1)
-        self.log_metrics(model, "tps", (len(inter_token_latencies) + 1)/elapsed)
-        
+        self.log_metrics(model, "tps", (len(inter_token_latencies) + 1) / elapsed)
+
     def display_response(self, response, elapsed):
         """ Display response. """
         print(response.choices[0].message.content) #[:100] + "...")

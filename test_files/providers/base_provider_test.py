@@ -14,25 +14,29 @@ def base_provider():
     return provider
 
 
-@patch('providers.base_provider.timer', side_effect=[0, 1.0])
-@patch.object(BaseProvider, 'log_metrics')
-@patch.object(BaseProvider, 'display_response')
-def test_perform_inference(mock_display_response, mock_log_metrics, mock_timer, base_provider):
+@patch("providers.base_provider.timer", side_effect=[0, 1.0])
+@patch.object(BaseProvider, "log_metrics")
+@patch.object(BaseProvider, "display_response")
+def test_perform_inference(
+    mock_display_response, mock_log_metrics, mock_timer, base_provider
+):
     mock_response = MagicMock()
     mock_response.choices = [MagicMock()]
     mock_response.choices[0].message.content = "Test response content."
     base_provider.client.chat.completions.create.return_value = mock_response
 
     # Call perform_inference
-    elapsed_time = base_provider.perform_inference("test-model", "What is the test prompt?")
+    elapsed_time = base_provider.perform_inference(
+        "test-model", "What is the test prompt?"
+    )
 
     base_provider.client.chat.completions.create.assert_called_once_with(
         model="model_id_test",
         messages=[
             {"role": "system", "content": "This is a test system prompt."},
-            {"role": "user", "content": "What is the test prompt?"}
+            {"role": "user", "content": "What is the test prompt?"},
         ],
-        max_tokens=100
+        max_tokens=100,
     )
 
     mock_log_metrics.assert_called_with("test-model", "response_times", 1.0)
@@ -40,10 +44,12 @@ def test_perform_inference(mock_display_response, mock_log_metrics, mock_timer, 
     assert elapsed_time == 1.0
 
 
-@patch('providers.base_provider.timer', side_effect=[0, 0.5, 1.0, 1.5, 2.0])
-@patch.object(BaseProvider, 'log_metrics')
-@patch.object(BaseProvider, 'display_response')
-def test_perform_inference_streaming(mock_display_response, mock_log_metrics, mock_timer, base_provider):
+@patch("providers.base_provider.timer", side_effect=[0, 0.5, 1.0, 1.5, 2.0])
+@patch.object(BaseProvider, "log_metrics")
+@patch.object(BaseProvider, "display_response")
+def test_perform_inference_streaming(
+    mock_display_response, mock_log_metrics, mock_timer, base_provider
+):
     mock_chunk1 = MagicMock()
     mock_chunk1.choices = [MagicMock()]
     mock_chunk1.choices[0].delta.content = "Test chunk 1 content."
@@ -60,19 +66,25 @@ def test_perform_inference_streaming(mock_display_response, mock_log_metrics, mo
     mock_chunk3.choices[0].finish_reason = "stop"
 
     # Simulate the stream response
-    base_provider.client.chat.completions.create.return_value = [mock_chunk1, mock_chunk2, mock_chunk3]
+    base_provider.client.chat.completions.create.return_value = [
+        mock_chunk1,
+        mock_chunk2,
+        mock_chunk3,
+    ]
 
     # Call perform_inference_streaming
-    base_provider.perform_inference_streaming("test-model", "What is the test streaming prompt?")
+    base_provider.perform_inference_streaming(
+        "test-model", "What is the test streaming prompt?"
+    )
 
     base_provider.client.chat.completions.create.assert_called_once_with(
         model="model_id_test",
         messages=[
             {"role": "system", "content": "This is a test system prompt."},
-            {"role": "user", "content": "What is the test streaming prompt?"}
+            {"role": "user", "content": "What is the test streaming prompt?"},
         ],
         stream=True,
-        max_tokens=100
+        max_tokens=100,
     )
 
     mock_log_metrics.assert_any_call("test-model", "timetofirsttoken", 0.5)
