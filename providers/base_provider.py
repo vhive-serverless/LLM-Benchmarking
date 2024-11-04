@@ -20,7 +20,7 @@ class BaseProvider(ProviderInterface):
     def get_model_name(self, model):
         return self.model_map.get(model, None)
 
-    def perform_inference(self, model, prompt, max_output):
+    def perform_inference(self, model, prompt, max_output=100, verbosity=True):
         model_id = self.get_model_name(model)
         if model_id is None:
             raise ValueError(f"Model {model} not available for provider.")
@@ -35,10 +35,11 @@ class BaseProvider(ProviderInterface):
         )
         elapsed = timer() - start
         self.log_metrics(model, "response_times", elapsed)
-        self.display_response(response, elapsed)
+        if verbosity:
+            self.display_response(response, elapsed)
         return elapsed
 
-    def perform_inference_streaming(self, model, prompt, max_output):
+    def perform_inference_streaming(self, model, prompt, max_output=100, verbosity=True):
         model_id = self.get_model_name(model)
         if model_id is None:
             raise ValueError(f"Model {model} not available for provider.")
@@ -62,11 +63,13 @@ class BaseProvider(ProviderInterface):
                 first_token_time = timer()
                 TTFT = first_token_time - start
                 prev_token_time = first_token_time
-                logging.debug(f"\nTime to First Token (TTFT): {TTFT:.4f} seconds\n")
+                if verbosity:
+                    print(f"\nTime to First Token (TTFT): {TTFT:.4f} seconds\n")
 
             if chunk.choices[0].finish_reason:
                 elapsed = timer() - start
-                logging.debug(f"\nTotal Response Time: {elapsed:.4f} seconds")
+                if verbosity:
+                    print(f"\nTotal Response Time: {elapsed:.4f} seconds")
                 break
 
             time_to_next_token = timer()
@@ -74,13 +77,14 @@ class BaseProvider(ProviderInterface):
             prev_token_time = time_to_next_token
 
             inter_token_latencies.append(inter_token_latency)
-            if len(inter_token_latencies) < 20:
-                print(chunk.choices[0].delta.content or "", end="", flush=True)
-            elif len(inter_token_latencies) == 20:
-                print("...")
+            if verbosity:
+                if len(inter_token_latencies) < 20:
+                    print(chunk.choices[0].delta.content or "", end="", flush=True)
+                elif len(inter_token_latencies) == 20:
+                    print("...")
 
-        # logging.info(f'\nNumber of output tokens/chunks: {len(inter_token_latencies) + 1}, Time to First Token (TTFT): {TTFT:.4f} seconds, Total Response Time: {elapsed:.4f} seconds')
-        print(f'\nNumber of output tokens/chunks: {len(inter_token_latencies) + 1}, Time to First Token (TTFT): {TTFT:.4f} seconds, Total Response Time: {elapsed:.4f} seconds')
+        if verbosity:
+            print(f'\nNumber of output tokens/chunks: {len(inter_token_latencies) + 1}, Time to First Token (TTFT): {TTFT:.4f} seconds, Total Response Time: {elapsed:.4f} seconds')
         self.log_metrics(model, "timetofirsttoken", TTFT)
         self.log_metrics(model, "response_times", elapsed)
         self.log_metrics(model, "timebetweentokens", inter_token_latencies)
@@ -92,5 +96,5 @@ class BaseProvider(ProviderInterface):
         self.log_metrics(model, "tps", (len(inter_token_latencies) + 1)/elapsed)
         
     def display_response(self, response, elapsed):
-        print(response.choices[0].message.content[:100] + "...")
-        logging.debug(f"\nGenerated in {elapsed:.2f} seconds")
+        print(response.choices[0].message.content) #[:100] + "...")
+        print(f"\nGenerated in {elapsed:.2f} seconds")

@@ -6,13 +6,14 @@ import os
 from datetime import datetime
 
 class Benchmark:
-    def __init__(self, providers, num_requests, models, max_output, prompt, streaming=False):
+    def __init__(self, providers, num_requests, models, max_output, prompt, streaming=False, verbosity=False):
         self.providers = providers
         self.num_requests = num_requests
         self.models = models
         self.prompt = prompt
         self.streaming = streaming
         self.max_output = max_output
+        self.verbosity = verbosity
 
         base_dir = "streaming" if streaming else "end_to_end"
 
@@ -67,13 +68,15 @@ class Benchmark:
                 print(f"Model: {model_name}\nPrompt: {self.prompt}")
 
                 for i in range(self.num_requests):
-                    # logging.info(f'Request {i+1}/{self.num_requests}')
-                    if i%10==0 or i==self.num_requests-1:
+                    if self.verbosity:
+                        print(f'Request {i+1}/{self.num_requests}')
+                    elif i%10==0 or i==self.num_requests-1:
                         print(f'\nRequest {i+1}/{self.num_requests}')
+
                     if self.streaming:
-                        provider.perform_inference_streaming(model, self.prompt, self.max_output)
+                        provider.perform_inference_streaming(model, self.prompt, self.max_output, self.verbosity)
                     else:
-                        provider.perform_inference(model, self.prompt, self.max_output)
+                        provider.perform_inference(model, self.prompt, self.max_output, self.verbosity)
 
         if not self.streaming:
             self.plot_metrics("response_times", "response_times")

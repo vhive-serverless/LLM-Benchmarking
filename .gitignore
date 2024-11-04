@@ -5,3 +5,12 @@
 __pycache__/
 *.pyc
 benchmark_graph
+
+# Testing and coverage
+.coverage
+coverage.xml
+htmlcov
+
+
+# Notebooks
+notebooks/.ipynb_checkpoints/

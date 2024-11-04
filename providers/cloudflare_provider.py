@@ -5,7 +5,7 @@ from timeit import default_timer as timer
 import requests
 import time
 import numpy as np
-import logging
+# import logging
 
 class Cloudflare(ProviderInterface):
     def __init__(self):
@@ -21,25 +21,19 @@ class Cloudflare(ProviderInterface):
 
         # model names 
         self.model_map = {
-            # "google-gemma-2b-it": "@cf/google/gemma-2b-it-lora",
-            # "phi-2": "@cf/microsoft/phi-2",
-            # "meta-llama-3.2-3b-instruct": "@cf/meta/llama-3.2-3b-instruct",
-            # "mistral-7b-instruct-v0.1": "@cf/mistral/mistral-7b-instruct-v0.1",
-            # "meta-llama-3.1-70b-instruct": "@cf/meta/llama-3.1-70b-instruct"
-            "2b-it": "@cf/google/gemma-2b-it-lora",
+            "google-gemma-2b-it": "@cf/google/gemma-2b-it-lora",
             "phi-2": "@cf/microsoft/phi-2",
-            "3b-instruct": "@cf/meta/llama-3.2-3b-instruct",
-            "7b-instruct": "@cf/mistral/mistral-7b-instruct-v0.1",
-            "70b-instruct": "@cf/meta/llama-3.1-70b-instruct"
+            "meta-llama-3.2-3b-instruct": "@cf/meta/llama-3.2-3b-instruct",
+            "mistral-7b-instruct-v0.1": "@cf/mistral/mistral-7b-instruct-v0.1",
+            "meta-llama-3.1-70b-instruct": "@cf/meta/llama-3.1-70b-instruct"
         }
     
     def get_model_name(self, model):
         return self.model_map.get(model, None) # or model
 
-    def perform_inference(self, model, prompt, max_output):
+    def perform_inference(self, model, prompt, max_output=100, verbosity=True):
         model_id = self.get_model_name(model)
         if model_id is None:
-            # logging.debug(f"Model {model} not available for provider {model_id}")
             print(f"Model {model} not available for provider {model_id}")
         start_time = timer()
         response = requests.post(
@@ -56,18 +50,20 @@ class Cloudflare(ProviderInterface):
         )
         
         elapsed = timer() - start_time
-
+        print("request sucess")
         #log response times metric
         self.log_metrics(model, "response_times", elapsed)
 
         inference = response.json()
+        print(inference)
         # logging.debug(inference["result"]["response"])
-        print(inference["result"]["response"][:50])
+        if verbosity:
+            print(inference["result"]["response"][:50])
 
-        logging.debug(f"#### _Generated in *{elapsed:.2f}* seconds_")
+            print(f"#### _Generated in *{elapsed:.2f}* seconds_")
         return elapsed
 
-    def perform_inference_streaming(self, model, prompt, max_output):
+    def perform_inference_streaming(self, model, prompt, max_output=100, verbosity=True):
         inter_token_latencies = []
         model_id = self.get_model_name(model)
         start_time = time.perf_counter()
@@ -93,7 +89,8 @@ class Cloudflare(ProviderInterface):
                     first_token_time = time.perf_counter()
                     TTFT = first_token_time - start_time
                     prev_token_time = first_token_time
-                    logging.debug(f"##### Time to First Token (TTFT): {TTFT:.4f} seconds\n")
+                    if verbosity:
+                        print(f"##### Time to First Token (TTFT): {TTFT:.4f} seconds\n")
 
                 line_str = line.decode('utf-8').strip()
 
@@ -101,7 +98,8 @@ class Cloudflare(ProviderInterface):
                 if line_str == "data: [DONE]":
                     end_time = time.perf_counter()
                     total_time = end_time - start_time
-                    logging.debug(f"##### Total Response Time: {total_time:.4f} seconds")
+                    if verbosity:
+                        print(f"##### Total Response Time: {total_time:.4f} seconds")
                     break
                 else:
                     time_to_next_token = time.perf_counter()
@@ -110,13 +108,15 @@ class Cloudflare(ProviderInterface):
 
                     inter_token_latencies.append(inter_token_latency)
                     # logging.debug(line_str[19:].split('"')[0], end='')
-                    if len(inter_token_latencies) < 20:
-                        print(line_str[19:].split('"')[0], end='')
-                    elif len(inter_token_latencies) == 20:
-                        print("...")
+                    if verbosity:
+                        if len(inter_token_latencies) < 20:
+                            print(line_str[19:].split('"')[0], end='')
+                        elif len(inter_token_latencies) == 20:
+                            print("...")
                     
         # logging.debug(f'##### Number of output tokens/chunks: {len(inter_token_latencies) + 1}')
-        print(f'\nNumber of output tokens/chunks: {len(inter_token_latencies) + 1}, Time to First Token (TTFT): {TTFT:.4f} seconds, Total Response Time: {total_time:.4f} seconds')
+        if verbosity:
+            print(f'\nNumber of output tokens/chunks: {len(inter_token_latencies) + 1}, Time to First Token (TTFT): {TTFT:.4f} seconds, Total Response Time: {total_time:.4f} seconds')
 
         self.log_metrics(model, "timetofirsttoken", TTFT)
         self.log_metrics(model, "response_times", total_time)

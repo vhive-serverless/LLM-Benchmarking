@@ -1,0 +1,10 @@
+{
+    "providers": ["Cloudflare"], 
+    "models": ["meta-llama-3.2-3b-instruct"],
+    "num_requests": 1,
+    "input_tokens": 10,
+    "streaming": true,
+    "max_output": 100,
+    "verbose": true
+}
+  
