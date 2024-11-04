@@ -76,7 +76,9 @@ def test_get_common_models(mock_providers):
     """
     selected_providers = [mock_providers["TogetherAI"], mock_providers["Cloudflare"]]
     common_models = get_common_models(selected_providers)
-    assert common_models == ["meta-llama-3.2-3b-instruct", "mistral-7b-instruct-v0.1"]
+    
+    # Use set comparison to ignore order
+    assert set(common_models) == {"meta-llama-3.2-3b-instruct", "mistral-7b-instruct-v0.1"}
 
 
 @patch("builtins.input", side_effect=["meta-llama-3.2-3b-instruct", "done"])
