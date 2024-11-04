@@ -10,8 +10,8 @@ from main import (
     validate_selected_models,
     get_available_providers,
     input_sizes,
-    output_size_upper_limit,
-    output_size_lower_limit,
+    OUTPUT_SIZE_LOWER_LIMIT,
+    OUTPUT_SIZE_UPPER_LIMIT,
     run_benchmark
 )
 
@@ -182,11 +182,11 @@ class TestMain(unittest.TestCase):
 
     def test_output_size_validation(self):
         """Test output size validation."""
-        self.assertGreaterEqual(self.sample_config["max_output"], output_size_lower_limit)
-        self.assertLessEqual(self.sample_config["max_output"], output_size_upper_limit)
+        self.assertGreaterEqual(self.sample_config["max_output"], OUTPUT_SIZE_LOWER_LIMIT)
+        self.assertLessEqual(self.sample_config["max_output"], OUTPUT_SIZE_UPPER_LIMIT)
         
         invalid_config = self.sample_config.copy()
-        invalid_config["max_output"] = output_size_upper_limit + 1  # Invalid output size
+        invalid_config["max_output"] = OUTPUT_SIZE_UPPER_LIMIT + 1  # Invalid output size
         with patch('main.Benchmark') as mock_benchmark:
             run_benchmark(invalid_config)
             mock_benchmark.assert_not_called()

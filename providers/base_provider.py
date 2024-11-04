@@ -1,8 +1,8 @@
 # base_provider.py for chat completions api
-from providers.provider_interface import ProviderInterface
 from timeit import default_timer as timer
 import numpy as np
-import logging
+from providers.provider_interface import ProviderInterface
+
 
 class BaseProvider(ProviderInterface):
     def __init__(self, api_key, client_class, base_url=None):
@@ -61,10 +61,10 @@ class BaseProvider(ProviderInterface):
         for chunk in response:
             if first_token_time is None:
                 first_token_time = timer()
-                TTFT = first_token_time - start
+                ttft = first_token_time - start
                 prev_token_time = first_token_time
                 if verbosity:
-                    print(f"\nTime to First Token (TTFT): {TTFT:.4f} seconds\n")
+                    print(f"\nTime to First Token (TTFT): {ttft:.4f} seconds\n")
 
             if chunk.choices[0].finish_reason:
                 elapsed = timer() - start
@@ -84,8 +84,8 @@ class BaseProvider(ProviderInterface):
                     print("...")
 
         if verbosity:
-            print(f'\nNumber of output tokens/chunks: {len(inter_token_latencies) + 1}, Time to First Token (TTFT): {TTFT:.4f} seconds, Total Response Time: {elapsed:.4f} seconds')
-        self.log_metrics(model, "timetofirsttoken", TTFT)
+            print(f'\nNumber of output tokens/chunks: {len(inter_token_latencies) + 1}, Time to First Token (TTFT): {ttft:.4f} seconds, Total Response Time: {elapsed:.4f} seconds')
+        self.log_metrics(model, "timetofirsttoken", ttft)
         self.log_metrics(model, "response_times", elapsed)
         self.log_metrics(model, "timebetweentokens", inter_token_latencies)
         median = np.percentile(inter_token_latencies, 50)
@@ -96,5 +96,6 @@ class BaseProvider(ProviderInterface):
         self.log_metrics(model, "tps", (len(inter_token_latencies) + 1)/elapsed)
         
     def display_response(self, response, elapsed):
+        """ Display response. """
         print(response.choices[0].message.content) #[:100] + "...")
         print(f"\nGenerated in {elapsed:.2f} seconds")

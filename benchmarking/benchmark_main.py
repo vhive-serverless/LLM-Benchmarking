@@ -1,12 +1,35 @@
 import matplotlib.pyplot as plt
-# from IPython.display import display, Markdown
-import logging
 import numpy as np
 import os
 from datetime import datetime
 
 class Benchmark:
+    """
+    A class to run and visualize benchmarks for different AI providers.
+
+    Attributes:
+        providers (list): List of AI provider instances.
+        num_requests (int): Number of requests to run per model.
+        models (list): List of model names to benchmark.
+        max_output (int): Maximum number of tokens for model output.
+        prompt (str): The input prompt to use for benchmarking.
+        streaming (bool): Flag to indicate whether to use streaming mode.
+        verbosity (bool): Flag to enable verbose output during benchmarking.
+        graph_dir (str): Directory path for saving generated plots.
+    """
     def __init__(self, providers, num_requests, models, max_output, prompt, streaming=False, verbosity=False):
+        """
+        Initializes the Benchmark instance with provided parameters.
+
+        Args:
+            providers (list): List of AI provider instances.
+            num_requests (int): Number of requests to run per model.
+            models (list): List of model names to benchmark.
+            max_output (int): Maximum number of tokens for model output.
+            prompt (str): The input prompt to use for benchmarking.
+            streaming (bool, optional): Flag to indicate streaming mode. Defaults to False.
+            verbosity (bool, optional): Flag to enable verbose output. Defaults to False.
+        """
         self.providers = providers
         self.num_requests = num_requests
         self.models = models
@@ -27,6 +50,13 @@ class Benchmark:
             os.makedirs(self.graph_dir)
 
     def plot_metrics(self, metric, filename_suffix):
+        """
+        Plots and saves graphs for the given metric.
+
+        Args:
+            metric (str): The name of the metric to plot (e.g., "response_times").
+            filename_suffix (str): Suffix to append to the filename for saving the plot.
+        """
         plt.figure(figsize=(8, 8))
 
         for provider in self.providers:
@@ -59,6 +89,12 @@ class Benchmark:
         print(f"Saved graph: {filepath}")
 
     def run(self):
+        """
+        Runs the benchmark for the selected providers and models, and plots the results.
+
+        This method sends a number of requests to each model for each provider, collects
+        performance metrics, and generates plots based on those metrics.
+        """
         for provider in self.providers:
             provider_name = provider.__class__.__name__
             # logging.debug(f"{provider_name}")

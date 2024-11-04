@@ -1,10 +1,10 @@
-from providers.provider_interface import ProviderInterface
 import os
-# from IPython.display import display, Image, Markdown, Audio
-from timeit import default_timer as timer
-import requests
 import time
+import requests
 import numpy as np
+from timeit import default_timer as timer
+from providers.provider_interface import ProviderInterface
+# from IPython.display import display, Image, Markdown, Audio
 # import logging
 
 class Cloudflare(ProviderInterface):
@@ -46,7 +46,8 @@ class Cloudflare(ProviderInterface):
                 {"role": "user", "content": prompt}
             ],
             "max_tokens": max_output #self.max_tokens
-            }
+            },
+            timeout=1800
         )
         
         elapsed = timer() - start_time
@@ -80,6 +81,7 @@ class Cloudflare(ProviderInterface):
             "max_tokens": max_output #self.max_tokens
             },
             stream=True,
+            timeout=1800
         )
 
         first_token_time = None
@@ -87,10 +89,10 @@ class Cloudflare(ProviderInterface):
             if line:
                 if first_token_time is None:
                     first_token_time = time.perf_counter()
-                    TTFT = first_token_time - start_time
+                    ttft = first_token_time - start_time
                     prev_token_time = first_token_time
                     if verbosity:
-                        print(f"##### Time to First Token (TTFT): {TTFT:.4f} seconds\n")
+                        print(f"##### Time to First Token (TTFT): {ttft:.4f} seconds\n")
 
                 line_str = line.decode('utf-8').strip()
 
@@ -101,24 +103,23 @@ class Cloudflare(ProviderInterface):
                     if verbosity:
                         print(f"##### Total Response Time: {total_time:.4f} seconds")
                     break
-                else:
-                    time_to_next_token = time.perf_counter()
-                    inter_token_latency = time_to_next_token - prev_token_time
-                    prev_token_time = time_to_next_token
+                time_to_next_token = time.perf_counter()
+                inter_token_latency = time_to_next_token - prev_token_time
+                prev_token_time = time_to_next_token
 
-                    inter_token_latencies.append(inter_token_latency)
-                    # logging.debug(line_str[19:].split('"')[0], end='')
-                    if verbosity:
-                        if len(inter_token_latencies) < 20:
-                            print(line_str[19:].split('"')[0], end='')
-                        elif len(inter_token_latencies) == 20:
-                            print("...")
+                inter_token_latencies.append(inter_token_latency)
+                # logging.debug(line_str[19:].split('"')[0], end='')
+                if verbosity:
+                    if len(inter_token_latencies) < 20:
+                        print(line_str[19:].split('"')[0], end='')
+                    elif len(inter_token_latencies) == 20:
+                        print("...")
                     
         # logging.debug(f'##### Number of output tokens/chunks: {len(inter_token_latencies) + 1}')
         if verbosity:
-            print(f'\nNumber of output tokens/chunks: {len(inter_token_latencies) + 1}, Time to First Token (TTFT): {TTFT:.4f} seconds, Total Response Time: {total_time:.4f} seconds')
+            print(f'\nNumber of output tokens/chunks: {len(inter_token_latencies) + 1}, Time to First Token (TTFT): {ttft:.4f} seconds, Total Response Time: {total_time:.4f} seconds')
 
-        self.log_metrics(model, "timetofirsttoken", TTFT)
+        self.log_metrics(model, "timetofirsttoken", ttft)
         self.log_metrics(model, "response_times", total_time)
         self.log_metrics(model, "timebetweentokens", inter_token_latencies)
         median = np.percentile(inter_token_latencies, 50)

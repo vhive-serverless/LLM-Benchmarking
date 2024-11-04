@@ -16,13 +16,13 @@ Sophia’s mind raced. Why would anyone orchestrate such a thing? And who was po
 A noise echoed down the hallway, breaking Sophia’s concentration. Guards were approaching. Dr. Elric hastily copied the last of the files onto his secure drive, and they slipped out just as the alarm blared. Running through the corridors with heart-pounding urgency, Sophia felt a newfound resolve. The world needed to know the truth, even if it meant challenging the very essence of what it meant to be human."
 
 def get_prompt(input_size):
+    """Generates a prompt based on the specified input token size."""
     if input_size == 10:
         return "Tell me a story."
     if input_size == 100:
         return PROMPT_100_TOKENS
-    elif input_size == 1000:
+    if input_size == 1000:
         return PROMPT_1000_TOKENS
-    elif input_size == 10000:
+    if input_size == 10000:
         return PROMPT_1000_TOKENS * 5 + PROMPT_100_TOKENS * 50
-    else:
-        return PROMPT_1000_TOKENS * 100
+    return PROMPT_1000_TOKENS * 100
