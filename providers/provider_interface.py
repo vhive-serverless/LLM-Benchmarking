@@ -11,7 +11,9 @@ class ProviderInterface(ABC):
         """
         # experiment constants
         self.min_tokens = 10000
-        self.system_prompt = f"Please provide a detailed response of MORE THAN {self.min_tokens} words"
+        self.system_prompt = (
+            f"Please provide a detailed response of MORE THAN {self.min_tokens} words"
+        )
 
         # metrics
         self.metrics = {

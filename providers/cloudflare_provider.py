@@ -4,8 +4,10 @@ import requests
 import numpy as np
 from timeit import default_timer as timer
 from providers.provider_interface import ProviderInterface
+
 # from IPython.display import display, Image, Markdown, Audio
 # import logging
+
 
 class Cloudflare(ProviderInterface):
     def __init__(self):
@@ -13,7 +15,7 @@ class Cloudflare(ProviderInterface):
         Initializes the Cloudflare with the necessary API key and client.
         """
         super().__init__()
-    
+
         cloudflare_account_id = os.environ.get("CLOUDFLARE_ACCOUNT_ID")
         cloudflare_api_token = os.environ.get("CLOUDFLARE_AI_TOKEN")
 
@@ -46,19 +48,19 @@ class Cloudflare(ProviderInterface):
             f"https://api.cloudflare.com/client/v4/accounts/{self.cloudflare_account_id}/ai/run/{model_id}",
             headers={"Authorization": f"Bearer {self.cloudflare_api_token}"},
             json={
-            "messages": [
-                # {"role": "system", "content": "Explain your answer step-by-step."},
-                {"role": "system", "content": self.system_prompt},
-                {"role": "user", "content": prompt}
-            ],
-            "max_tokens": max_output #self.max_tokens
+                "messages": [
+                    # {"role": "system", "content": "Explain your answer step-by-step."},
+                    {"role": "system", "content": self.system_prompt},
+                    {"role": "user", "content": prompt},
+                ],
+                "max_tokens": max_output,  # self.max_tokens
             },
-            timeout=1800
+            timeout=1800,
         )
 
         elapsed = timer() - start_time
         print("request sucess")
-        #log response times metric
+        # log response times metric
         self.log_metrics(model, "response_times", elapsed)
 
         inference = response.json()
@@ -70,7 +72,9 @@ class Cloudflare(ProviderInterface):
             print(f"#### _Generated in *{elapsed:.2f}* seconds_")
         return elapsed
 
-    def perform_inference_streaming(self, model, prompt, max_output=100, verbosity=True):
+    def perform_inference_streaming(
+        self, model, prompt, max_output=100, verbosity=True
+    ):
         inter_token_latencies = []
         model_id = self.get_model_name(model)
         start_time = time.perf_counter()
@@ -82,15 +86,15 @@ class Cloudflare(ProviderInterface):
                 "Content-Type": "application/json",
             },
             json={
-            "stream" : True,
-            "messages": [
-                {"role": "system", "content": self.system_prompt},
-                {"role": "user", "content": prompt}
-            ],
-            "max_tokens": max_output #self.max_tokens
+                "stream": True,
+                "messages": [
+                    {"role": "system", "content": self.system_prompt},
+                    {"role": "user", "content": prompt},
+                ],
+                "max_tokens": max_output,
             },
             stream=True,
-            timeout=1800
+            timeout=1800,
         )
 
         first_token_time = None
@@ -120,13 +124,15 @@ class Cloudflare(ProviderInterface):
                 # logging.debug(line_str[19:].split('"')[0], end='')
                 if verbosity:
                     if len(inter_token_latencies) < 20:
-                        print(line_str[19:].split('"')[0], end='')
+                        print(line_str[19:].split('"')[0], end="")
                     elif len(inter_token_latencies) == 20:
                         print("...")
-                    
+
         # logging.debug(f'##### Number of output tokens/chunks: {len(inter_token_latencies) + 1}')
         if verbosity:
-            print(f'\nNumber of output tokens/chunks: {len(inter_token_latencies) + 1}, Time to First Token (TTFT): {ttft:.4f} seconds, Total Response Time: {total_time:.4f} seconds')
+            print(
+                f"\nNumber of output tokens/chunks: {len(inter_token_latencies) + 1}, Time to First Token (TTFT): {ttft:.4f} seconds, Total Response Time: {total_time:.4f} seconds"
+            )
 
         self.log_metrics(model, "timetofirsttoken", ttft)
         self.log_metrics(model, "response_times", total_time)

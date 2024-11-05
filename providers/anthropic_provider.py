@@ -70,7 +70,9 @@ class Anthropic(ProviderInterface):
             self.display_response(response, elapsed)
         return elapsed
 
-    def perform_inference_streaming(self, model, prompt, max_output=100, verbosity=True):
+    def perform_inference_streaming(
+        self, model, prompt, max_output=100, verbosity=True
+    ):
         """
         Performs a streaming inference call to the Anthropic API.
 

@@ -2,6 +2,7 @@ import os
 from groq import Groq
 from providers.base_provider import BaseProvider
 
+
 class GroqProvider(BaseProvider):
     def __init__(self):
         """

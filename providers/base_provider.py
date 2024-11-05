@@ -31,7 +31,7 @@ class BaseProvider(ProviderInterface):
                 {"role": "system", "content": self.system_prompt},
                 {"role": "user", "content": prompt},
             ],
-            max_tokens= max_output #self.max_tokens
+            max_tokens=max_output,
         )
         elapsed = timer() - start
         self.log_metrics(model, "response_times", elapsed)
@@ -39,7 +39,9 @@ class BaseProvider(ProviderInterface):
             self.display_response(response, elapsed)
         return elapsed
 
-    def perform_inference_streaming(self, model, prompt, max_output=100, verbosity=True):
+    def perform_inference_streaming(
+        self, model, prompt, max_output=100, verbosity=True
+    ):
         model_id = self.get_model_name(model)
         if model_id is None:
             raise ValueError(f"Model {model} not available for provider.")
@@ -54,8 +56,7 @@ class BaseProvider(ProviderInterface):
                 {"role": "user", "content": prompt},
             ],
             stream=True,
-            # max_tokens= self.max_tokens,
-            max_tokens= max_output
+            max_tokens=max_output,
         )
 
         for chunk in response:
@@ -84,7 +85,9 @@ class BaseProvider(ProviderInterface):
                     print("...")
 
         if verbosity:
-            print(f'\nNumber of output tokens/chunks: {len(inter_token_latencies) + 1}, Time to First Token (TTFT): {ttft:.4f} seconds, Total Response Time: {elapsed:.4f} seconds')
+            print(
+                f"\nNumber of output tokens/chunks: {len(inter_token_latencies) + 1}, Time to First Token (TTFT): {ttft:.4f} seconds, Total Response Time: {elapsed:.4f} seconds"
+            )
         self.log_metrics(model, "timetofirsttoken", ttft)
         self.log_metrics(model, "response_times", elapsed)
         self.log_metrics(model, "timebetweentokens", inter_token_latencies)
@@ -96,6 +99,6 @@ class BaseProvider(ProviderInterface):
         self.log_metrics(model, "tps", (len(inter_token_latencies) + 1) / elapsed)
 
     def display_response(self, response, elapsed):
-        """ Display response. """
-        print(response.choices[0].message.content) #[:100] + "...")
+        """Display response."""
+        print(response.choices[0].message.content)  # [:100] + "...")
         print(f"\nGenerated in {elapsed:.2f} seconds")

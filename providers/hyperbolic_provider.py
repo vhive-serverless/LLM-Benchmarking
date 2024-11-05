@@ -2,6 +2,7 @@ import os
 from openai import OpenAI
 from providers.base_provider import BaseProvider
 
+
 class Hyperbolic(BaseProvider):
     def __init__(self):
         """

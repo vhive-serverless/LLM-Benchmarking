@@ -1,10 +1,11 @@
 import os
-import os
 from openai import OpenAI
 from providers.base_provider import BaseProvider
 
+
 class PerplexityAI(BaseProvider):
-    """ perplexity provider class """
+    """perplexity provider class"""
+
     def __init__(self):
         """
         Initializes the AnthropicProvider with the necessary API key and client.

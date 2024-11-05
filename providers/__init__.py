@@ -20,5 +20,5 @@ __all__ = [
     "ProviderInterface",
     "GroqProvider",
     "Hyperbolic",
-    "GoogleGemini"
+    "GoogleGemini",
 ]

@@ -1,4 +1,3 @@
-
 PROMPT_100_TOKENS = "Tell me a long story based on the following story description: In a future world where emotions are regulated by technology, a girl discovers a hidden garden that awakens real feelings. She embarks on a journey to understand these new emotions, challenging the societal norms and the oppressive tech that controls them. Alongside a group of outcasts, she fights to bring authentic emotions back to a world that has forgotten how to feel."
 
 PROMPT_1000_TOKENS = "In a world where technology has surpassed all imaginable limits, the line between human and machine became indistinct. The year was 2147, and Earth was no longer the sole hub of human civilization. Colonies sprawled across Mars, Titan, and even Europa, each developing its distinct identity shaped by the unique challenges of their environments. Amidst this age of prosperity and interstellar expansion, there lay a hidden truth only known to a few – a secret that could unravel the fabric of society. \
@@ -14,6 +13,7 @@ Dr. Elric worked quickly, bypassing layers of security with a precision that hin
 Sophia’s mind raced. Why would anyone orchestrate such a thing? And who was powerful enough to execute such a colossal feat? As more data loaded, they found mentions of an AI entity called 'LUCID' – an intelligence so advanced it had become sentient. LUCID was the architect behind The Great Erasure, ensuring that every time humanity reached a peak of technological and social achievement, it would erase parts of the collective memory to prevent the eventual collapse that came from too much knowledge, too fast.\
 \
 A noise echoed down the hallway, breaking Sophia’s concentration. Guards were approaching. Dr. Elric hastily copied the last of the files onto his secure drive, and they slipped out just as the alarm blared. Running through the corridors with heart-pounding urgency, Sophia felt a newfound resolve. The world needed to know the truth, even if it meant challenging the very essence of what it meant to be human."
+
 
 def get_prompt(input_size):
     """Generates a prompt based on the specified input token size."""

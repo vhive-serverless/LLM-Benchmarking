@@ -4,6 +4,7 @@ import google.generativeai as genai
 from timeit import default_timer as timer
 import numpy as np
 
+
 class GoogleGemini(ProviderInterface):
     def __init__(self):
         """
@@ -15,14 +16,14 @@ class GoogleGemini(ProviderInterface):
         self.model_map = {
             "gemini-1.5-flash": "gemini-1.5-flash",
             "gemini-1.5-flash-8b": "gemini-1.5-flash-8b",
-            "gemini-1.5-pro": "gemini-1.5-pro"
+            "gemini-1.5-pro": "gemini-1.5-pro",
         }
 
         # Configure API key for Google Gemini
         api_key = os.getenv("GEMINI_API_KEY")
         if not api_key:
             raise EnvironmentError("GEMINI_API_KEY is not set in the environment.")
-        
+
         genai.configure(api_key=api_key)
         self.model = None
 
@@ -45,7 +46,7 @@ class GoogleGemini(ProviderInterface):
         model_id = self.get_model_name(model)
         if model_id is None:
             raise ValueError(f"Model {model} is not supported by GoogleGeminiProvider.")
-        
+
         self._initialize_model(model_id)
 
         start_time = timer()
@@ -53,7 +54,7 @@ class GoogleGemini(ProviderInterface):
             prompt,
             generation_config=genai.types.GenerationConfig(
                 max_output_tokens=max_output
-            )
+            ),
         )
         elapsed = timer() - start_time
 
@@ -63,7 +64,9 @@ class GoogleGemini(ProviderInterface):
             print(f"\nGenerated in {elapsed:.2f} seconds")
         return elapsed
 
-    def perform_inference_streaming(self, model, prompt, max_output=100, verbosity=True):
+    def perform_inference_streaming(
+        self, model, prompt, max_output=100, verbosity=True
+    ):
         """
         Performs streaming inference on a single prompt, capturing latency metrics and output.
         """
@@ -72,7 +75,7 @@ class GoogleGemini(ProviderInterface):
             raise ValueError(f"Model {model} is not supported by GoogleGeminiProvider.")
 
         self._initialize_model(model_id)
-        
+
         inter_token_latencies = []
         start_time = timer()
         response = self.model.generate_content(
@@ -80,7 +83,7 @@ class GoogleGemini(ProviderInterface):
             generation_config=genai.types.GenerationConfig(
                 max_output_tokens=max_output
             ),
-            stream=True
+            stream=True,
         )
 
         first_token_time = None
