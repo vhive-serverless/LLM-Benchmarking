@@ -22,7 +22,8 @@ class TestMain(unittest.TestCase):
             "CLOUDFLARE_ACCOUNT_ID": "test_account_id",
             "CLOUDFLARE_AI_TOKEN": "test_api_token",
             "TOGETHER_AI_API": "test_together_api",
-            "OPEN_AI_API": "test_openai_api"
+            "OPEN_AI_API": "test_openai_api",
+            "ANTHROPIC_API_KEY": "test_anthropic_api_key"
         })
         
         self.env_patcher.start()
