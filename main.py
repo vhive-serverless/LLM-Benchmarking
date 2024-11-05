@@ -4,7 +4,7 @@ import argparse
 import json
 from dotenv import load_dotenv
 from benchmarking.benchmark_main import Benchmark
-from providers import TogetherAI, Cloudflare, Open_AI
+from providers import TogetherAI, Cloudflare, Open_AI, GoogleGemini, GroqProvider, Anthropic, PerplexityAI, Hyperbolic
 from utils.prompt_generator import get_prompt
 
 # Load environment variables
@@ -32,7 +32,11 @@ def get_available_providers():
         "TogetherAI": TogetherAI(),
         "Cloudflare": Cloudflare(),
         "OpenAI": Open_AI(),
-        # "PerplexityAI": PerplexityAI(),
+        "PerplexityAI": PerplexityAI(),
+        "Hyperbolic": Hyperbolic(),
+        "Google": GoogleGemini(),
+        "Anthropic": Anthropic(),
+        "Groq": GroqProvider(),
     }
 
     return available_providers
