@@ -23,7 +23,10 @@ class TestMain(unittest.TestCase):
             "CLOUDFLARE_AI_TOKEN": "test_api_token",
             "TOGETHER_AI_API": "test_together_api",
             "OPEN_AI_API": "test_openai_api",
-            "ANTHROPIC_API_KEY": "test_anthropic_api_key"
+            "ANTHROPIC_API_KEY": "test_anthropic_api_key",
+            "PERPLEXITY_AI_API": "test_api_perplexity",
+            "GROQ_API_KEY": 'test_groq_key',
+            "GEMINI_API_KEY": 'test_gemini_key'
         })
         
         self.env_patcher.start()
