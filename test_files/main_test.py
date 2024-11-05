@@ -26,7 +26,8 @@ class TestMain(unittest.TestCase):
             "ANTHROPIC_API_KEY": "test_anthropic_api_key",
             "PERPLEXITY_AI_API": "test_api_perplexity",
             "GROQ_API_KEY": 'test_groq_key',
-            "GEMINI_API_KEY": 'test_gemini_key'
+            "GEMINI_API_KEY": 'test_gemini_key',
+            "HYPERBOLIC_API": 'hyperbolic_test_api'
         })
         
         self.env_patcher.start()
