@@ -13,6 +13,6 @@ codespell==2.3.0
 autoflake==2.3.1
 anthropic==0.37.1
 boto3==1.35.49
-moto==5.0.18
+moto==5.0.20
 groq==0.11.0
 google-generativeai==0.8.3
