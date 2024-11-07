@@ -4,3 +4,15 @@
 # Ignore Python cache files
 __pycache__/
 *.pyc
+dynamodb/docker/docker/dynamodb/shared-local-instance.db
+.coverage
+benchmark_graph/*
+
+
+# Testing and coverage
+coverage.xml
+htmlcov
+
+
+# Notebooks
+notebooks/.ipynb_checkpoints/

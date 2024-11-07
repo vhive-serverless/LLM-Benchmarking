@@ -1,0 +1,8 @@
+# .coveragerc
+[run]
+source =
+    .
+
+omit =
+    */notebook/*
+    */test_files/*
