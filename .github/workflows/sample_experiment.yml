@@ -2,11 +2,20 @@ name: Sample Experiment
 
 on:
   workflow_dispatch:
-  push:
+  # push:
 
 jobs:
   test:
     runs-on: ubuntu-latest
+    env:
+        CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+        CLOUDFLARE_AI_TOKEN: ${{ secrets.CLOUDFLARE_AI_TOKEN }}
+        GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+        GROQ_API_KEY: ${{ secrets.GROQ_API_KEY }}
+        HYPERBOLIC_API: ${{ secrets.HYPERBOLIC_API }}
+        OPEN_AI_API: ${{ secrets.OPEN_AI_API }}
+        PERPLEXITY_AI_API: ${{ secrets.PERPLEXITY_AI_API }}
+        TOGETHER_AI_API: ${{ secrets.TOGETHER_AI_API }}
 
     steps:
     - name: Check out repository
@@ -23,20 +32,11 @@ jobs:
         pip install -r requirements.txt
     
     - name: Run Experiment
-      env:
-        CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
-        CLOUDFLARE_AI_TOKEN: ${{ secrets.CLOUDFLARE_AI_TOKEN }}
-        GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
-        GROQ_API_KEY: ${{ secrets.GROQ_API_KEY }}
-        HYPERBOLIC_API: ${{ secrets.HYPERBOLIC_API }}
-        OPEN_AI_API: ${{ secrets.OPEN_AI_API }}
-        PERPLEXITY_AI_API: ${{ secrets.PERPLEXITY_AI_API }}
-        TOGETHER_AI_API: ${{ secrets.TOGETHER_AI_API }}
-
       run: python main.py -c benchmarking/experiments/sample_config.json
 
     - name: Upload Experiment Outputs
       if: success()
       uses: actions/upload-artifact@v3
       with:
-        name: experiment-results
+        name: sample-experiment-results
+        path: benchmarking/sample-results
