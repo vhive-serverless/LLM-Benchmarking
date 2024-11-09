@@ -39,4 +39,4 @@ jobs:
       uses: actions/upload-artifact@v3
       with:
         name: sample-experiment-results
-        path: benchmarking/sample-results
+        path: benchmark_graph
