@@ -143,6 +143,7 @@ class Anthropic(ProviderInterface):
             elapsed (float): Time in seconds taken to generate the response.
         """
         # content = "".join(block.get("text", "") for block in response.content)
+        # print(response)
         for block in response.content:
             print(block.text)
         print(f"\nGenerated in {elapsed:.2f} seconds")

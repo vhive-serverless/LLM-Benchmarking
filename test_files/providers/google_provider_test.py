@@ -21,6 +21,7 @@ def test_google_gemini_initialization(setup_google_gemini):
         "gemini-1.5-flash": "gemini-1.5-flash",
         "gemini-1.5-flash-8b": "gemini-1.5-flash-8b",
         "gemini-1.5-pro": "gemini-1.5-pro",
+        "common-model": "gemini-1.5-flash"
     }
 
 
