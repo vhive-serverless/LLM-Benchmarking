@@ -7,7 +7,7 @@ from providers.anthropic_provider import Anthropic
 @pytest.fixture
 def setup_anthropic_provider():
     """Fixture to set up and return an instance of Anthropic with a mocked API key."""
-    with patch.dict(os.environ, {"ANTHROPIC_API_KEY": "test_api_key"}):
+    with patch.dict(os.environ, {"ANTHROPIC_API": "test_anthropic_api_key"}):
         return Anthropic()
 
 
