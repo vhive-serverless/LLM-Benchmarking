@@ -2,8 +2,8 @@
     "providers": ["Anthropic"],  
     "models": ["claude-3-opus"],
     "num_requests": 1,
-    "input_tokens": 10000,
-    "streaming": true,
-    "max_output": 1000,
+    "input_tokens": 10,
+    "streaming": false,
+    "max_output": 100,
     "verbose": true
 }

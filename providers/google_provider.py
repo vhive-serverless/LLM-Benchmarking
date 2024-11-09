@@ -17,6 +17,7 @@ class GoogleGemini(ProviderInterface):
             "gemini-1.5-flash": "gemini-1.5-flash",
             "gemini-1.5-flash-8b": "gemini-1.5-flash-8b",
             "gemini-1.5-pro": "gemini-1.5-pro",
+            "common-model": "gemini-1.5-flash"
         }
 
         # Configure API key for Google Gemini

@@ -23,9 +23,10 @@ class Anthropic(ProviderInterface):
 
         # Model mapping for Anthropic models
         self.model_map = {
-            "claude-3.5-sonnet": "claude-3-5-sonnet-20241022",
-            "claude-3-opus": "claude-3-opus-latest",
-            "claude-3-haiku": "claude-3-haiku-20240307",
+            "claude-3.5-sonnet": "claude-3-5-sonnet-20241022", # approx 70b
+            "claude-3-opus": "claude-3-opus-latest", # approx 2T
+            "claude-3-haiku": "claude-3-haiku-20240307", # approx 20b
+            "common-model": "claude-3-5-sonnet-20241022"
         }
 
     def get_model_name(self, model):
@@ -60,7 +61,7 @@ class Anthropic(ProviderInterface):
             model=model_id,
             max_tokens=max_output,
             messages=[{"role": "user", "content": prompt}],
-            temperature=0.7,
+            # temperature=0.7,
             stop_sequences=["\nUser:"],
         )
         elapsed = timer() - start
@@ -92,7 +93,7 @@ class Anthropic(ProviderInterface):
             model=model_id,
             max_tokens=max_output,
             messages=[{"role": "user", "content": prompt}],
-            temperature=0.7,
+            # temperature=0.7,
             stop_sequences=["\nUser:"],
         ) as stream:
             for chunk in stream.text_stream:
@@ -141,6 +142,7 @@ class Anthropic(ProviderInterface):
             response (dict): The response dictionary from the Anthropic API.
             elapsed (float): Time in seconds taken to generate the response.
         """
-        content = "".join(block.get("text", "") for block in response["content"])
-        print(content)
+        # content = "".join(block.get("text", "") for block in response.content)
+        for block in response.content:
+            print(block.text)
         print(f"\nGenerated in {elapsed:.2f} seconds")
