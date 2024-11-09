@@ -23,9 +23,9 @@ class Anthropic(ProviderInterface):
 
         # Model mapping for Anthropic models
         self.model_map = {
-            "claude-3.5-sonnet": "claude-3-5-sonnet-20241022", # approx 70b
-            "claude-3-opus": "claude-3-opus-latest", # approx 2T
-            "claude-3-haiku": "claude-3-haiku-20240307", # approx 20b
+            "claude-3.5-sonnet": "claude-3-5-sonnet-20241022",  # approx 70b
+            "claude-3-opus": "claude-3-opus-latest",  # approx 2T
+            "claude-3-haiku": "claude-3-haiku-20240307",  # approx 20b
             "common-model": "claude-3-5-sonnet-20241022"
         }
 
