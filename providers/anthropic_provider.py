@@ -14,7 +14,7 @@ class Anthropic(ProviderInterface):
         super().__init__()
 
         # Load API key from environment
-        self.api_key = os.getenv("ANTHROPIC_API_KEY")
+        self.api_key = os.getenv("ANTHROPIC_API")
         if not self.api_key:
             raise ValueError("API key must be provided as an environment variable.")
 
@@ -111,11 +111,15 @@ class Anthropic(ProviderInterface):
 
                 inter_token_latencies.append(inter_token_latency)
                 if verbosity:
-                    print(chunk, end="", flush=True)
+                    if len(inter_token_latencies) < 20:
+                        print(chunk, end="", flush=True)
+                    elif len(inter_token_latencies) == 20:
+                        print("...")
 
             elapsed = timer() - start
             if verbosity:
                 print(f"\nTotal Response Time: {elapsed:.4f} seconds")
+                # print(f"Total tokens: {len(inter_token_latencies)}")
 
         # Log remaining metrics
         self.log_metrics(model, "response_times", elapsed)

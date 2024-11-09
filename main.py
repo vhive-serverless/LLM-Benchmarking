@@ -10,7 +10,7 @@ from providers import (
     Open_AI,
     GoogleGemini,
     GroqProvider,
-    # Anthropic,
+    Anthropic,
     PerplexityAI,
     Hyperbolic,
 )
@@ -49,7 +49,7 @@ def get_available_providers():
         "PerplexityAI": PerplexityAI(),
         "Hyperbolic": Hyperbolic(),
         "Google": GoogleGemini(),
-        # "Anthropic": Anthropic(),
+        "Anthropic": Anthropic(),
         "Groq": GroqProvider(),
     }
 
