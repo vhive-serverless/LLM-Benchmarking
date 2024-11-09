@@ -16,6 +16,7 @@ jobs:
         OPEN_AI_API: ${{ secrets.OPEN_AI_API }}
         PERPLEXITY_AI_API: ${{ secrets.PERPLEXITY_AI_API }}
         TOGETHER_AI_API: ${{ secrets.TOGETHER_AI_API }}
+        ANTHROPIC_API: ${{ secrets.ANTHROPIC_API }}
 
     steps:
     - name: Check out repository
