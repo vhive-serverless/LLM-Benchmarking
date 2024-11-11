@@ -17,7 +17,7 @@ jobs:
         PERPLEXITY_AI_API: ${{ secrets.PERPLEXITY_AI_API }}
         TOGETHER_AI_API: ${{ secrets.TOGETHER_AI_API }}
         ANTHROPIC_API: ${{ secrets.ANTHROPIC_API }}
-        filepath: benchmarking/experiments/compare_providers_test.json
+        filepath: benchmarking/experiments/providers_test.json
 
     steps:
     - name: Check out repository
