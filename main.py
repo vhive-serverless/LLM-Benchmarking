@@ -52,7 +52,7 @@ def get_available_providers():
         "Google": GoogleGemini(),
         "Anthropic": Anthropic(),
         "Groq": GroqProvider(),
-        "Azure": Azure()    
+        "Azure": Azure()
     }
 
     return available_providers

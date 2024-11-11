@@ -104,7 +104,7 @@ class GoogleGemini(ProviderInterface):
             inter_token_latency = current_time - prev_token_time
             inter_token_latencies.append(inter_token_latency)
             prev_token_time = current_time
-                # print(chunk.text, end="", flush=True)
+            # print(chunk.text, end="", flush=True)
             try:
                 if hasattr(chunk, "text") and chunk.text:
                     if verbosity:

@@ -9,26 +9,20 @@ class Azure(ProviderInterface):
         """Initialize AzureProvider with required API information."""
         super().__init__()
 
-        # Endpoint for all requests
-        # model_name = 
-        # self.azure_endpoint = f"https://{model_name}.eastus.models.ai.azure.com/chat/completions"
-        # if not self.azure_endpoint:
-        #     raise ValueError("Azure endpoint must be provided as an environment variable.")
-
         # Map model names to Azure model IDs
         self.model_map = {
             # "mistral-7b-instruct-v0.1": "mistral-7b-instruct-v0.1",
-            "meta-llama-3.1-8b-instruct": "Meta-Llama-3-1-8B-Instruct-fyp",
-            "meta-llama-3.1-70b-instruct":"Meta-Llama-3-1-70B-Instruct-fyp",
-            "common-model": "Meta-Llama-3-1-70B-Instruct-fyp"
+            "meta-llama-3.1-8b-instruct" : "Meta-Llama-3-1-8B-Instruct-fyp",
+            "meta-llama-3.1-70b-instruct" : "Meta-Llama-3-1-70B-Instruct-fyp",
+            "common-model" : "Meta-Llama-3-1-70B-Instruct-fyp"
         }
 
         # Define API keys for each model
         self.model_api_keys = {
             # "mistral-7b-instruct-v0.1": os.environ.get("MISTRAL_API_KEY"),
-            "meta-llama-3.1-8b-instruct": os.environ.get("AZURE_LLAMA_8B_API"),
-            "meta-llama-3.1-70b-instruct": os.environ.get("AZURE_LLAMA_70B_API"),
-            "common-model": os.environ.get("AZURE_LLAMA_70B_API"),
+            "meta-llama-3.1-8b-instruct" : os.environ.get("AZURE_LLAMA_8B_API"),
+            "meta-llama-3.1-70b-instruct" : os.environ.get("AZURE_LLAMA_70B_API"),
+            "common-model" : os.environ.get("AZURE_LLAMA_70B_API"),
             # "common-model": os.environ.get("MISTRAL_API_KEY")
         }
 
@@ -150,43 +144,3 @@ class Azure(ProviderInterface):
         self.log_metrics(model, "timebetweentokens_median", np.median(inter_token_latencies))
         self.log_metrics(model, "timebetweentokens_p95", np.percentile(inter_token_latencies, 95))
         self.log_metrics(model, "totaltokens", len(inter_token_latencies) + 1)
-
-
-# import os
-# from openai import OpenAI
-# from providers.base_provider import BaseProvider
-
-
-# class Azure(BaseProvider):
-#     def __init__(self):
-#         """
-#         Initializes AZURE with the necessary API key and client.
-#         """
-
-#         model = "meta-llama-3.1-8b-instruct"
-
-#         # Map model names to Azure model IDs
-#         self.model_map = {
-#             "meta-llama-3.1-8b-instruct": "Meta-Llama-3-1-8B-Instruct-fyp",
-#         }
-
-#         # Define API keys for each model
-#         self.model_api_keys = {
-#             "meta-llama-3.1-8b-instruct": os.environ.get("AZURE_LLAMA_8B_API"),
-#         }
-
-#         model_name = self.get_model_name(model)
-#         model_api_key = self.get_model_api(model)       
-
-#         client_class = OpenAI
-#         base_url = f"https://{model_name}.eastus.models.ai.azure.com/chat/completions"
-
-#         super().__init__(
-#             api_key=model_api_key, client_class=client_class, base_url=base_url
-#         )
-
-#     def get_model_name(self, model):
-#         return self.model_map.get(model, None)
-
-#     def get_model_api(self, model):
-#         return self.model_api_keys.get(model, None)
