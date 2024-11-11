@@ -1,0 +1,9 @@
+{
+    "providers": ["Cloudflare"],  
+    "models": ["google-gemma-2b-it", "phi-2", "meta-llama-3.2-3b-instruct", "meta-llama-3.1-70b-instruct", "mistral-7b-instruct-v0.1"],
+    "num_requests": 100,
+    "input_tokens": 10,
+    "streaming": true,
+    "max_output": 100,
+    "verbose": true
+}

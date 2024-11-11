@@ -93,6 +93,14 @@ class GoogleGemini(ProviderInterface):
 
         for chunk in response:
             current_time = timer()
+            
+            # Check if the response chunk contains a valid text part
+            if hasattr(chunk, "text") and chunk.text:
+                print(chunk.text, end="", flush=True)
+            else:
+                # Handle filtered response gracefully
+                print("\n[Filtered response: Content blocked due to safety concerns.]", flush=True)
+
             if first_token_time is None:
                 first_token_time = current_time
                 TTFT = first_token_time - start_time

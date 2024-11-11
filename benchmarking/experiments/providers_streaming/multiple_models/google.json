@@ -1,6 +1,6 @@
 {
-    "providers": ["Anthropic", "TogetherAI"],  
-    "models": ["common-model"],
+    "providers": ["Google"],  
+    "models": ["gemini-1.5-flash", "gemini-1.5-flash-8b", "gemini-1.5-pro"],
     "num_requests": 100,
     "input_tokens": 10,
     "streaming": true,

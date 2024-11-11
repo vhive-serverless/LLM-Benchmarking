@@ -1,6 +1,6 @@
 {
-    "providers": ["Anthropic", "TogetherAI"],  
-    "models": ["common-model"],
+    "providers": ["Anthropic"],  
+    "models": ["claude-3-5-sonnet-20241022"],
     "num_requests": 100,
     "input_tokens": 10,
     "streaming": true,

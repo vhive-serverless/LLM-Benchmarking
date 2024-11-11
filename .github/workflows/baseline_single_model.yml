@@ -1,0 +1,258 @@
+name: Compare Providers
+
+on:
+  workflow_dispatch:
+  # push:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    env:
+        CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+        CLOUDFLARE_AI_TOKEN: ${{ secrets.CLOUDFLARE_AI_TOKEN }}
+        GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+        GROQ_API_KEY: ${{ secrets.GROQ_API_KEY }}
+        HYPERBOLIC_API: ${{ secrets.HYPERBOLIC_API }}
+        OPEN_AI_API: ${{ secrets.OPEN_AI_API }}
+        PERPLEXITY_AI_API: ${{ secrets.PERPLEXITY_AI_API }}
+        TOGETHER_AI_API: ${{ secrets.TOGETHER_AI_API }}
+        ANTHROPIC_API: ${{ secrets.ANTHROPIC_API }}
+
+    steps:
+    - name: Check out repository
+      uses: actions/checkout@v3
+    
+    - name: Set up Python 3.12
+      uses: actions/setup-python@v4
+      with:
+        python-version: 3.12
+    
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install -r requirements.txt
+    
+    - name: Run Experiment
+      run: python main.py -c benchmarking/experiments/compare_providers_test.json
+
+    - name: Upload Experiment Outputs
+      if: success()
+      uses: actions/upload-artifact@v3
+      with:
+        name: test-experiment-results
+        path: benchmark_graph
+
+  anthropic:
+    runs-on: ubuntu-latest
+    env:
+        ANTHROPIC_API: ${{ secrets.ANTHROPIC_API }}
+        folder: ${{ benchmarking/experiments/providers_streaming/single_model }}
+    
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v3
+      
+      - name: Set up Python 3.12
+        uses: actions/setup-python@v4
+        with:
+          python-version: 3.12
+      
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+      
+      - name: Run Experiment
+        run: python main.py -c ${{ env.folder }}/anthropic.json # how to put folder here?
+
+      - name: Upload Experiment Outputs
+        if: success()
+        uses: actions/upload-artifact@v3
+        with:
+          name: anthropic-experiment-results
+          path: benchmark_graph
+
+  cloudflare:
+    runs-on: ubuntu-latest
+    env:
+        CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+        CLOUDFLARE_AI_TOKEN: ${{ secrets.CLOUDFLARE_AI_TOKEN }}
+        folder: benchmarking/experiments/providers_streaming/single_model
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v3
+      
+      - name: Set up Python 3.12
+        uses: actions/setup-python@v4
+        with:
+          python-version: 3.12
+      
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+      
+      - name: Run Experiment
+        run: python main.py -c ${{ env.folder }}/cloudflare.json
+
+      - name: Upload Experiment Outputs
+        if: success()
+        uses: actions/upload-artifact@v3
+        with:
+          name: cloudflare-experiment-results
+          path: benchmark_graph
+
+  togetherai:
+    runs-on: ubuntu-latest
+    env:
+        TOGETHER_AI_API: ${{ secrets.TOGETHER_AI_API }}
+        folder: benchmarking/experiments/providers_streaming/single_model
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v3
+      
+      - name: Set up Python 3.12
+        uses: actions/setup-python@v4
+        with:
+          python-version: 3.12
+      
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+      
+      - name: Run Experiment
+        run: python main.py -c ${{ env.folder }}/togetherai.json
+
+      - name: Upload Experiment Outputs
+        if: success()
+        uses: actions/upload-artifact@v3
+        with:
+          name: togetherai-experiment-results
+          path: benchmark_graph
+
+  # OpenAI
+  openai:
+    runs-on: ubuntu-latest
+    env:
+        OPEN_AI_API: ${{ secrets.OPEN_AI_API }}
+        folder: benchmarking/experiments/providers_streaming/single_model
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v3
+      
+      - name: Set up Python 3.12
+        uses: actions/setup-python@v4
+        with:
+          python-version: 3.12
+      
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+      
+      - name: Run Experiment
+        run: python main.py -c ${{ env.folder }}/openai.json
+
+      - name: Upload Experiment Outputs
+        if: success()
+        uses: actions/upload-artifact@v3
+        with:
+          name: openai-experiment-results
+          path: benchmark_graph
+
+  # Hyperbolic
+  hyperbolic:
+    runs-on: ubuntu-latest
+    env:
+        HYPERBOLIC_API: ${{ secrets.HYPERBOLIC_API }}
+        folder: benchmarking/experiments/providers_streaming/single_model
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v3
+      
+      - name: Set up Python 3.12
+        uses: actions/setup-python@v4
+        with:
+          python-version: 3.12
+      
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+      
+      - name: Run Experiment
+        run: python main.py -c ${{ env.folder }}/hyperbolic.json
+
+      - name: Upload Experiment Outputs
+        if: success()
+        uses: actions/upload-artifact@v3
+        with:
+          name: hyperbolic-experiment-results
+          path: benchmark_graph
+
+  # Google Gemini
+  google_gemini:
+    runs-on: ubuntu-latest
+    env:
+        GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+        folder: benchmarking/experiments/providers_streaming/single_model
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v3
+      
+      - name: Set up Python 3.12
+        uses: actions/setup-python@v4
+        with:
+          python-version: 3.12
+      
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+      
+      - name: Run Experiment
+        run: python main.py -c ${{ env.folder }}/google_gemini.json
+
+      - name: Upload Experiment Outputs
+        if: success()
+        uses: actions/upload-artifact@v3
+        with:
+          name: google-gemini-experiment-results
+          path: benchmark_graph
+
+  # Groq
+  groq:
+    runs-on: ubuntu-latest
+    env:
+        GROQ_API_KEY: ${{ secrets.GROQ_API_KEY }}
+        folder: benchmarking/experiments/providers_streaming/single_model
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v3
+      
+      - name: Set up Python 3.12
+        uses: actions/setup-python@v4
+        with:
+          python-version: 3.12
+      
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+      
+      - name: Run Experiment
+        run: python main.py -c ${{ env.folder }}/groq.json
+
+      - name: Upload Experiment Outputs
+        if: success()
+        uses: actions/upload-artifact@v3
+        with:
+          name: groq-experiment-results
+          path: benchmark_graph

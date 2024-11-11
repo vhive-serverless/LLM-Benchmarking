@@ -1,6 +1,6 @@
 {
-    "providers": ["Anthropic", "TogetherAI"],  
-    "models": ["common-model"],
+    "providers": ["Hyperbolic"],  
+    "models": ["qwen2-vl-7b-instruct"],
     "num_requests": 100,
     "input_tokens": 10,
     "streaming": true,

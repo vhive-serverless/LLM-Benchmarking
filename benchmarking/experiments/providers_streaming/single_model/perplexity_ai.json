@@ -1,6 +1,6 @@
 {
-    "providers": ["Anthropic", "TogetherAI"],  
-    "models": ["common-model"],
+    "providers": ["PerplexityAI"],  
+    "models": ["meta-llama-3.1-8b-instruct"],
     "num_requests": 100,
     "input_tokens": 10,
     "streaming": true,
