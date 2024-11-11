@@ -1,5 +1,5 @@
 {
-    "providers": ["Anthropic", "Cloudflare", "Google", "Groq", "Hyperbolic", "OpenAI", "PerplexityAI", "TogetherAI"],  
+    "providers": ["Anthropic", "Azure", "Cloudflare", "Google", "Groq", "Hyperbolic", "OpenAI", "PerplexityAI", "TogetherAI"],  
     "models": ["common-model"],
     "num_requests": 100,
     "input_tokens": 10,

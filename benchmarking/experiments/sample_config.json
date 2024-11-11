@@ -1,7 +1,7 @@
 {
-    "providers": ["Anthropic", "TogetherAI"],  
-    "models": ["common-model"],
-    "num_requests": 100,
+    "providers": ["Azure"],  
+    "models": ["meta-llama-3.1-8b-instruct"],
+    "num_requests": 1,
     "input_tokens": 10,
     "streaming": true,
     "max_output": 100,

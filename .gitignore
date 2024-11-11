@@ -16,3 +16,7 @@ htmlcov
 
 # Notebooks
 notebooks/.ipynb_checkpoints/
+
+
+azure-test.py
+providers/_.py
