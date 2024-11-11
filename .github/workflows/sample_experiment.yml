@@ -2,7 +2,7 @@ name: Sample Experiment
 
 on:
   workflow_dispatch:
-  push:
+  # push:
 
 jobs:
   test:
@@ -36,7 +36,7 @@ jobs:
         pip install -r requirements.txt
     
     - name: Run Experiment
-      run: python main.py -c benchmarking/experiments/compare_providers_streaming.json
+      run: python main.py -c benchmarking/experiments/sample_config.json
       # run: python main.py -c ${{ env.filepath }}
 
     - name: Upload Experiment Outputs
