@@ -4,10 +4,20 @@ from unittest.mock import patch, MagicMock
 from providers.anthropic_provider import Anthropic
 
 
+class TextBlock:
+    def __init__(self, text, type):
+        self.text = text
+        self.type = type
+
+class Message:
+    def __init__(self, content):
+        self.content = content
+
 @pytest.fixture
+
 def setup_anthropic_provider():
     """Fixture to set up and return an instance of Anthropic with a mocked API key."""
-    with patch.dict(os.environ, {"ANTHROPIC_API_KEY": "test_api_key"}):
+    with patch.dict(os.environ, {"ANTHROPIC_API": "test_anthropic_api_key"}):
         return Anthropic()
 
 
@@ -20,6 +30,7 @@ def test_anthropic_provider_initialization(setup_anthropic_provider):
         "claude-3.5-sonnet": "claude-3-5-sonnet-20241022",
         "claude-3-opus": "claude-3-opus-latest",
         "claude-3-haiku": "claude-3-haiku-20240307",
+        "common-model": "claude-3-5-sonnet-20241022"
     }
 
 
@@ -39,7 +50,9 @@ def test_perform_inference(mock_anthropic_client_class, setup_anthropic_provider
 
     # Mock the client instance and replace it in the provider instance
     mock_client_instance = MagicMock()
-    mock_response = {"content": [{"text": "Test response"}]}
+    mock_response = Message(
+    content=[TextBlock(text="Test response", type="text")]
+    )  
     mock_client_instance.messages.create.return_value = mock_response
     provider.client = mock_client_instance  # Directly set the mock client
 
@@ -53,7 +66,7 @@ def test_perform_inference(mock_anthropic_client_class, setup_anthropic_provider
         model="claude-3-5-sonnet-20241022",
         max_tokens=100,
         messages=[{"role": "user", "content": "Test prompt"}],
-        temperature=0.7,
+        # temperature=0.7,
         stop_sequences=["\nUser:"],
     )
 
@@ -88,7 +101,7 @@ def test_perform_inference_streaming(
         model="claude-3-5-sonnet-20241022",
         max_tokens=100,
         messages=[{"role": "user", "content": "Test prompt"}],
-        temperature=0.7,
+        # temperature=0.7,
         stop_sequences=["\nUser:"],
     )
 

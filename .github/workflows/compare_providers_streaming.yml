@@ -1,0 +1,43 @@
+name: Compare Providers Streaming
+
+on:
+  workflow_dispatch:
+  # push:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    env:
+        CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+        CLOUDFLARE_AI_TOKEN: ${{ secrets.CLOUDFLARE_AI_TOKEN }}
+        GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+        GROQ_API_KEY: ${{ secrets.GROQ_API_KEY }}
+        HYPERBOLIC_API: ${{ secrets.HYPERBOLIC_API }}
+        OPEN_AI_API: ${{ secrets.OPEN_AI_API }}
+        PERPLEXITY_AI_API: ${{ secrets.PERPLEXITY_AI_API }}
+        TOGETHER_AI_API: ${{ secrets.TOGETHER_AI_API }}
+        ANTHROPIC_API: ${{ secrets.ANTHROPIC_API }}
+
+    steps:
+    - name: Check out repository
+      uses: actions/checkout@v3
+    
+    - name: Set up Python 3.12
+      uses: actions/setup-python@v4
+      with:
+        python-version: 3.12
+    
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install -r requirements.txt
+    
+    - name: Run Experiment
+      run: python main.py -c benchmarking/experiments/compare_providers_streaming.json
+
+    - name: Upload Experiment Outputs
+      if: success()
+      uses: actions/upload-artifact@v3
+      with:
+        name: sample-experiment-results
+        path: benchmark_graph

@@ -17,6 +17,7 @@ class GoogleGemini(ProviderInterface):
             "gemini-1.5-flash": "gemini-1.5-flash",
             "gemini-1.5-flash-8b": "gemini-1.5-flash-8b",
             "gemini-1.5-pro": "gemini-1.5-pro",
+            "common-model": "gemini-1.5-flash"
         }
 
         # Configure API key for Google Gemini
@@ -92,6 +93,7 @@ class GoogleGemini(ProviderInterface):
 
         for chunk in response:
             current_time = timer()
+
             if first_token_time is None:
                 first_token_time = current_time
                 TTFT = first_token_time - start_time
@@ -102,13 +104,21 @@ class GoogleGemini(ProviderInterface):
             inter_token_latency = current_time - prev_token_time
             inter_token_latencies.append(inter_token_latency)
             prev_token_time = current_time
-            if verbosity:
-                print(chunk.text, end="", flush=True)
-            streamed_output.append(chunk.text)
+            # print(chunk.text, end="", flush=True)
+            try:
+                if hasattr(chunk, "text") and chunk.text:
+                    if verbosity:
+                        print(chunk.text, end="", flush=True)
+                    streamed_output.append(chunk.text)
+                else:
+                    print("\n[Filtered response: Content blocked due to safety concerns.]", flush=True)
+            except ValueError as e:
+                print(f"\n[ERROR: {str(e)}] Filtered or invalid content received, skipping this chunk.", flush=True)
 
         total_time = timer() - start_time
         if verbosity:
             print(f"\nTotal Response Time: {total_time:.4f} seconds")
+            print(f"total tokens {len(inter_token_latencies)}")
 
         self.log_metrics(model, "timetofirsttoken", TTFT)
         self.log_metrics(model, "response_times", total_time)

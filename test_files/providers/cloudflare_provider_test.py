@@ -28,6 +28,7 @@ def test_cloudflare_provider_initialization(setup_cloudflare_provider):
         "meta-llama-3.2-3b-instruct": "@cf/meta/llama-3.2-3b-instruct",
         "mistral-7b-instruct-v0.1": "@cf/mistral/mistral-7b-instruct-v0.1",
         "meta-llama-3.1-70b-instruct": "@cf/meta/llama-3.1-70b-instruct",
+        "common-model": "@cf/meta/llama-3.1-70b-instruct"
     }
 
 

@@ -1,0 +1,55 @@
+A. 8 separate experiments for each provider, 1 model (medium sized model?), input tokens = 10, output = 100, for 100 requests
+{
+    "providers": ["Cloudflare"],  
+    "models": ["mistral-7b-instruct-v0.1"],
+    "num_requests": 100,
+    "input_tokens": 10,
+    "streaming": true,
+    "max_output": 100,
+    "verbose": true
+}
+^ like this each provider
+
+B. 8 experiments for each provider - all models each provider - input tokens = 10, output = 100, for 100 requests
+{
+    "providers": ["Cloudflare"],  
+    "models": ["google-gemma-2b-it", "phi-2", "meta-llama-3.2-3b-instruct", "mistral-7b-instruct-v0.1", "meta-llama-3.1-70b-instruct"],
+    "num_requests": 100,
+    "input_tokens": 10,
+    "streaming": true,
+    "max_output": 100,
+    "verbose": true
+}
+^ like this each provider
+
+C. Compare all providers? possible with a single model - mistral-7b-instruct-v0.1: TogetherAI, Cloudflare; meta-llama-3.2-3b-instruct - OpenAI
+meta-llama-3.1-8b-instruct - PerplexityAI; qwen2-vl-7b-instruct - Hyperbolic; gemini-1.5-flash-8b - Google; claude-3-haiku - Anthropic; google-gemma-7b-it - Groq
+add a mapping - medium_model in each of this 
+
+D For each provider 1 model, different output sizes (50 or 100? )
+{
+  "providers": ["Google"],
+  "models": ["gemini-1.5-flash-8b"],
+  "num_requests": 50,
+  "input_tokens": 10,
+  "streaming": false,
+  "max_output": [10, 100, 500, 1000, 5000],
+  "verbose": true
+}
+
+E. For each provider, 1 model try different input and output sizes - so should be able to give a list of input sizes - and see the trajectories for each 
+actually if input size varies - we should have output as variable ?
+^ to consider (50 or 100?)
+[10, 100, 1000, 10000, 100000]
+{
+    "providers": ["Anthropic"],  
+    "models": ["claude-3-opus"],
+    "num_requests": 50,
+    "input_tokens": [10, 100, 1000, 10000, 100000],
+    "streaming": true,
+    "max_output": 100, (?)
+    "verbose": true
+}
+
+
+
