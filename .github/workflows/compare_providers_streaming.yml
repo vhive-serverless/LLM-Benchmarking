@@ -17,7 +17,9 @@ jobs:
         PERPLEXITY_AI_API: ${{ secrets.PERPLEXITY_AI_API }}
         TOGETHER_AI_API: ${{ secrets.TOGETHER_AI_API }}
         ANTHROPIC_API: ${{ secrets.ANTHROPIC_API }}
-
+        AZURE_LLAMA_70B_API: ${{ secrets.AZURE_LLAMA_70B_API }}
+        AZURE_LLAMA_8B_API: ${{ secrets.AZURE_LLAMA_70B_API }}
+        
     steps:
     - name: Check out repository
       uses: actions/checkout@v3
