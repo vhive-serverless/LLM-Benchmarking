@@ -1,3 +1,4 @@
+import json
 import numpy as np
 import os
 from datetime import datetime
@@ -30,7 +31,6 @@ class Benchmark:
         # Initialize DynamoDB
         self.dynamodb = boto3.resource(
             "dynamodb",
-            endpoint_url=os.getenv("DYNAMODB_ENDPOINT_URL"),
             region_name=os.getenv("AWS_REGION"),
             aws_access_key_id=os.getenv("AWS_ACCESS_KEY_ID"),
             aws_secret_access_key=os.getenv("AWS_SECRET_ACCESS_KEY"),
@@ -59,27 +59,34 @@ class Benchmark:
         elif isinstance(data, list):
             return [self.clean_data(v) for v in data if v not in [None, "", [], {}]]
         elif isinstance(data, float):
-            return Decimal(str(data))  # Convert float to Decimal for DynamoDB
+            return (str(data))  # Convert float to Decimal for DynamoDB
         return data
 
     def store_data_points(self):
         """
-        Store the complete benchmark data in DynamoDB for future visualization.
+        Store benchmark data in DynamoDB using an optimized schema with nested metrics.
         """
         table = self.dynamodb.Table(self.table_name)
 
-        # Clean the data before storing
-        clean_benchmark_data = self.clean_data(self.benchmark_data)
-
-        # Print for debugging
-        print("Storing the following data in DynamoDB:", clean_benchmark_data)
-
         try:
-            table.put_item(Item=clean_benchmark_data)
-            print(f"Stored benchmark data for run ID {self.run_id}")
+            # Iterate through providers
+            for provider_name, models in self.benchmark_data["providers"].items():
+                for model_name, metrics in models.items():
+                    item = {
+                        "run_id": self.benchmark_data["run_id"],
+                        "timestamp": self.benchmark_data["timestamp"],
+                        "provider_name": provider_name,
+                        "model_name": model_name,
+                        "prompt": self.benchmark_data["prompt"],
+                        "metrics": json.dumps(metrics),  # Serialize metrics as JSON string
+                    }
+                    # Store the item in DynamoDB
+                    table.put_item(Item=item)
+
+            print(f"Successfully stored benchmark data for run ID {self.run_id}")
         except ClientError as e:
             print(f"Error saving to DynamoDB: {e.response['Error']['Message']}")
-
+        
     def add_metric_data(self, provider_name, model_name, metric, latencies):
         """
         Add latency and CDF data to the benchmark data structure.
@@ -95,8 +102,8 @@ class Benchmark:
         cdf = np.arange(1, len(latencies_sorted) + 1) / len(latencies_sorted)
 
         # Convert floats to Decimal for DynamoDB compatibility
-        latencies_sorted = [Decimal(str(val)) for val in latencies_sorted.tolist()]
-        cdf = [Decimal(str(val)) for val in cdf.tolist()]
+        latencies_sorted = [(str(val)) for val in latencies_sorted.tolist()]
+        cdf = [(str(val)) for val in cdf.tolist()]
 
         # Initialize provider and model entries if not already present
         if provider_name not in self.benchmark_data["providers"]:

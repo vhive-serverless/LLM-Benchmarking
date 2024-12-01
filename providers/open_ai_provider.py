@@ -15,4 +15,5 @@ class Open_AI(BaseProvider):
             "meta-llama-3.2-3b-instruct": "gpt-4o-mini",  # speculative: 8-40b
             "mistral-7b-instruct-v0.1": "gpt-4o",  # speculative: 200-1000b
             "meta-llama-3.1-70b-instruct": "gpt-4",  # 1000-1800b
+            "8b": "gpt-4o-mini",
         }
