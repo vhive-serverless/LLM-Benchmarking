@@ -34,7 +34,7 @@ class Cloudflare(ProviderInterface):
             "meta-llama-3.2-3b-instruct": "@cf/meta/llama-3.2-3b-instruct",
             "mistral-7b-instruct-v0.1": "@cf/mistral/mistral-7b-instruct-v0.1",
             "meta-llama-3.1-70b-instruct": "@cf/meta/llama-3.1-70b-instruct",
-            "common-model": "@cf/meta/llama-3.1-8b-instruct"
+            "common-model" : "@cf/meta/llama-3.1-70b-instruct",
         }
 
     def get_model_name(self, model):
@@ -60,7 +60,7 @@ class Cloudflare(ProviderInterface):
         )
 
         elapsed = timer() - start_time
-        print("request sucess")
+        # print("request sucess")
         # log response times metric
         self.log_metrics(model, "response_times", elapsed)
 

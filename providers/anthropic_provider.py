@@ -14,7 +14,7 @@ class Anthropic(ProviderInterface):
         super().__init__()
 
         # Load API key from environment
-        self.api_key = os.getenv("ANTHROPIC_API_KEY")
+        self.api_key = os.getenv("ANTHROPIC_API")
         if not self.api_key:
             raise ValueError("API key must be provided as an environment variable.")
 
@@ -23,10 +23,10 @@ class Anthropic(ProviderInterface):
 
         # Model mapping for Anthropic models
         self.model_map = {
-            "claude-3.5-sonnet": "claude-3-5-sonnet-20241022",
-            "claude-3-opus": "claude-3-opus-latest",
-            "claude-3-haiku": "claude-3-haiku-20240307",
-            "common-model": "claude-3-haiku-20240307"
+            "claude-3.5-sonnet": "claude-3-5-sonnet-20241022",  # approx 70b
+            "claude-3-opus": "claude-3-opus-latest",  # approx 2T
+            "claude-3-haiku": "claude-3-haiku-20240307",  # approx 20b
+            "common-model": "claude-3-5-sonnet-20241022"
         }
 
     def get_model_name(self, model):
@@ -61,7 +61,7 @@ class Anthropic(ProviderInterface):
             model=model_id,
             max_tokens=max_output,
             messages=[{"role": "user", "content": prompt}],
-            temperature=0.7,
+            # temperature=0.7,
             stop_sequences=["\nUser:"],
         )
         elapsed = timer() - start
@@ -93,7 +93,7 @@ class Anthropic(ProviderInterface):
             model=model_id,
             max_tokens=max_output,
             messages=[{"role": "user", "content": prompt}],
-            temperature=0.7,
+            # temperature=0.7,
             stop_sequences=["\nUser:"],
         ) as stream:
             for chunk in stream.text_stream:
@@ -112,11 +112,15 @@ class Anthropic(ProviderInterface):
 
                 inter_token_latencies.append(inter_token_latency)
                 if verbosity:
-                    print(chunk, end="", flush=True)
+                    if len(inter_token_latencies) < 20:
+                        print(chunk, end="", flush=True)
+                    elif len(inter_token_latencies) == 20:
+                        print("...")
 
             elapsed = timer() - start
             if verbosity:
                 print(f"\nTotal Response Time: {elapsed:.4f} seconds")
+                # print(f"Total tokens: {len(inter_token_latencies)}")
 
         # Log remaining metrics
         self.log_metrics(model, "response_times", elapsed)
@@ -138,6 +142,8 @@ class Anthropic(ProviderInterface):
             response (dict): The response dictionary from the Anthropic API.
             elapsed (float): Time in seconds taken to generate the response.
         """
-        content = "".join(block.get("text", "") for block in response["content"])
-        print(content)
+        # content = "".join(block.get("text", "") for block in response.content)
+        # print(response)
+        for block in response.content:
+            print(block.text)
         print(f"\nGenerated in {elapsed:.2f} seconds")

@@ -1,0 +1,9 @@
+{
+    "providers": ["Anthropic", "Azure", "Cloudflare", "Google", "Groq", "Hyperbolic", "OpenAI", "PerplexityAI", "TogetherAI"],  
+    "models": ["common-model"],
+    "num_requests": 100,
+    "input_tokens": 10,
+    "streaming": false,
+    "max_output": 100,
+    "verbose": true
+}

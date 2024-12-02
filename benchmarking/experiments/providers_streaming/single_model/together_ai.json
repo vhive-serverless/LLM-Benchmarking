@@ -1,0 +1,9 @@
+{
+    "providers": ["TogetherAI"],  
+    "models": ["mistral-7b-instruct-v0.1"],
+    "num_requests": 100,
+    "input_tokens": 10,
+    "streaming": true,
+    "max_output": 100,
+    "verbose": true
+}

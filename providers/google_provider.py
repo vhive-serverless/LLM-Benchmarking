@@ -18,6 +18,7 @@ class GoogleGemini(ProviderInterface):
             "common-model": "gemini-1.5-flash-8b",
             "gemini-1.5-flash-8b": "gemini-1.5-flash-8b",
             "gemini-1.5-pro": "gemini-1.5-pro",
+            "common-model": "gemini-1.5-flash"
         }
 
         # Configure API key for Google Gemini
@@ -94,6 +95,7 @@ class GoogleGemini(ProviderInterface):
         
         for chunk in response:
             current_time = timer()
+
             if first_token_time is None:
                 first_token_time = current_time
                 TTFT = first_token_time - start_time
@@ -119,6 +121,7 @@ class GoogleGemini(ProviderInterface):
         total_time = timer() - start_time
         if verbosity:
             print(f"\nTotal Response Time: {total_time:.4f} seconds")
+            print(f"total tokens {len(inter_token_latencies)}")
 
         # Log all metrics
         self.log_metrics(model, "timetofirsttoken", TTFT)

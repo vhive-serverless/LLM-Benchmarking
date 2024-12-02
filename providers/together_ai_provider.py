@@ -17,5 +17,5 @@ class TogetherAI(BaseProvider):
             "mistral-7b-instruct-v0.1": "mistralai/Mistral-7B-Instruct-v0.1",
             "meta-llama-3.1-70b-instruct": "meta-llama/Meta-Llama-3.1-70B-Instruct-Turbo",
             "meta-llama-3.1-405b-instruct": "meta-llama/Meta-Llama-3.1-405B-Instruct-Turbo",
-            "common-model": "meta-llama/Llama-3.2-3B-Instruct-Turbo"
+            "common-model": "meta-llama/Meta-Llama-3.1-70B-Instruct-Turbo"
         }
