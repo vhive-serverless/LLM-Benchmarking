@@ -26,6 +26,7 @@ class TestPerplexityAI(unittest.TestCase):
             expected_model_map = {
                 "meta-llama-3.1-70b-instruct": "llama-3.1-70b-instruct",  # 70b
                 "meta-llama-3.1-8b-instruct": "llama-3.1-8b-instruct",  # 8b
+                "common-model": "llama-3.1-8b-instruct",  # 8b
                 "meta-llama-3.1-sonar-405B": "llama-3.1-sonar-huge-128k-online",  # 405B
             }
             self.assertEqual(provider.model_map, expected_model_map)

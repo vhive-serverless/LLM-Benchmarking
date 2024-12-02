@@ -5,7 +5,6 @@ from datetime import datetime
 import boto3
 from botocore.exceptions import ClientError
 import uuid
-from decimal import Decimal
 
 
 class Benchmark:

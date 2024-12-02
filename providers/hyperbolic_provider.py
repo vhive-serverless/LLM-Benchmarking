@@ -27,5 +27,6 @@ class Hyperbolic(BaseProvider):
             "meta-llama-3.2-3b-instruct": "meta-llama/Llama-3.2-3B-Instruct",
             "qwen2-vl-7b-instruct": "Qwen/Qwen2-VL-7B-Instruct",
             "meta-llama-3.1-70b-instruct": "meta-llama/Meta-Llama-3.1-70B-Instruct",
-            "8b":"meta-llama/Meta-Llama-3.1-8B-Instruct"
+            "meta-llama-3.1-8b-instruct": "meta-llama/Meta-Llama-3.1-8B-Instruct",
+            "common-model": "meta-llama/Meta-Llama-3.1-8B-Instruct"
         }

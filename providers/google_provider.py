@@ -15,7 +15,8 @@ class GoogleGemini(ProviderInterface):
         # Map of model names to specific Google Gemini model identifiers
         self.model_map = {
             "gemini-1.5-flash": "gemini-1.5-flash",
-            "8b": "gemini-1.5-flash-8b",
+            "common-model": "gemini-1.5-flash-8b",
+            "gemini-1.5-flash-8b": "gemini-1.5-flash-8b",
             "gemini-1.5-pro": "gemini-1.5-pro",
         }
 

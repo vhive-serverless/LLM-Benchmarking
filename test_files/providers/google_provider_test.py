@@ -19,6 +19,7 @@ def test_google_gemini_initialization(setup_google_gemini):
     # Ensure model_map is set correctly
     assert provider.model_map == {
         "gemini-1.5-flash": "gemini-1.5-flash",
+        "common-model": "gemini-1.5-flash-8b",
         "gemini-1.5-flash-8b": "gemini-1.5-flash-8b",
         "gemini-1.5-pro": "gemini-1.5-pro",
     }

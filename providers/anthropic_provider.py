@@ -25,7 +25,8 @@ class Anthropic(ProviderInterface):
         self.model_map = {
             "claude-3.5-sonnet": "claude-3-5-sonnet-20241022",
             "claude-3-opus": "claude-3-opus-latest",
-            "8b": "claude-3-haiku-20240307",
+            "claude-3-haiku": "claude-3-haiku-20240307",
+            "common-model": "claude-3-haiku-20240307"
         }
 
     def get_model_name(self, model):
