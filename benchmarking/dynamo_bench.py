@@ -78,6 +78,7 @@ class Benchmark:
                         "model_name": model_name,
                         "prompt": self.benchmark_data["prompt"],
                         "metrics": json.dumps(metrics),  # Serialize metrics as JSON string
+                        "sort_key": f"{provider_name}#{model_name}"
                     }
                     # Store the item in DynamoDB
                     table.put_item(Item=item)
