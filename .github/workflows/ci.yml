@@ -33,7 +33,7 @@ jobs:
           pip install -r requirements.txt
           
       - name: Check Installed Packages
-        run: pip show openai
+        run: pip show anthropic
         
       # Step 4: Run pytest with coverage
       - name: Run tests with coverage
