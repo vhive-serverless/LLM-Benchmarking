@@ -148,8 +148,10 @@ def run_benchmark(config):
     num_requests = config.get("num_requests", 1)
     models = config.get("models", [])
     input_tokens = config.get("input_tokens", 10)
+    # input_tokens = config.get("input_tokens", [10])
     streaming = config.get("streaming", False)
     max_output = config.get("max_output", 100)
+    # max_output = config.get("max_output", [100])
     verbose = config.get("verbose", False)
     # Validate and initialize providers
     selected_providers = validate_providers(providers)
