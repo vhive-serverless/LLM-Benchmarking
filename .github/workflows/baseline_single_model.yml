@@ -1,4 +1,4 @@
-name: Compare Providers
+name: Compare Providers (Single Model)
 
 on:
   workflow_dispatch:
