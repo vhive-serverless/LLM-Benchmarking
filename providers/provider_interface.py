@@ -1,7 +1,5 @@
 from abc import ABC, abstractmethod
 
-
-# create an interface for providers (abstract class)
 # create an interface for providers (abstract class)
 class ProviderInterface(ABC):
 

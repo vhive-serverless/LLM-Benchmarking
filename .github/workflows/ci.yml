@@ -31,9 +31,6 @@ jobs:
         run: |
           python -m pip install --upgrade pip
           pip install -r requirements.txt
-          
-      - name: Check Installed Packages
-        run: pip show anthropic
         
       # Step 4: Run pytest with coverage
       - name: Run tests with coverage

@@ -13,7 +13,8 @@ from providers import (
     Anthropic,
     PerplexityAI,
     Hyperbolic,
-    Azure
+    Azure,
+    AWSBedrock
 )
 from utils.prompt_generator import get_prompt
 
@@ -52,7 +53,8 @@ def get_available_providers():
         "Google": GoogleGemini(),
         "Anthropic": Anthropic(),
         "Groq": GroqProvider(),
-        "Azure": Azure()
+        "Azure": Azure(),
+        "AWSBedrock": AWSBedrock()
     }
 
     return available_providers
