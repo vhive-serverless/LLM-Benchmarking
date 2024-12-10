@@ -94,7 +94,7 @@ class Benchmark:
         plt.grid(True)
 
         # Add legend
-        plt.legend(loc="lower right")
+        plt.legend(loc="best")
         plt.xscale("log")
 
         # Show and save the plot
