@@ -24,5 +24,5 @@ __all__ = [
     "Hyperbolic",
     "GoogleGemini",
     "Azure",
-    "AWSBedrock"
+    "AWSBedrock",
 ]

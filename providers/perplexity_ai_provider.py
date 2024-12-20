@@ -31,7 +31,7 @@ class PerplexityAI(BaseProvider):
             "meta-llama-3.1-70b-instruct": "llama-3.1-70b-instruct",  # 70b
             "meta-llama-3.1-8b-instruct": "llama-3.1-8b-instruct",  # 8b
             "meta-llama-3.1-sonar-405B": "llama-3.1-sonar-huge-128k-online",  # 405B
-            "common-model": "llama-3.1-70b-instruct"
+            "common-model": "llama-3.1-70b-instruct",
         }
 
     def perform_inference_streaming(
@@ -74,7 +74,9 @@ class PerplexityAI(BaseProvider):
                 break
 
             time_to_next_token = timer()
-            inter_token_latency = (time_to_next_token - prev_token_time) / max(1, new_tokens)
+            inter_token_latency = (time_to_next_token - prev_token_time) / max(
+                1, new_tokens
+            )
             prev_token_time = time_to_next_token
             for _ in range(new_tokens):
                 inter_token_latencies.append(inter_token_latency)

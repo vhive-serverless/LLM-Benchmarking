@@ -7,6 +7,7 @@ __pycache__/
 dynamodb/docker/docker/dynamodb/shared-local-instance.db
 .coverage
 benchmark_graph/*
+.pytest_cache/*
 
 
 # Testing and coverage

@@ -37,8 +37,7 @@ class TestMain(unittest.TestCase):
                 "HYPERBOLIC_API": "hyperbolic_test_api",
                 "AWS_BEDROCK_ACCESS_KEY_ID": "aws_test_id",
                 "AWS_BEDROCK_SECRET_ACCESS_KEY": "aws_test_key",
-                "AWS_BEDROCK_REGION": "us-east-1"                
- 
+                "AWS_BEDROCK_REGION": "us-east-1",
             },
         )
 
@@ -323,6 +322,7 @@ class TestCommandLineInterface(unittest.TestCase):
         # Test --config flag
         args = vars(parser.parse_args(["-c", "test.json"]))
         self.assertEqual(args["config"], "test.json")
+
 
 if __name__ == "__main__":
     unittest.main()

@@ -1,5 +1,6 @@
 from abc import ABC, abstractmethod
 
+
 # create an interface for providers (abstract class)
 class ProviderInterface(ABC):
 
@@ -33,11 +34,6 @@ class ProviderInterface(ABC):
         if model_name not in self.metrics[metric]:
             self.metrics[metric][model_name] = []
 
-        # if metric == "timebetweentokens":
-        #     print("Are you here?")
-        #     self.metrics[metric][model_name].extend(value)
-        # else:
-        #     self.metrics[metric][model_name].append(value)
         self.metrics[metric][model_name].append(value)
 
     @abstractmethod
@@ -45,18 +41,15 @@ class ProviderInterface(ABC):
         """
         perform_inference
         """
-        pass
 
     @abstractmethod
     def perform_inference_streaming(self, model, prompt):
         """
         perform_inference_streaming
         """
-        pass
 
     @abstractmethod
     def get_model_name(self, model):
         """
         get model names
         """
-        pass
