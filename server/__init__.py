@@ -2,6 +2,4 @@
 
 from .server import app
 
-__all__ = [
-    'app'
-]
+__all__ = ["app"]

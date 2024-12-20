@@ -11,11 +11,14 @@ app = FastAPI()
 # Add CORS middleware
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],  # Allow all origins. You can restrict this to specific origins.
+    allow_origins=[
+        "*"
+    ],  # Allow all origins. You can restrict this to specific origins.
     allow_credentials=True,
     allow_methods=["*"],  # Allow all HTTP methods
     allow_headers=["*"],  # Allow all HTTP headers
 )
+
 
 def get_dynamodb_table():
     dynamodb = boto3.resource("dynamodb", region_name="us-west-2")
@@ -23,6 +26,7 @@ def get_dynamodb_table():
 
 
 table = get_dynamodb_table()
+
 
 def get_latest_run_id(streaming: bool):
     """
@@ -36,11 +40,15 @@ def get_latest_run_id(streaming: bool):
     expression_attribute_values = {":streaming": streaming}
 
     # Scan the table
-    response = table.scan(
-        FilterExpression=filter_expression,
-        ExpressionAttributeNames=expression_attribute_names,
-        ExpressionAttributeValues=expression_attribute_values,
-    ) if filter_expression else table.scan()
+    response = (
+        table.scan(
+            FilterExpression=filter_expression,
+            ExpressionAttributeNames=expression_attribute_names,
+            ExpressionAttributeValues=expression_attribute_values,
+        )
+        if filter_expression
+        else table.scan()
+    )
 
     items = response.get("Items", [])
     if not items:
@@ -50,10 +58,11 @@ def get_latest_run_id(streaming: bool):
     latest_item = max(items, key=lambda x: x["timestamp"])
     return {"run_id": latest_item["run_id"]}
 
+
 def get_metrics(run_id: str, metricType: str = Query(None)):
     """
     Retrieve metrics for a given run_id and optionally filter by a specific metric type.
-    
+
     :param run_id: The ID of the run to retrieve metrics for.
     :param metricType: (Optional) The specific metric type to return (e.g., "timetofirsttoken").
     """
@@ -74,17 +83,20 @@ def get_metrics(run_id: str, metricType: str = Query(None)):
 
         # Filter metrics if a metricType is specified
         if metricType:
-            filtered_metrics = {metricType: metrics.get(metricType)} if metricType in metrics else {}
+            filtered_metrics = (
+                {metricType: metrics.get(metricType)} if metricType in metrics else {}
+            )
             metrics_by_provider[provider_name][model_name] = filtered_metrics
         else:
             metrics_by_provider[provider_name][model_name] = metrics
-            
+
     sorted_metrics_by_provider = {
         provider: metrics_by_provider[provider]
         for provider in sorted(metrics_by_provider)
     }
 
     return {"run_id": run_id, "metrics": sorted_metrics_by_provider}
+
 
 @app.get("/metrics/period")
 def get_metrics_period(metricType: str, timeRange: str, streaming: bool = True):
@@ -102,7 +114,9 @@ def get_metrics_period(metricType: str, timeRange: str, streaming: bool = True):
     }
 
     if timeRange not in time_ranges:
-        return {"error": f"Invalid timeRange. Valid options are {list(time_ranges.keys())}"}
+        return {
+            "error": f"Invalid timeRange. Valid options are {list(time_ranges.keys())}"
+        }
 
     # Calculate the start and end dates for the time range
     end_date = datetime.now()
@@ -113,13 +127,15 @@ def get_metrics_period(metricType: str, timeRange: str, streaming: bool = True):
     end_date_str = end_date.strftime("%Y-%m-%d %H:%M:%S")
 
     # Build FilterExpression dynamically for the time range
-    filter_expression = "#ts BETWEEN :start_date AND :end_date AND #streaming = :streaming"
+    filter_expression = (
+        "#ts BETWEEN :start_date AND :end_date AND #streaming = :streaming"
+    )
     expression_attribute_names = {"#ts": "timestamp"}
     expression_attribute_names["#streaming"] = "streaming"
     expression_attribute_values = {
         ":start_date": start_date_str,
         ":end_date": end_date_str,
-        ":streaming": streaming
+        ":streaming": streaming,
     }
 
     # Scan the table
@@ -147,11 +163,13 @@ def get_metrics_period(metricType: str, timeRange: str, streaming: bool = True):
         cdf_length = len(metric_data["cdf"])
         if cdf_length > 0:
             aggregated_latency = sum(latencies) / cdf_length
-            formatted_date = datetime.strptime(item["timestamp"], "%Y-%m-%d %H:%M:%S").strftime(
-                "%d%b%Y"
-            )  # Format as daymonthyear
+            formatted_date = datetime.strptime(
+                item["timestamp"], "%Y-%m-%d %H:%M:%S"
+            ).strftime(
+                "%d-%m-%Y"
+            )  # Format as day-month-year
             date_array.add(formatted_date)
-            
+
             # Group aggregated metrics by provider and date
             if provider_name not in aggregated_metrics:
                 aggregated_metrics[provider_name] = {}
@@ -169,12 +187,19 @@ def get_metrics_period(metricType: str, timeRange: str, streaming: bool = True):
     }
 
     # Sort the result by provider name alphabetically
-    sorted_result = {
-        provider: result[provider]
-        for provider in sorted(result)
-    }
+    sorted_result = {provider: result[provider] for provider in sorted(result)}
 
-    return {"metricType": metricType, "timeRange": timeRange, "aggregated_metrics": sorted_result, "date_array": list(date_array)}
+    # Sort the date array
+    sorted_date_array = sorted(
+        date_array, key=lambda x: datetime.strptime(x, "%d-%m-%Y"), reverse=True
+    )
+
+    return {
+        "metricType": metricType,
+        "timeRange": timeRange,
+        "aggregated_metrics": sorted_result,
+        "date_array": sorted_date_array,
+    }
 
 
 @app.get("/metrics/date")
@@ -191,25 +216,26 @@ def get_metrics_by_date(metricType: str, date: str, streaming: bool = True):
         latest_id_response = get_latest_run_id(streaming)
         if "error" in latest_id_response:
             return {"error": "No latest run_id found."}
-        
+
         # Extract the run_id
         run_id = latest_id_response["run_id"]
-        
+
         # Fetch metrics for the latest run_id
         return get_metrics(run_id, metricType)
     try:
-        # Parse the date string in the format "12Dec2024"
-        start_date = datetime.strptime(date, "%d%b%Y")
+        start_date = datetime.strptime(date, "%d-%m-%Y")
         end_date = start_date + timedelta(days=1)
     except ValueError:
-        return {"error": "Invalid date format. Use '12Dec2024'."}
+        return {"error": "Invalid date format. Use '12-12-2024'."}
 
     # Convert dates to strings for comparison
     start_date_str = start_date.strftime("%Y-%m-%d %H:%M:%S")
     end_date_str = end_date.strftime("%Y-%m-%d %H:%M:%S")
 
     # Build the FilterExpression for the specified date and streaming
-    filter_expression = "#ts BETWEEN :start_date AND :end_date AND #streaming = :streaming"
+    filter_expression = (
+        "#ts BETWEEN :start_date AND :end_date AND #streaming = :streaming"
+    )
     expression_attribute_names = {
         "#ts": "timestamp",
         "#streaming": "streaming",
@@ -239,14 +265,20 @@ def get_metrics_by_date(metricType: str, date: str, streaming: bool = True):
 
         # Filter metrics if a metricType is specified
         if metricType:
-            filtered_metrics = {metricType: metrics.get(metricType)} if metricType in metrics else {}
+            filtered_metrics = (
+                {metricType: metrics.get(metricType)} if metricType in metrics else {}
+            )
             metrics_by_provider[provider_name][model_name] = filtered_metrics
         else:
             metrics_by_provider[provider_name][model_name] = metrics
-            
+
     sorted_metrics_by_provider = {
         provider: metrics_by_provider[provider]
         for provider in sorted(metrics_by_provider)
     }
 
-    return {"date": date, "metricType": metricType, "metrics": sorted_metrics_by_provider}
+    return {
+        "date": date,
+        "metricType": metricType,
+        "metrics": sorted_metrics_by_provider,
+    }

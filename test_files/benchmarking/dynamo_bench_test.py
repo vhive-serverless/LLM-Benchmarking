@@ -72,10 +72,14 @@ def test_add_metric_data(benchmark_instance):
 
     benchmark_instance.add_metric_data(provider_name, model_name, metric, latencies)
 
-    data = benchmark_instance.benchmark_data["providers"][provider_name][model_name][metric]
+    data = benchmark_instance.benchmark_data["providers"][provider_name][model_name][
+        metric
+    ]
     assert "latencies" in data
     assert "cdf" in data
-    assert isinstance(data["latencies"][0], str)  # Latencies should be stored as strings (Decimal for DynamoDB)
+    assert isinstance(
+        data["latencies"][0], str
+    )  # Latencies should be stored as strings (Decimal for DynamoDB)
     assert isinstance(data["cdf"][0], str)  # CDF values should also be in string format
 
 
@@ -86,7 +90,7 @@ def test_clean_data(benchmark_instance):
         "none_value": None,
         "empty_list": [],
         "nested": {"empty_dict": {}, "valid": "nested_value"},
-        "float_value": 0.1234
+        "float_value": 0.1234,
     }
     cleaned_data = benchmark_instance.clean_data(data)
 
@@ -99,7 +103,9 @@ def test_clean_data(benchmark_instance):
     assert "empty_list" not in cleaned_data
     assert "empty_dict" not in cleaned_data["nested"]
     assert "float_value" in cleaned_data  # Ensure float_value is converted
-    assert isinstance(cleaned_data["float_value"], str)  # Check that float is converted to string
+    assert isinstance(
+        cleaned_data["float_value"], str
+    )  # Check that float is converted to string
 
 
 def test_store_data_points(benchmark_instance):
@@ -122,14 +128,16 @@ def test_store_data_points(benchmark_instance):
     mock_table.put_item.assert_called_once()
     args, kwargs = mock_table.put_item.call_args
     item = kwargs["Item"]
-    
+
     # Check if the item contains necessary data
     assert item["run_id"] == benchmark_instance.run_id
     assert item["provider_name"] == provider_name
     assert item["model_name"] == model_name
     assert item["prompt"] == benchmark_instance.prompt
     assert "metrics" in item  # Ensure metrics are serialized
-    assert isinstance(item["metrics"], str)  # Ensure metrics are serialized to JSON string
+    assert isinstance(
+        item["metrics"], str
+    )  # Ensure metrics are serialized to JSON string
 
 
 def test_plot_metrics(benchmark_instance):
@@ -141,4 +149,7 @@ def test_plot_metrics(benchmark_instance):
     model_name = "mock_model"
     assert provider_name in benchmark_instance.benchmark_data["providers"]
     assert model_name in benchmark_instance.benchmark_data["providers"][provider_name]
-    assert "response_times" in benchmark_instance.benchmark_data["providers"][provider_name][model_name]
+    assert (
+        "response_times"
+        in benchmark_instance.benchmark_data["providers"][provider_name][model_name]
+    )

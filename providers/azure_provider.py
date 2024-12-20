@@ -4,6 +4,7 @@ import numpy as np
 from providers.base_provider import ProviderInterface
 from time import perf_counter as timer
 
+
 class Azure(ProviderInterface):
     def __init__(self):
         """Initialize AzureProvider with required API information."""
@@ -12,17 +13,17 @@ class Azure(ProviderInterface):
         # Map model names to Azure model IDs
         self.model_map = {
             # "mistral-7b-instruct-v0.1": "mistral-7b-instruct-v0.1",
-            "meta-llama-3.1-8b-instruct" : "Meta-Llama-3-1-8B-Instruct-fyp",
-            "meta-llama-3.1-70b-instruct" : "Meta-Llama-3-1-70B-Instruct-fyp",
-            "common-model" : "Meta-Llama-3-1-70B-Instruct-fyp"
+            "meta-llama-3.1-8b-instruct": "Meta-Llama-3-1-8B-Instruct-fyp",
+            "meta-llama-3.1-70b-instruct": "Meta-Llama-3-1-70B-Instruct-fyp",
+            "common-model": "Meta-Llama-3-1-70B-Instruct-fyp",
         }
 
         # Define API keys for each model
         self.model_api_keys = {
             # "mistral-7b-instruct-v0.1": os.environ.get("MISTRAL_API_KEY"),
-            "meta-llama-3.1-8b-instruct" : os.environ.get("AZURE_LLAMA_8B_API"),
-            "meta-llama-3.1-70b-instruct" : os.environ.get("AZURE_LLAMA_70B_API"),
-            "common-model" : os.environ.get("AZURE_LLAMA_70B_API"),
+            "meta-llama-3.1-8b-instruct": os.environ.get("AZURE_LLAMA_8B_API"),
+            "meta-llama-3.1-70b-instruct": os.environ.get("AZURE_LLAMA_70B_API"),
+            "common-model": os.environ.get("AZURE_LLAMA_70B_API"),
             # "common-model": os.environ.get("MISTRAL_API_KEY")
         }
 
@@ -34,46 +35,55 @@ class Azure(ProviderInterface):
         """Retrieve the API key for a specific model."""
         api_key = self.model_api_keys.get(model)
         if not api_key:
-            raise ValueError(f"No API key found for model '{model}'. Ensure it is set in environment variables.")
+            raise ValueError(
+                f"No API key found for model '{model}'. Ensure it is set in environment variables."
+            )
         return api_key
 
     def perform_inference(self, model, prompt, max_output=100, verbosity=True):
         """Performs non-streaming inference request to Azure."""
-        model_id = self.get_model_name(model)
-        api_key = self.get_model_api_key(model)
-        if model_id is None:
-            print(f"Model {model} not available.")
-            return None
-        start_time = timer()
-        endpoint = f"https://{model_id}.eastus.models.ai.azure.com/chat/completions"
-        response = requests.post(
-            f"{endpoint}",
-            headers={
-                "Authorization": f"Bearer {api_key}",
-                "Content-Type": "application/json"
-            },
-            json={
-                "messages": [
-                    {"role": "system", "content": self.system_prompt},
-                    {"role": "user", "content": prompt}
-                ],
-                "max_tokens": max_output
-            },
-            timeout=1800
-        )
-        elapsed = timer() - start_time
-        if response.status_code != 200:
-            print(f"Error: {response.status_code} - {response.text}")
-            return None
+        try:
+            model_id = self.get_model_name(model)
+            api_key = self.get_model_api_key(model)
+            if model_id is None:
+                print(f"Model {model} not available.")
+                return None
+            start_time = timer()
+            endpoint = f"https://{model_id}.eastus.models.ai.azure.com/chat/completions"
+            response = requests.post(
+                f"{endpoint}",
+                headers={
+                    "Authorization": f"Bearer {api_key}",
+                    "Content-Type": "application/json",
+                },
+                json={
+                    "messages": [
+                        {"role": "system", "content": self.system_prompt},
+                        {"role": "user", "content": prompt},
+                    ],
+                    "max_tokens": max_output,
+                },
+                timeout=500,
+            )
+            elapsed = timer() - start_time
+            if response.status_code != 200:
+                print(f"Error: {response.status_code} - {response.text}")
+                return None
 
-        # Parse and display response
-        inference = response.json()
-        self.log_metrics(model, "response_times", elapsed)
-        if verbosity:
-            print(f"Response: {inference['choices'][0]['message']['content'][:50]}")
-        return inference
+            # Parse and display response
+            inference = response.json()
+            self.log_metrics(model, "response_times", elapsed)
+            if verbosity:
+                print(f"Response: {inference['choices'][0]['message']['content'][:50]}")
+            return inference
+        
+        except Exception as e:
+            print(f"[ERROR] Inference failed for model '{model}': {e}")
+            return None, None
 
-    def perform_inference_streaming(self, model, prompt, max_output=100, verbosity=True):
+    def perform_inference_streaming(
+        self, model, prompt, max_output=100, verbosity=True
+    ):
         """Performs streaming inference request to Azure."""
         model_id = self.get_model_name(model)
         api_key = self.get_model_api_key(model)
@@ -89,18 +99,18 @@ class Azure(ProviderInterface):
             f"{endpoint}",
             headers={
                 "Authorization": f"Bearer {api_key}",
-                "Content-Type": "application/json"
+                "Content-Type": "application/json",
             },
             json={
                 "messages": [
                     {"role": "system", "content": self.system_prompt},
-                    {"role": "user", "content": prompt}
+                    {"role": "user", "content": prompt},
                 ],
                 "max_tokens": max_output,
-                "stream": True
+                "stream": True,
             },
             stream=True,
-            timeout=1800
+            timeout=500,
         )
 
         first_token_time = None
@@ -142,6 +152,10 @@ class Azure(ProviderInterface):
         self.log_metrics(model, "timetofirsttoken", ttft)
         self.log_metrics(model, "response_times", total_time)
         self.log_metrics(model, "timebetweentokens", avg_tbt)
-        self.log_metrics(model, "timebetweentokens_median", np.median(inter_token_latencies))
-        self.log_metrics(model, "timebetweentokens_p95", np.percentile(inter_token_latencies, 95))
+        self.log_metrics(
+            model, "timebetweentokens_median", np.median(inter_token_latencies)
+        )
+        self.log_metrics(
+            model, "timebetweentokens_p95", np.percentile(inter_token_latencies, 95)
+        )
         self.log_metrics(model, "totaltokens", len(inter_token_latencies) + 1)

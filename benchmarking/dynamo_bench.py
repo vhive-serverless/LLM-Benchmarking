@@ -1,13 +1,22 @@
+"""
+Module for benchmarking performance metrics of Large Language Model providers and storing
+results in a DynamoDB table.
+"""
 import json
-import numpy as np
 import os
-from datetime import datetime
-import boto3
-from botocore.exceptions import ClientError
 import uuid
+from datetime import datetime
+
+import boto3
+import numpy as np
+from botocore.exceptions import ClientError
 
 
 class Benchmark:
+    """
+    A class to benchmark the performance of various LLM providers.
+    """
+
     def __init__(
         self,
         providers,
@@ -18,6 +27,18 @@ class Benchmark:
         streaming=False,
         verbosity=False,
     ):
+        """
+        Initialize the Benchmark object.
+
+        Args:
+            providers (list): List of provider objects to benchmark.
+            num_requests (int): Number of requests to send per provider.
+            models (list): List of models to benchmark.
+            max_output (int): Maximum output length.
+            prompt (str): Input prompt for benchmarking.
+            streaming (bool, optional): Whether to use streaming mode. Defaults to False.
+            verbosity (bool, optional): Enable verbose output. Defaults to False.
+        """
         self.providers = providers
         self.num_requests = num_requests
         self.models = models
@@ -44,31 +65,33 @@ class Benchmark:
             "providers": {},
         }
 
-    def clean_data(self, data):
+    @staticmethod
+    def clean_data(data):
         """
-        Recursively removes any empty values (None, empty strings, empty lists, etc.)
-        from a dictionary to ensure compatibility with DynamoDB.
+        Recursively removes empty values from a dictionary.
+
+        Args:
+            data (dict): Input dictionary.
+
+        Returns:
+            dict: Cleaned dictionary.
         """
         if isinstance(data, dict):
             return {
-                k: self.clean_data(v)
+                k: Benchmark.clean_data(v)
                 for k, v in data.items()
                 if v not in [None, "", [], {}]
             }
-        elif isinstance(data, list):
-            return [self.clean_data(v) for v in data if v not in [None, "", [], {}]]
-        elif isinstance(data, float):
-            return (str(data))  # Convert float to Decimal for DynamoDB
-        return data
+        if isinstance(data, list):
+            return [Benchmark.clean_data(v) for v in data if v not in [None, "", [], {}]]
+        return str(data) if isinstance(data, float) else data
 
     def store_data_points(self):
         """
         Store benchmark data in DynamoDB using an optimized schema with nested metrics.
         """
         table = self.dynamodb.Table(self.table_name)
-
         try:
-            # Iterate through providers
             for provider_name, models in self.benchmark_data["providers"].items():
                 for model_name, metrics in models.items():
                     item = {
@@ -79,15 +102,13 @@ class Benchmark:
                         "model_name": model_name,
                         "prompt": self.benchmark_data["prompt"],
                         "metrics": json.dumps(metrics),  # Serialize metrics as JSON string
-                        "streaming": self.streaming
+                        "streaming": self.streaming,
                     }
-                    # Store the item in DynamoDB
                     table.put_item(Item=item)
-
             print(f"Successfully stored benchmark data for run ID {self.run_id}")
         except ClientError as e:
             print(f"Error saving to DynamoDB: {e.response['Error']['Message']}")
-        
+
     def add_metric_data(self, provider_name, model_name, metric, latencies):
         """
         Add latency and CDF data to the benchmark data structure.
@@ -96,35 +117,25 @@ class Benchmark:
             provider_name (str): The name of the provider.
             model_name (str): The name of the model.
             metric (str): The metric type (e.g., response_times, timetofirsttoken).
-            latencies (list): List of sorted latency values in milliseconds.
+            latencies (list): List of latency values in milliseconds.
         """
-        # Calculate CDF
         latencies_sorted = np.sort(latencies) * 1000  # Convert to milliseconds
         cdf = np.arange(1, len(latencies_sorted) + 1) / len(latencies_sorted)
 
-        # Convert floats to Decimal for DynamoDB compatibility
-        latencies_sorted = [(str(val)) for val in latencies_sorted.tolist()]
-        cdf = [(str(val)) for val in cdf.tolist()]
+        # Convert floats to string for DynamoDB compatibility
+        latencies_sorted = [str(val) for val in latencies_sorted.tolist()]
+        cdf = [str(val) for val in cdf.tolist()]
 
-        # Initialize provider and model entries if not already present
-        if provider_name not in self.benchmark_data["providers"]:
-            self.benchmark_data["providers"][provider_name] = {}
-        if model_name not in self.benchmark_data["providers"][provider_name]:
-            self.benchmark_data["providers"][provider_name][model_name] = {}
-
-        # Add metric data
-        self.benchmark_data["providers"][provider_name][model_name][metric] = {
-            "latencies": latencies_sorted,
-            "cdf": cdf,
-        }
+        self.benchmark_data["providers"].setdefault(provider_name, {}).setdefault(
+            model_name, {}
+        )[metric] = {"latencies": latencies_sorted, "cdf": cdf}
 
     def plot_metrics(self, metric):
         """
-        Collects latency and CDF data points for each provider and model,
-        and adds them to the benchmark data structure instead of plotting.
+        Collect and add latency and CDF data points for each provider and model.
 
         Args:
-            metric (str): The metric type to plot (e.g., response_times).
+            metric (str): The metric type to collect (e.g., response_times).
         """
         for provider in self.providers:
             provider_name = provider.__class__.__name__
@@ -134,7 +145,7 @@ class Benchmark:
 
     def run(self):
         """
-        Run the benchmark and store metrics in DynamoDB.
+        Execute the benchmark and store metrics in DynamoDB.
         """
         for provider in self.providers:
             for model in self.models:
@@ -148,15 +159,12 @@ class Benchmark:
                             model, self.prompt, self.max_output, self.verbosity
                         )
 
-        # Collect and store metrics in the data structure
-        if not self.streaming:
-            self.plot_metrics("response_times")
-        else:
-            self.plot_metrics("timetofirsttoken")
-            self.plot_metrics("response_times")
-            self.plot_metrics("timebetweentokens")
-            self.plot_metrics("timebetweentokens_median")
-            self.plot_metrics("timebetweentokens_p95")
+        metrics_to_plot = (
+            ["timetofirsttoken", "response_times", "timebetweentokens"]
+            if self.streaming
+            else ["response_times"]
+        )
+        for metric in metrics_to_plot:
+            self.plot_metrics(metric)
 
-        # Store all data points in DynamoDB
         self.store_data_points()
