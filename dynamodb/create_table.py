@@ -21,17 +21,17 @@ try:
         TableName=table_name,
         KeySchema=[
             {
-                "AttributeName": "run_id",  # Partition key
+                "AttributeName": "id",  # Partition key
                 "KeyType": "HASH",  # Partition key type
             },
             {
-                "AttributeName": "sort_key",  # Composite sort key
+                "AttributeName": "timestamp",  # Composite sort key
                 "KeyType": "RANGE",  # Sort key type
             },
         ],
         AttributeDefinitions=[
-            {"AttributeName": "run_id", "AttributeType": "S"},
-            {"AttributeName": "sort_key", "AttributeType": "S"},  # Define sort_key
+            {"AttributeName": "id", "AttributeType": "S"},
+            {"AttributeName": "timestamp", "AttributeType": "S"},  # Define sort_key
         ],
         ProvisionedThroughput={"ReadCapacityUnits": 5, "WriteCapacityUnits": 5},
     )

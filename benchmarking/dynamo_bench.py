@@ -72,13 +72,14 @@ class Benchmark:
             for provider_name, models in self.benchmark_data["providers"].items():
                 for model_name, metrics in models.items():
                     item = {
+                        "id": str(uuid.uuid4()),
                         "run_id": self.benchmark_data["run_id"],
                         "timestamp": self.benchmark_data["timestamp"],
                         "provider_name": provider_name,
                         "model_name": model_name,
                         "prompt": self.benchmark_data["prompt"],
                         "metrics": json.dumps(metrics),  # Serialize metrics as JSON string
-                        "sort_key": f"{provider_name}#{model_name}"
+                        "streaming": self.streaming
                     }
                     # Store the item in DynamoDB
                     table.put_item(Item=item)

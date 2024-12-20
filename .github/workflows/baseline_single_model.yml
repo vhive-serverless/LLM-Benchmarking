@@ -2,7 +2,7 @@ name: Compare Providers
 
 on:
   workflow_dispatch:
-  push:
+  # push:
   
 env:  # Define global environment variables for all jobs
     CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
