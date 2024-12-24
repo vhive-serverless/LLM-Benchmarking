@@ -34,6 +34,8 @@ class vLLM(ProviderInterface):
         Sends an inference request to the vLLM API server.
         """
         model_id = self.get_model_name(model)
+        formatted_prompt = f"System: {self.system_prompt} \n User: {prompt}"
+        print("prompt", formatted_prompt)
         start_time = timer()
         try:
             response = requests.post(
@@ -41,7 +43,7 @@ class vLLM(ProviderInterface):
                 headers={"Content-Type": "application/json"},
                 json={
                     "model": model_id,
-                    "messages": [{"role": "user", "content": prompt}],
+                    "prompt": formatted_prompt,
                     "max_tokens": max_output,
                 },
                 timeout=1800,
@@ -53,7 +55,8 @@ class vLLM(ProviderInterface):
 
             if verbosity:
                 print(f"#### _Generated in *{elapsed:.2f}* seconds_")
-
+            
+            print(response)
             inference = response.json()
             print(inference)
             return elapsed
@@ -70,6 +73,7 @@ class vLLM(ProviderInterface):
         """
         inter_token_latencies = []
         model_id = self.get_model_name(model)
+        formatted_prompt = f"System: {self.system_prompt} \n User: {prompt}"
         start_time = time.perf_counter()
         generated_text = ""  # To accumulate the full response
 
@@ -82,7 +86,8 @@ class vLLM(ProviderInterface):
                 json={
                     "stream": True,
                     "model": model_id,
-                    "messages": [{"role": "user", "content": prompt}],
+                    # "messages": [{"role": "user", "content": prompt}],
+                    "prompt": formatted_prompt,
                     "max_tokens": max_output,
                 },
                 stream=True,
@@ -136,6 +141,12 @@ class vLLM(ProviderInterface):
             self.log_metrics(model, "timetofirsttoken", ttft)
             self.log_metrics(model, "response_times", total_time)
             self.log_metrics(model, "timebetweentokens", inter_token_latencies)
+            median = np.percentile(inter_token_latencies, 50)
+            p95 = np.percentile(inter_token_latencies, 95)
+            self.log_metrics(model, "timebetweentokens_median", median)
+            self.log_metrics(model, "timebetweentokens_p95", p95)
+            self.log_metrics(model, "totaltokens", len(inter_token_latencies) + 1)
+            self.log_metrics(model, "tps", (len(inter_token_latencies) + 1) / total_time)
 
             return generated_text, total_time
 

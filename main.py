@@ -2,7 +2,7 @@
 
 import argparse
 import json
-from dotenv import load_dotenv
+# from dotenv import load_dotenv
 from benchmarking.benchmark_main import Benchmark
 from providers import (
     TogetherAI,
@@ -20,7 +20,7 @@ from providers import (
 from utils.prompt_generator import get_prompt
 
 # Load environment variables
-load_dotenv()
+# load_dotenv()
 
 
 # Define input parser
