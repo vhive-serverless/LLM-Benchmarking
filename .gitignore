@@ -6,7 +6,15 @@ __pycache__/
 *.pyc
 dynamodb/docker/docker/dynamodb/shared-local-instance.db
 .coverage
+# Ignore everything in benchmark_graph/end_to_end
+benchmark_graph/end_to_end/*
+# Allow the vllm folder in benchmark_graph/end_to_end
+!benchmark_graph/end_to_end/vllm/
 
+# Ignore everything in benchmark_graph/streaming
+benchmark_graph/streaming/*
+# Allow the vllm folder in benchmark_graph/streaming
+!benchmark_graph/streaming/vllm/
 
 # Testing and coverage
 coverage.xml
