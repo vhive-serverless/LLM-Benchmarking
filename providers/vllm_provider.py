@@ -128,7 +128,7 @@ class vLLM(ProviderInterface):
                         inter_token_latencies.append(inter_token_latency)
 
                         if verbosity:
-                            print(token_text, end="")
+                            print(token_text, end="~")
 
             if verbosity:
                 print(
