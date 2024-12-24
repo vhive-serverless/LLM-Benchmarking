@@ -1,9 +1,9 @@
 {
     "providers": ["vLLM"],  
     "models": ["common-model"],
-    "num_requests": 1,
+    "num_requests": 100,
     "input_tokens": 10,
     "streaming": true,
-    "max_output": 1500,
+    "max_output": 100,
     "verbose": true
 }
