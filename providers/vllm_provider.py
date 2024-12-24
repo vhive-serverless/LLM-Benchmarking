@@ -4,7 +4,7 @@ import requests
 import numpy as np
 from timeit import default_timer as timer
 from providers.provider_interface import ProviderInterface
-
+import json
 
 class vLLM(ProviderInterface):
     def __init__(self):
