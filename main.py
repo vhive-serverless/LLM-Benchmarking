@@ -14,7 +14,8 @@ from providers import (
     PerplexityAI,
     Hyperbolic,
     Azure,
-    AWSBedrock
+    AWSBedrock,
+    vLLM
 )
 from utils.prompt_generator import get_prompt
 
@@ -54,7 +55,8 @@ def get_available_providers():
         "Anthropic": Anthropic(),
         "Groq": GroqProvider(),
         "Azure": Azure(),
-        "AWSBedrock": AWSBedrock()
+        "AWSBedrock": AWSBedrock(),
+        "vLLM": vLLM()
     }
 
     return available_providers

@@ -11,6 +11,7 @@ from .hyperbolic_provider import Hyperbolic
 from .google_provider import GoogleGemini
 from .azure_provider import Azure
 from .aws_provider import AWSBedrock
+from .vllm_provider import vLLM
 
 __all__ = [
     "BaseProvider",
@@ -24,5 +25,6 @@ __all__ = [
     "Hyperbolic",
     "GoogleGemini",
     "Azure",
-    "AWSBedrock"
+    "AWSBedrock",
+    "vLLM"
 ]
