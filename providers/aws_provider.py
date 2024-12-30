@@ -24,7 +24,9 @@ class AWSBedrock(ProviderInterface):
         # model names
         self.model_map = {
             "meta-llama-3-70b-instruct": "meta.llama3-70b-instruct-v1:0",
-            "common-model" : "meta.llama3-70b-instruct-v1:0"
+            "meta-llama-3.1-8b-instruct": "meta.llama3-1-8b-instruct-v1:0",
+            "common-model" : "meta.llama3-70b-instruct-v1:0",
+            "common-model-small": "meta.llama3-1-8b-instruct-v1:0"
         }
 
     def get_model_name(self, model):

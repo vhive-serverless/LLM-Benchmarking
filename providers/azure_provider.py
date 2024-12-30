@@ -14,7 +14,8 @@ class Azure(ProviderInterface):
             # "mistral-7b-instruct-v0.1": "mistral-7b-instruct-v0.1",
             "meta-llama-3.1-8b-instruct" : "Meta-Llama-3-1-8B-Instruct-fyp",
             "meta-llama-3.1-70b-instruct" : "Meta-Llama-3-1-70B-Instruct-fyp",
-            "common-model" : "Meta-Llama-3-1-70B-Instruct-fyp"
+            "common-model" : "Meta-Llama-3-1-70B-Instruct-fyp",
+            "common-model-small": "Meta-Llama-3-1-8B-Instruct-fyp"
         }
 
         # Define API keys for each model
@@ -23,6 +24,7 @@ class Azure(ProviderInterface):
             "meta-llama-3.1-8b-instruct" : os.environ.get("AZURE_LLAMA_8B_API"),
             "meta-llama-3.1-70b-instruct" : os.environ.get("AZURE_LLAMA_70B_API"),
             "common-model" : os.environ.get("AZURE_LLAMA_70B_API"),
+            "common-model-small" : os.environ.get("AZURE_LLAMA_70B_API"),
             # "common-model": os.environ.get("MISTRAL_API_KEY")
         }
 

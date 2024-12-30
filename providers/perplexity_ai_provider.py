@@ -29,5 +29,6 @@ class PerplexityAI(BaseProvider):
             "meta-llama-3.1-70b-instruct": "llama-3.1-70b-instruct",  # 70b
             "meta-llama-3.1-8b-instruct": "llama-3.1-8b-instruct",  # 8b
             "meta-llama-3.1-sonar-405B": "llama-3.1-sonar-huge-128k-online",  # 405B
-            "common-model": "llama-3.1-70b-instruct"
+            "common-model": "llama-3.1-70b-instruct",
+            "common-model-small": "llama-3.1-8b-instruct"
         }

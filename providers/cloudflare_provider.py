@@ -35,6 +35,7 @@ class Cloudflare(ProviderInterface):
             "mistral-7b-instruct-v0.1": "@cf/mistral/mistral-7b-instruct-v0.1",
             "meta-llama-3.1-70b-instruct": "@cf/meta/llama-3.1-70b-instruct",
             "common-model" : "@cf/meta/llama-3.1-70b-instruct",
+            "common-model-small": "@cf/mistral/mistral-7b-instruct-v0.1"
         }
 
     def get_model_name(self, model):

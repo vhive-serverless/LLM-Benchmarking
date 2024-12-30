@@ -16,5 +16,6 @@ class GroqProvider(BaseProvider):
             "google-gemma-7b-it": "gemma-7b-it",
             "meta-llama-3.2-3b-instruct": "llama-3.2-3b-preview",
             "meta-llama-3.1-70b-instruct": "llama-3.1-70b-versatile",
-            "common-model": "llama-3.1-70b-versatile"
+            "common-model": "llama-3.1-70b-versatile",
+            "common-model-small": "gemma-7b-it"
         }
