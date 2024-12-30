@@ -14,7 +14,7 @@ class vLLM(ProviderInterface):
         super().__init__()
 
         # Fetch VLLM server configurations from environment variables
-        vllm_host = os.environ.get("vLLM_HOST", "http://10.168.0.46")
+        vllm_host = os.environ.get("vLLM_HOST", "http://10.168.0.51")
         vllm_port = os.environ.get("vLLM_PORT", "8000")
 
         self.vllm_host = vllm_host
@@ -22,7 +22,8 @@ class vLLM(ProviderInterface):
 
         # Define available models
         self.model_map = {
-            "common-model": "facebook/opt-125m",
+           # "common-model": "facebook/opt-125m",
+           "common-model": "NousResearch/Meta-Llama-3-8B-Instruct"
         }
 
     def get_model_name(self, model):
