@@ -27,7 +27,7 @@ class Anthropic(ProviderInterface):
             "claude-3-opus": "claude-3-opus-latest",  # approx 2T
             "claude-3-haiku": "claude-3-haiku-20240307",  # approx 20b
             "common-model": "claude-3-5-sonnet-20241022",
-            "common-model-small": "claude-3-5-haiku-20240307"
+            "common-model-small": "claude-3-haiku-20240307"
         }
 
     def get_model_name(self, model):
