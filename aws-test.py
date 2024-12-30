@@ -18,6 +18,7 @@ bedrock = boto3.client(
 # response = bedrock.list_foundation_models()
 
 model_id = "meta.llama3-70b-instruct-v1:0"
+model_id = "meta.llama3-8b-instruct-v1:0"
 
 prompt = "Tell me a story"
 
