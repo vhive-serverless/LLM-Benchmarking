@@ -16,6 +16,8 @@ benchmark_graph/streaming/*
 # Allow the vllm folder in benchmark_graph/streaming
 !benchmark_graph/streaming/vllm/
 !benchmark_graph/streaming/anthropic_awsbedrock_azure_cloudflare_googlegemini_groqprovider_hyperbolic_open_ai_perplexityai_togetherai_vllm
+!benchmark_graph/streaming/anthropic_awsbedrock_azure_googlegemini_groqprovider_hyperbolic_open_ai_perplexityai_togetherai_vllm
+
 # Testing and coverage
 coverage.xml
 htmlcov
