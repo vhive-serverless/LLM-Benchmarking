@@ -1,5 +1,5 @@
 {
-    "providers": ["vLLM", "Cloudflare", "AWSBedrock", "Azure", "Anthropic", "Google", "Groq", "Hyperbolic", "OpenAI", "PerplexityAI", "TogetherAI"],  
+    "providers": ["vLLM", "Groq", "AWSBedrock", "Azure", "Anthropic", "Google", "Hyperbolic", "OpenAI", "PerplexityAI", "TogetherAI"],  
     "models": ["common-model-small"],
     "num_requests": 100,
     "input_tokens": 10,
