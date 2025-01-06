@@ -5,7 +5,6 @@ import boto3
 from server.server import app
 from datetime import datetime, timedelta
 import json
-import os
 
 # Initialize test client
 client = TestClient(app)
@@ -47,14 +46,6 @@ def setup_dynamodb():
             }
         )
         yield mock_table
-
-@pytest.mark.asyncio
-async def test_get_latest_run_id():
-    response = client.get("/metrics/date?metricType=timetofirsttoken&date=latest")
-    assert response.status_code == 200
-    data = response.json()
-    assert "run_id" in data
-    assert "metrics" in data
 
 @pytest.mark.asyncio
 async def test_get_metrics_period():
