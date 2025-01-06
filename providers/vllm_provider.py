@@ -14,7 +14,7 @@ class vLLM(ProviderInterface):
         super().__init__()
 
         # Fetch VLLM server configurations from environment variables
-        vllm_host = os.environ.get("vLLM_HOST", "http://10.168.0.51")
+        vllm_host = os.environ.get("vLLM_HOST", "http://10.168.0.45")
         vllm_port = os.environ.get("vLLM_PORT", "8000")
 
         self.vllm_host = vllm_host

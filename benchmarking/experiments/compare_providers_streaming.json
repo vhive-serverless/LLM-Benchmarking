@@ -1,6 +1,6 @@
 {
-    "providers": ["vLLM", "AWSBedrock", "Azure", "Anthropic", "Google", "Hyperbolic", "OpenAI", "PerplexityAI", "TogetherAI"],  
-    "models": ["common-model-small"],
+    "providers": ["vLLM", "AWSBedrock", "Azure", "Anthropic", "Cloudflare", "Google", "Groq", "Hyperbolic", "OpenAI", "PerplexityAI", "TogetherAI"],  
+    "models": ["common-model"],
     "num_requests": 100,
     "input_tokens": 10,
     "streaming": true,
