@@ -4,6 +4,6 @@
     "num_requests": 1,
     "input_tokens": 10,
     "streaming": true,
-    "max_output": 1500,
+    "max_output": 100,
     "verbose": true
 }
