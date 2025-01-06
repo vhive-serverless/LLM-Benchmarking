@@ -144,12 +144,13 @@ class AWSBedrock(ProviderInterface):
             # Measure total response time
             total_time = time.perf_counter() - start_time
             if verbosity:
+                avg_tbt = sum(inter_token_latencies)/len(inter_token_latencies)
                 print(f"\n##### Total Response Time: {total_time:.4f} seconds")
                 print(f"##### Tokens: {len(inter_token_latencies)}")
 
             self.log_metrics(model, "timetofirsttoken", ttft)
             self.log_metrics(model, "response_times", total_time)
-            self.log_metrics(model, "timebetweentokens", inter_token_latencies)
+            self.log_metrics(model, "timebetweentokens", avg_tbt)
             median = np.percentile(inter_token_latencies, 50)
             p95 = np.percentile(inter_token_latencies, 95)
             # print(median, p95)

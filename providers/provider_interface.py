@@ -33,10 +33,11 @@ class ProviderInterface(ABC):
         if model_name not in self.metrics[metric]:
             self.metrics[metric][model_name] = []
 
-        if metric == "timebetweentokens":
-            self.metrics[metric][model_name].extend(value)
-        else:
-            self.metrics[metric][model_name].append(value)
+        # if metric == "timebetweentokens":
+        #     self.metrics[metric][model_name].extend(value)
+        # else:
+        #     self.metrics[metric][model_name].append(value)
+        self.metrics[metric][model_name].append(value)
 
     @abstractmethod
     def perform_inference(self, model, prompt):
