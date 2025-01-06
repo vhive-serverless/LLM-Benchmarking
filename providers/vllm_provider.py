@@ -23,7 +23,7 @@ class vLLM(ProviderInterface):
         # Define available models
         self.model_map = {
            # "common-model": "facebook/opt-125m",
-           "common-model-small": "NousResearch/Meta-Llama-3-8B-Instruct"
+           "common-model-small": "meta-llama/Llama-3.1-8B"
         }
 
     def get_model_name(self, model):

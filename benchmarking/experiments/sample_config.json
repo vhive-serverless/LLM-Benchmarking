@@ -1,5 +1,5 @@
 {
-    "providers": ["AWSBedrock"],  
+    "providers": ["vLLM"],  
     "models": ["common-model-small"],
     "num_requests": 1,
     "input_tokens": 10,
