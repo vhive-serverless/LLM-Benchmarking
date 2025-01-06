@@ -120,11 +120,16 @@ class Anthropic(ProviderInterface):
             elapsed = timer() - start
             if verbosity:
                 print(f"\nTotal Response Time: {elapsed:.4f} seconds")
-                # print(f"Total tokens: {len(inter_token_latencies)}")
-
+                print(f"Total tokens: {len(inter_token_latencies)}")
+                # print(
+                #     f"\nNumber of output tokens/chunks: {len(inter_token_latencies) + 1}, Avg TBT: {avg_tbt:.4f}, Time to First Token (TTFT): {ttft:.4f} seconds, Total Response Time: {elapsed:.4f} seconds"
+                # )
+        
         # Log remaining metrics
+        avg_tbt = sum(inter_token_latencies)/len(inter_token_latencies)
+
         self.log_metrics(model, "response_times", elapsed)
-        self.log_metrics(model, "timebetweentokens", inter_token_latencies)
+        self.log_metrics(model, "timebetweentokens", avg_tbt)
         self.log_metrics(model, "totaltokens", len(inter_token_latencies) + 1)
         self.log_metrics(model, "tps", (len(inter_token_latencies) + 1) / elapsed)
         self.log_metrics(
