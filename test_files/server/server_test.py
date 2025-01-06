@@ -5,7 +5,12 @@ import boto3
 from server.server import app
 from datetime import datetime, timedelta
 import json
+import os
 
+# Set up mocked environment variables
+os.environ["AWS_ACCESS_KEY_ID"] = "mock_access_key_id"
+os.environ["AWS_SECRET_ACCESS_KEY"] = "mock_secret_access_key"
+os.environ["AWS_REGION"] = "us-east-1"
 # Initialize test client
 client = TestClient(app)
 
