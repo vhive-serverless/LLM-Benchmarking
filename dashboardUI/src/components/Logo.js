@@ -11,8 +11,8 @@ Logo.propTypes = {
 };
 
 export default function Logo({ disabledLink = false, sx }) {
-  
-  const logo = <Box component="img" src="/STeLLAR/static/stellar_logo.png" sx={{height: '60px', ...sx }} />
+
+  const logo = <Box component="img" src="/STeLLAR/static/icon.svg" sx={{ height: '60px', ...sx }} />
 
   if (disabledLink) {
     return <>{logo}</>;

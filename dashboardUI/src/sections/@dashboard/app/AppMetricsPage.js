@@ -18,7 +18,7 @@ const AppMetricsPage = ({ metricType, streaming = true }) => {
     const [loadingMetrics, setLoadingMetrics] = useState(true);
     const [loadingPeriodMetrics, setLoadingPeriodMetrics] = useState(true);
     const [error, setError] = useState(false);
-    const [dateRange, setDateRange] = useState("week");
+    const [dateRange, setDateRange] = useState("three-month");
     const [selectedDate, setSelectedDate] = useState('latest');
 
     const baseURL = "http://localhost:8000";
