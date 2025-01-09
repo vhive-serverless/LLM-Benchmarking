@@ -135,7 +135,7 @@ class Cloudflare(ProviderInterface):
                 f"\nNumber of output tokens/chunks: {len(inter_token_latencies) + 1}, Time to First Token (TTFT): {ttft:.4f} seconds, Total Response Time: {total_time:.4f} seconds"
             )
 
-        avg_tbt = sum(inter_token_latencies)/len(inter_token_latencies)
+        avg_tbt = sum(inter_token_latencies) / len(inter_token_latencies)
         self.log_metrics(model, "timetofirsttoken", ttft)
         self.log_metrics(model, "response_times", total_time)
         self.log_metrics(model, "timebetweentokens", avg_tbt)

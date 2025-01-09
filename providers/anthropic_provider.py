@@ -126,7 +126,7 @@ class Anthropic(ProviderInterface):
                 # )
         
         # Log remaining metrics
-        avg_tbt = sum(inter_token_latencies)/len(inter_token_latencies)
+        avg_tbt = sum(inter_token_latencies) / len(inter_token_latencies)
 
         self.log_metrics(model, "response_times", elapsed)
         self.log_metrics(model, "timebetweentokens", avg_tbt)

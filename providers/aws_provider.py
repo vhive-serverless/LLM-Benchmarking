@@ -48,7 +48,7 @@ class AWSBedrock(ProviderInterface):
         Performs a single-prompt inference using AWS Bedrock.
         """
         print("[INFO] Performing inference...")
-        model_id = self.get_model_name(model)   
+        model_id = self.get_model_name(model)
         formatted_prompt = self.format_prompt(prompt)
         print(formatted_prompt)
         # Prepare the request payload
@@ -113,7 +113,7 @@ class AWSBedrock(ProviderInterface):
                     try:
                         # print(f"[DEBUG] {event}")
                         chunk = json.loads(event["chunk"]["bytes"].decode("utf-8"))
-                    except Exception as e:
+                    except Exception:
                         # print(f"[DEBUG] Failed to decode chunk: {e}")
                         continue
 
@@ -144,7 +144,7 @@ class AWSBedrock(ProviderInterface):
             if verbosity:
                 print(f"\n##### Total Response Time: {total_time:.4f} seconds")
                 print(f"##### Tokens: {len(inter_token_latencies)}")
-                avg_tbt = sum(inter_token_latencies)/len(inter_token_latencies)
+                avg_tbt = sum(inter_token_latencies) / len(inter_token_latencies)
                 median = np.percentile(inter_token_latencies, 50)
                 p95 = np.percentile(inter_token_latencies, 95)
                 print("[INFO] tbt - ", avg_tbt, median, p95)
