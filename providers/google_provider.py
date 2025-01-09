@@ -15,10 +15,10 @@ class GoogleGemini(ProviderInterface):
         # Map of model names to specific Google Gemini model identifiers
         self.model_map = {
             "gemini-1.5-flash": "gemini-1.5-flash",
+            "common-model-small": "gemini-1.5-flash-8b",
             "gemini-1.5-flash-8b": "gemini-1.5-flash-8b",
             "gemini-1.5-pro": "gemini-1.5-pro",
-            "common-model": "gemini-1.5-flash",
-            "common-model-small": "gemini-1.5-flash-8b"
+            "common-model": "gemini-1.5-flash"
         }
 
         # Configure API key for Google Gemini
@@ -91,7 +91,8 @@ class GoogleGemini(ProviderInterface):
         first_token_time = None
         prev_token_time = start_time
         streamed_output = []
-
+        total_tokens = 0
+        
         for chunk in response:
             current_time = timer()
 
@@ -102,38 +103,38 @@ class GoogleGemini(ProviderInterface):
                 if verbosity:
                     print(f"Time to First Token (TTFT): {TTFT:.4f} seconds")
 
-            inter_token_latency = current_time - prev_token_time
-            inter_token_latencies.append(inter_token_latency)
+            # Estimate the number of tokens in the current chunk
+            num_tokens = int(self.model.count_tokens(chunk.text).total_tokens)
+            total_tokens += num_tokens
+
+            # Calculate inter-token latency per token in the chunk
+            if num_tokens > 0:
+                inter_token_latency = (current_time - prev_token_time) / num_tokens
+                for _ in range(num_tokens):
+                    inter_token_latencies.append(inter_token_latency)
+
             prev_token_time = current_time
-            # print(chunk.text, end="", flush=True)
-            try:
-                if hasattr(chunk, "text") and chunk.text:
-                    if verbosity:
-                        print(chunk.text, end="", flush=True)
-                    streamed_output.append(chunk.text)
-                else:
-                    print("\n[Filtered response: Content blocked due to safety concerns.]", flush=True)
-            except ValueError as e:
-                print(f"\n[ERROR: {str(e)}] Filtered or invalid content received, skipping this chunk.", flush=True)
+            if verbosity and chunk.text:
+                print(chunk.text, end="", flush=True)
+            streamed_output.append(chunk.text)
 
         total_time = timer() - start_time
         if verbosity:
             print(f"\nTotal Response Time: {total_time:.4f} seconds")
             print(f"total tokens {len(inter_token_latencies)}")
 
+        # Log all metrics
         self.log_metrics(model, "timetofirsttoken", TTFT)
         self.log_metrics(model, "response_times", total_time)
-        avg_tbt = sum(inter_token_latencies)/len(inter_token_latencies)
-        self.log_metrics(model, "timebetweentokens", avg_tbt)
+        self.log_metrics(model, "timebetweentokens", inter_token_latencies)
 
         # Calculate additional latency metrics
-        median_latency = np.median(inter_token_latencies)
-        p95_latency = np.percentile(inter_token_latencies, 95)
+        median_latency = np.median(inter_token_latencies) if inter_token_latencies else 0
+        p95_latency = np.percentile(inter_token_latencies, 95) if inter_token_latencies else 0
 
-        # Log other metrics
         self.log_metrics(model, "timebetweentokens_median", median_latency)
         self.log_metrics(model, "timebetweentokens_p95", p95_latency)
-        self.log_metrics(model, "totaltokens", len(inter_token_latencies) + 1)
-        self.log_metrics(model, "tps", (len(inter_token_latencies) + 1) / total_time)
+        self.log_metrics(model, "totaltokens", total_tokens)
+        self.log_metrics(model, "tps", total_tokens / total_time if total_time > 0 else 0)
 
         return streamed_output

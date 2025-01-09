@@ -108,6 +108,7 @@ class Azure(ProviderInterface):
         first_token_time = None
         for line in response.iter_lines():
             if line:
+                print(line)
                 if first_token_time is None:
                     # print(line)
                     first_token_time = timer()
@@ -125,13 +126,14 @@ class Azure(ProviderInterface):
                 inter_token_latency = time_to_next_token - prev_token_time
                 prev_token_time = time_to_next_token
                 inter_token_latencies.append(inter_token_latency)
-
+                
                 # Display token if verbosity is enabled
                 if verbosity:
-                    if len(inter_token_latencies) < 20:
-                        print(line_str[19:].split('"')[5], end="")
-                    elif len(inter_token_latencies) == 20:
-                        print("...")
+                    print(line_str[19:].split('"')[5], inter_token_latency)
+                    # if len(inter_token_latencies) < 20:
+                    #     print(line_str[19:].split('"')[5], end="")
+                    # elif len(inter_token_latencies) == 20:
+                    #     print("...")
 
         # Calculate total metrics
         total_time = timer() - start_time
@@ -141,6 +143,7 @@ class Azure(ProviderInterface):
             print(len(inter_token_latencies))
 
         # Log metrics
+        print("Avg TBT", avg_tbt)
         self.log_metrics(model, "timetofirsttoken", ttft)
         self.log_metrics(model, "response_times", total_time)
         self.log_metrics(model, "timebetweentokens", avg_tbt)

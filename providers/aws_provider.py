@@ -120,6 +120,7 @@ class AWSBedrock(ProviderInterface):
                         continue
 
                     if "generation" in chunk:
+                        # print(chunk)
                         current_token = chunk["generation"]
 
                         # Calculate timing
@@ -127,24 +128,33 @@ class AWSBedrock(ProviderInterface):
                         if first_token_time is None:
                             first_token_time = current_time
                             ttft = first_token_time - start_time
+                            prev_token_time = first_token_time
                             print(
                                 f"\n##### Time to First Token (TTFT): {ttft:.4f} seconds"
                             )
 
-                        if first_token_time:
-                            inter_token_latency = current_time - first_token_time
-                            inter_token_latencies.append(inter_token_latency)
+                        # if first_token_time:
+                        #     inter_token_latency = current_time - first_token_time
+                        #     inter_token_latencies.append(inter_token_latency)
+                        time_to_next_token = time.perf_counter()
+                        inter_token_latency = time_to_next_token - prev_token_time
+                        prev_token_time = time_to_next_token
+                        inter_token_latencies.append(inter_token_latency)
+                        print(f"{current_token}, {(inter_token_latency*1000):.4f}ms")
 
-                            if verbosity:
-                                if len(inter_token_latencies) < 20:
-                                    print(current_token, end="")  # Print the token
-                                elif len(inter_token_latencies) == 21:
-                                    print("...")
+                        # if verbosity:
+                        #     print(current_token, end="")
+                                # if len(inter_token_latencies) < 20:
+                                #     print(current_token, end="")  # Print the token
+                                # elif len(inter_token_latencies) == 21:
+                                #     print("...")
 
             # Measure total response time
             total_time = time.perf_counter() - start_time
+
             if verbosity:
                 avg_tbt = sum(inter_token_latencies)/len(inter_token_latencies)
+                print("Avg TBT", avg_tbt)
                 print(f"\n##### Total Response Time: {total_time:.4f} seconds")
                 print(f"##### Tokens: {len(inter_token_latencies)}")
 
