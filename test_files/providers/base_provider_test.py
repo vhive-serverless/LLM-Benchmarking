@@ -87,8 +87,9 @@ def test_perform_inference_streaming(
         max_tokens=100,
     )
 
+    avg_tbt = sum([0.5, 0.5])/len([0.5, 0.5])
     mock_log_metrics.assert_any_call("test-model", "timetofirsttoken", 0.5)
     mock_log_metrics.assert_any_call("test-model", "response_times", 2.0)
-    mock_log_metrics.assert_any_call("test-model", "timebetweentokens", [0.5, 0.5])
+    mock_log_metrics.assert_any_call("test-model", "timebetweentokens", avg_tbt)
 
     mock_display_response.assert_not_called()
