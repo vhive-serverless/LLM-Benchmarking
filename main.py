@@ -13,7 +13,8 @@ from providers import (
     Anthropic,
     PerplexityAI,
     Hyperbolic,
-    Azure
+    Azure,
+    AWSBedrock
 )
 from utils.prompt_generator import get_prompt
 
@@ -52,7 +53,8 @@ def get_available_providers():
         "Google": GoogleGemini(),
         "Anthropic": Anthropic(),
         "Groq": GroqProvider(),
-        "Azure": Azure()
+        "Azure": Azure(),
+        "AWSBedrock": AWSBedrock()
     }
 
     return available_providers
@@ -148,8 +150,10 @@ def run_benchmark(config):
     num_requests = config.get("num_requests", 1)
     models = config.get("models", [])
     input_tokens = config.get("input_tokens", 10)
+    # input_tokens = config.get("input_tokens", [10])
     streaming = config.get("streaming", False)
     max_output = config.get("max_output", 100)
+    # max_output = config.get("max_output", [100])
     verbose = config.get("verbose", False)
     # Validate and initialize providers
     selected_providers = validate_providers(providers)

@@ -120,9 +120,10 @@ class GoogleGemini(ProviderInterface):
             print(f"\nTotal Response Time: {total_time:.4f} seconds")
             print(f"total tokens {len(inter_token_latencies)}")
 
+        avg_tbt = sum(inter_token_latencies) / len(inter_token_latencies)
         self.log_metrics(model, "timetofirsttoken", TTFT)
         self.log_metrics(model, "response_times", total_time)
-        self.log_metrics(model, "timebetweentokens", inter_token_latencies)
+        self.log_metrics(model, "timebetweentokens", avg_tbt)
 
         # Calculate additional latency metrics
         median_latency = np.median(inter_token_latencies)

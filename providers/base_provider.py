@@ -84,13 +84,15 @@ class BaseProvider(ProviderInterface):
                 elif len(inter_token_latencies) == 20:
                     print("...")
 
+        avg_tbt = sum(inter_token_latencies) / len(inter_token_latencies)
         if verbosity:
+
             print(
-                f"\nNumber of output tokens/chunks: {len(inter_token_latencies) + 1}, Time to First Token (TTFT): {ttft:.4f} seconds, Total Response Time: {elapsed:.4f} seconds"
+                f"\nNumber of output tokens/chunks: {len(inter_token_latencies) + 1}, Avg TBT: {avg_tbt:.4f}, Time to First Token (TTFT): {ttft:.4f} seconds, Total Response Time: {elapsed:.4f} seconds"
             )
         self.log_metrics(model, "timetofirsttoken", ttft)
         self.log_metrics(model, "response_times", elapsed)
-        self.log_metrics(model, "timebetweentokens", inter_token_latencies)
+        self.log_metrics(model, "timebetweentokens", avg_tbt)
         median = np.percentile(inter_token_latencies, 50)
         p95 = np.percentile(inter_token_latencies, 95)
         self.log_metrics(model, "timebetweentokens_median", median)
