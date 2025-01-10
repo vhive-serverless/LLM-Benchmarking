@@ -3,6 +3,9 @@ name: Compare Providers Streaming
 on:
   workflow_dispatch:
   # push:
+  schedule:
+    - cron: "5 22 * * * "
+
 
 jobs:
   test:
@@ -17,7 +20,12 @@ jobs:
         PERPLEXITY_AI_API: ${{ secrets.PERPLEXITY_AI_API }}
         TOGETHER_AI_API: ${{ secrets.TOGETHER_AI_API }}
         ANTHROPIC_API: ${{ secrets.ANTHROPIC_API }}
-
+        AZURE_LLAMA_70B_API: ${{ secrets.AZURE_LLAMA_70B_API }}
+        AZURE_LLAMA_8B_API: ${{ secrets.AZURE_LLAMA_70B_API }}
+        AWS_BEDROCK_ACCESS_KEY_ID: ${{ secrets.AWS_BEDROCK_ACCESS_KEY_ID }}
+        AWS_BEDROCK_SECRET_ACCESS_KEY: ${{ secrets.AWS_BEDROCK_SECRET_ACCESS_KEY }}
+        AWS_BEDROCK_REGION: ${{ secrets.AWS_BEDROCK_REGION }}
+        
     steps:
     - name: Check out repository
       uses: actions/checkout@v3

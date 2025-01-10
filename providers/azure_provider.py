@@ -138,9 +138,10 @@ class Azure(ProviderInterface):
             print(len(inter_token_latencies))
 
         # Log metrics
+        avg_tbt = sum(inter_token_latencies) / len(inter_token_latencies)
         self.log_metrics(model, "timetofirsttoken", ttft)
         self.log_metrics(model, "response_times", total_time)
-        self.log_metrics(model, "timebetweentokens", inter_token_latencies)
+        self.log_metrics(model, "timebetweentokens", avg_tbt)
         self.log_metrics(model, "timebetweentokens_median", np.median(inter_token_latencies))
         self.log_metrics(model, "timebetweentokens_p95", np.percentile(inter_token_latencies, 95))
         self.log_metrics(model, "totaltokens", len(inter_token_latencies) + 1)

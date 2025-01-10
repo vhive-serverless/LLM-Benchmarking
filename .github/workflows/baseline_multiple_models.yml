@@ -1,4 +1,4 @@
-name: Compare Providers
+name: Compare Providers (Multiple Models)
 
 on:
   workflow_dispatch:
@@ -17,6 +17,13 @@ jobs:
         PERPLEXITY_AI_API: ${{ secrets.PERPLEXITY_AI_API }}
         TOGETHER_AI_API: ${{ secrets.TOGETHER_AI_API }}
         ANTHROPIC_API: ${{ secrets.ANTHROPIC_API }}
+        AZURE_LLAMA_70B_API: ${{ secrets.AZURE_LLAMA_70B_API }}
+        AZURE_LLAMA_8B_API: ${{ secrets.AZURE_LLAMA_8B_API }}        
+        AWS_BEDROCK_ACCESS_KEY_ID: ${{ secrets.AWS_BEDROCK_ACCESS_KEY_ID }}
+        AWS_BEDROCK_SECRET_ACCESS_KEY: ${{ secrets.AWS_BEDROCK_SECRET_ACCESS_KEY }}
+        AWS_BEDROCK_REGION: ${{ secrets.AWS_BEDROCK_REGION }}
+        folder: benchmarking/experiments/providers_streaming/multiple_models
+
 
     steps:
     - name: Check out repository
@@ -63,7 +70,7 @@ jobs:
           pip install -r requirements.txt
       
       - name: Run Experiment
-        run: python main.py -c ${{ env.folder }}/anthropic.json # how to put folder here?
+        run: python main.py -c ${{ env.folder }}/anthropic.json
 
       - name: Upload Experiment Outputs
         if: success()
@@ -101,6 +108,60 @@ jobs:
         uses: actions/upload-artifact@v3
         with:
           name: cloudflare-experiment-results
+          path: benchmark_graph
+
+  aws:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v3
+      
+      - name: Set up Python 3.12
+        uses: actions/setup-python@v4
+        with:
+          python-version: 3.12
+      
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+      
+      - name: Run Experiment
+        run: python main.py -c ${{ env.folder }}/aws.json
+
+      - name: Upload Experiment Outputs
+        if: success()
+        uses: actions/upload-artifact@v3
+        with:
+          name: aws-experiment-results
+          path: benchmark_graph
+
+  azure:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v3
+      
+      - name: Set up Python 3.12
+        uses: actions/setup-python@v4
+        with:
+          python-version: 3.12
+      
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+      
+      - name: Run Experiment
+        run: python main.py -c ${{ env.folder }}/azure.json
+
+      - name: Upload Experiment Outputs
+        if: success()
+        uses: actions/upload-artifact@v3
+        with:
+          name: azure-experiment-results
           path: benchmark_graph
 
   togetherai:

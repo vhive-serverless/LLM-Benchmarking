@@ -10,6 +10,7 @@ from .groq_provider import GroqProvider
 from .hyperbolic_provider import Hyperbolic
 from .google_provider import GoogleGemini
 from .azure_provider import Azure
+from .aws_provider import AWSBedrock
 
 __all__ = [
     "BaseProvider",
@@ -22,5 +23,6 @@ __all__ = [
     "GroqProvider",
     "Hyperbolic",
     "GoogleGemini",
-    "Azure"
+    "Azure",
+    "AWSBedrock"
 ]

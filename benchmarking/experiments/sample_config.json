@@ -1,12 +1,11 @@
 {
     "providers": [
-        "Cloudflare",
-        "PerplexityAI"
+        "AWSBedrock"
     ],
     "models": [
         "common-model"
     ],
-    "num_requests": 5,
+    "num_requests": 1,
     "input_tokens": 10,
     "streaming": true,
     "max_output": 100,
