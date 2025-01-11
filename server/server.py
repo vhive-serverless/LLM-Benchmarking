@@ -16,9 +16,13 @@ app.add_middleware(
     allow_methods=["*"],  # Allow all HTTP methods
     allow_headers=["*"],  # Allow all HTTP headers
 )
-dynamodb = boto3.resource("dynamodb")
-table = dynamodb.Table("BenchmarkMetrics")
 
+def get_dynamodb_table():
+    dynamodb = boto3.resource("dynamodb", region_name="us-west-2")
+    return dynamodb.Table("BenchmarkMetrics")
+
+
+table = get_dynamodb_table()
 
 def get_latest_run_id(streaming: bool):
     """
