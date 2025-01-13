@@ -3,7 +3,6 @@
 import argparse
 import json
 from dotenv import load_dotenv
-from benchmarking.benchmark_main import Benchmark
 from providers import (
     TogetherAI,
     Cloudflare,
@@ -155,6 +154,12 @@ def run_benchmark(config):
     max_output = config.get("max_output", 100)
     # max_output = config.get("max_output", [100])
     verbose = config.get("verbose", False)
+    backend = config.get("backend", False)
+    # Select Benchmark class based on backend flag
+    if backend:
+        from benchmarking.dynamo_bench import Benchmark
+    else:
+        from benchmarking.benchmark_main import Benchmark
     # Validate and initialize providers
     selected_providers = validate_providers(providers)
     print(

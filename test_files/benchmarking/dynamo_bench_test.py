@@ -61,6 +61,7 @@ def test_initialization(benchmark_instance):
     assert benchmark_instance.verbosity is True
     assert isinstance(benchmark_instance.run_id, str)
     assert benchmark_instance.benchmark_data["prompt"] == "test prompt"
+    assert "providers" in benchmark_instance.benchmark_data
 
 
 def test_add_metric_data(benchmark_instance):
@@ -71,12 +72,11 @@ def test_add_metric_data(benchmark_instance):
 
     benchmark_instance.add_metric_data(provider_name, model_name, metric, latencies)
 
-    data = benchmark_instance.benchmark_data["providers"][provider_name][model_name][
-        metric
-    ]
+    data = benchmark_instance.benchmark_data["providers"][provider_name][model_name][metric]
     assert "latencies" in data
     assert "cdf" in data
-    assert isinstance(data["latencies"][0], Decimal)
+    assert isinstance(data["latencies"][0], str)  # Latencies should be stored as strings (Decimal for DynamoDB)
+    assert isinstance(data["cdf"][0], str)  # CDF values should also be in string format
 
 
 def test_clean_data(benchmark_instance):
@@ -86,6 +86,7 @@ def test_clean_data(benchmark_instance):
         "none_value": None,
         "empty_list": [],
         "nested": {"empty_dict": {}, "valid": "nested_value"},
+        "float_value": 0.1234
     }
     cleaned_data = benchmark_instance.clean_data(data)
 
@@ -97,6 +98,8 @@ def test_clean_data(benchmark_instance):
     assert "none_value" not in cleaned_data
     assert "empty_list" not in cleaned_data
     assert "empty_dict" not in cleaned_data["nested"]
+    assert "float_value" in cleaned_data  # Ensure float_value is converted
+    assert isinstance(cleaned_data["float_value"], str)  # Check that float is converted to string
 
 
 def test_store_data_points(benchmark_instance):
@@ -105,8 +108,37 @@ def test_store_data_points(benchmark_instance):
     benchmark_instance.dynamodb.Table = MagicMock(return_value=mock_table)
     mock_table.put_item = MagicMock()
 
+    # Prepare some sample data
+    provider_name = "MockProvider"
+    model_name = "mock_model"
+    metric = "response_times"
+    latencies = [0.1, 0.2, 0.3]
+    benchmark_instance.add_metric_data(provider_name, model_name, metric, latencies)
+
     # Call the store_data_points method
     benchmark_instance.store_data_points()
 
-    # Verify that put_item was called once
+    # Verify that put_item was called once with correct data
     mock_table.put_item.assert_called_once()
+    args, kwargs = mock_table.put_item.call_args
+    item = kwargs["Item"]
+    
+    # Check if the item contains necessary data
+    assert item["run_id"] == benchmark_instance.run_id
+    assert item["provider_name"] == provider_name
+    assert item["model_name"] == model_name
+    assert item["prompt"] == benchmark_instance.prompt
+    assert "metrics" in item  # Ensure metrics are serialized
+    assert isinstance(item["metrics"], str)  # Ensure metrics are serialized to JSON string
+
+
+def test_plot_metrics(benchmark_instance):
+    # Call plot_metrics for 'response_times'
+    benchmark_instance.plot_metrics("response_times")
+
+    # Check that the benchmark data has the correct structure after plotting
+    provider_name = "MockProvider"
+    model_name = "mock_model"
+    assert provider_name in benchmark_instance.benchmark_data["providers"]
+    assert model_name in benchmark_instance.benchmark_data["providers"][provider_name]
+    assert "response_times" in benchmark_instance.benchmark_data["providers"][provider_name][model_name]
