@@ -14,7 +14,7 @@ class vLLM(ProviderInterface):
         super().__init__()
 
         # Fetch VLLM server configurations from environment variables
-        vllm_host = os.environ.get("vLLM_HOST", "http://10.168.0.45")
+        vllm_host = os.environ.get("vLLM_HOST", "http://10.168.0.21")
         vllm_port = os.environ.get("vLLM_PORT", "8000")
 
         self.vllm_host = vllm_host
@@ -125,11 +125,11 @@ class vLLM(ProviderInterface):
                         time_to_next_token = time.perf_counter()
                         inter_token_latency = time_to_next_token - prev_token_time
                         prev_token_time = time_to_next_token
-
+                        print(token_text, inter_token_latency)
                         inter_token_latencies.append(inter_token_latency)
 
                         if verbosity:
-                            print(token_text, end="~")
+                            print(token_text, end="")
 
             avg_tbt = sum(inter_token_latencies)/len(inter_token_latencies)
             if verbosity:

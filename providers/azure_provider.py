@@ -72,7 +72,7 @@ class Azure(ProviderInterface):
         inference = response.json()
         self.log_metrics(model, "response_times", elapsed)
         if verbosity:
-            print(f"Response: {inference['choices'][0]['message']['content'][:50]}")
+            print(f"Response: {inference['choices'][0]['message']['content']}")
         return inference
 
     def perform_inference_streaming(self, model, prompt, max_output=100, verbosity=True):
@@ -91,7 +91,8 @@ class Azure(ProviderInterface):
             f"{endpoint}",
             headers={
                 "Authorization": f"Bearer {api_key}",
-                "Content-Type": "application/json"
+                "Content-Type": "application/json",
+                "Accept": "text/event-stream, application/json",
             },
             json={
                 "messages": [
@@ -108,14 +109,14 @@ class Azure(ProviderInterface):
         first_token_time = None
         for line in response.iter_lines():
             if line:
-                print(line)
+                #print(line)
                 if first_token_time is None:
                     # print(line)
                     first_token_time = timer()
                     ttft = first_token_time - start_time
                     prev_token_time = first_token_time
-                    if verbosity:
-                        print(f"##### Time to First Token (TTFT): {ttft:.4f} seconds\n")
+                    #if verbosity:
+                       # print(f"##### Time to First Token (TTFT): {ttft:.4f} seconds\n")
 
                 line_str = line.decode("utf-8").strip()
                 if line_str == "data: [DONE]":
@@ -129,9 +130,12 @@ class Azure(ProviderInterface):
                 
                 # Display token if verbosity is enabled
                 if verbosity:
-                    print(line_str[19:].split('"')[5], inter_token_latency)
+                    if inter_token_latency > 0.001 :
+                        print()
+                        print(line_str[19:].split('"')[5], inter_token_latency)
                     # if len(inter_token_latencies) < 20:
-                    #     print(line_str[19:].split('"')[5], end="")
+                    else:
+                        print(line_str[19:].split('"')[5], end='')
                     # elif len(inter_token_latencies) == 20:
                     #     print("...")
 
@@ -143,7 +147,7 @@ class Azure(ProviderInterface):
             print(len(inter_token_latencies))
 
         # Log metrics
-        print("Avg TBT", avg_tbt)
+        print("Avg TBT", avg_tbt, "TTFT", ttft)
         self.log_metrics(model, "timetofirsttoken", ttft)
         self.log_metrics(model, "response_times", total_time)
         self.log_metrics(model, "timebetweentokens", avg_tbt)
