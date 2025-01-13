@@ -79,15 +79,26 @@ class Benchmark:
                 latencies_sorted = np.sort(latencies) * 1000
                 cdf = np.arange(1, len(latencies_sorted) + 1) / len(latencies_sorted)
                 model_name = provider.get_model_name(model)
-
-                plt.plot(
-                    latencies_sorted,
-                    cdf,
-                    marker="o",
-                    linestyle="-",
-                    markersize=5,
-                    label=f"{provider_name} - {model_name}",
-                )
+                if provider_name.lower() == "vllm":
+                    plt.plot(
+                        latencies_sorted,
+                        cdf,
+                        marker="o",
+                        linestyle="-",
+                        markersize=8,  # Slightly larger marker size
+                        color="black",  # Black color for the marker
+                        label=f"{provider_name} - {model_name}",
+                        linewidth=2,  # Bold line
+                    )
+                else:
+                    plt.plot(
+                        latencies_sorted,
+                        cdf,
+                        marker="o",
+                        linestyle="-",
+                        markersize=5,
+                        label=f"{provider_name} - {model_name}",
+                    )
 
         plt.xlabel("Latency (ms)", fontsize=12)
         plt.ylabel("Portion of requests", fontsize=12)
