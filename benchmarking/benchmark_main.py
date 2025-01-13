@@ -85,7 +85,7 @@ class Benchmark:
                         cdf,
                         marker="o",
                         linestyle="-",
-                        markersize=8,  # Slightly larger marker size
+                        markersize=6,  # Slightly larger marker size
                         color="black",  # Black color for the marker
                         label=f"{provider_name} - {model_name}",
                         linewidth=2,  # Bold line
