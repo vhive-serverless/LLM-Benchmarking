@@ -158,18 +158,23 @@ class AWSBedrock(ProviderInterface):
                 print(f"\n##### Total Response Time: {total_time:.4f} seconds")
                 print(f"##### Tokens: {len(inter_token_latencies)}")
 
-            self.log_metrics(model, "timetofirsttoken", ttft)
-            self.log_metrics(model, "response_times", total_time)
-            self.log_metrics(model, "timebetweentokens", avg_tbt)
-            median = np.percentile(inter_token_latencies, 50)
-            p95 = np.percentile(inter_token_latencies, 95)
-            # print(median, p95)
-            self.log_metrics(model, "timebetweentokens_median", median)
-            self.log_metrics(model, "timebetweentokens_p95", p95)
-            self.log_metrics(model, "totaltokens", len(inter_token_latencies) + 1)
-            self.log_metrics(model, "tps", (len(inter_token_latencies) + 1) / total_time)
+            if len(inter_token_latencies) >= 100:
+                self.log_metrics(model, "timetofirsttoken", ttft)
+                self.log_metrics(model, "response_times", total_time)
+                self.log_metrics(model, "timebetweentokens", avg_tbt)
+                median = np.percentile(inter_token_latencies, 50)
+                p95 = np.percentile(inter_token_latencies, 95)
+                # print(median, p95)
+                self.log_metrics(model, "timebetweentokens_median", median)
+                self.log_metrics(model, "timebetweentokens_p95", p95)
+                self.log_metrics(model, "totaltokens", len(inter_token_latencies) + 1)
+                self.log_metrics(model, "tps", (len(inter_token_latencies) + 1) / total_time)
 
-            return total_time, inter_token_latencies
+                return total_time, inter_token_latencies
+            
+            else:
+                print("No Result", len(inter_token_latencies))
+                return -1, -1
 
         except Exception as e:
             print(f"[ERROR] Streaming inference failed: {e}")
