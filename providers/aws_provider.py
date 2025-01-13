@@ -120,7 +120,7 @@ class AWSBedrock(ProviderInterface):
                         continue
 
                     if "generation" in chunk:
-                        # print(chunk)
+                        print(chunk)
                         current_token = chunk["generation"]
 
                         # Calculate timing

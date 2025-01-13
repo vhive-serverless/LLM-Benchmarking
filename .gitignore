@@ -14,7 +14,8 @@ benchmark_graph/end_to_end/*
 # Ignore everything in benchmark_graph/streaming
 benchmark_graph/streaming/*
 # Allow the vllm folder in benchmark_graph/streaming
-!benchmark_graph/streaming/vllm/
+!benchmark_graph/streaming/*vllm*/
+!benchmark_graph/streaming/awsbedrock_azure_vllm/
 !benchmark_graph/streaming/anthropic_awsbedrock_azure_cloudflare_googlegemini_groqprovider_hyperbolic_open_ai_perplexityai_togetherai_vllm
 !benchmark_graph/streaming/anthropic_awsbedrock_azure_googlegemini_groqprovider_hyperbolic_open_ai_perplexityai_togetherai_vllm
 !benchmark_graph/streaming/anthropic_awsbedrock_azure_googlegemini_hyperbolic_open_ai_perplexityai_togetherai_vllm
