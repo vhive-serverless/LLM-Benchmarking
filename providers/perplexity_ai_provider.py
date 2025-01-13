@@ -98,10 +98,13 @@ class PerplexityAI(BaseProvider):
                 f"Time to First Token (TTFT): {ttft:.4f} seconds, "
                 f"Total Response Time: {elapsed:.4f} seconds"
             )
+
+        avg_tbt = sum(inter_token_latencies)/len(inter_token_latencies)
+
         # Log metrics
         self.log_metrics(model, "timetofirsttoken", ttft)
         self.log_metrics(model, "response_times", elapsed)
-        self.log_metrics(model, "timebetweentokens", inter_token_latencies)
+        self.log_metrics(model, "timebetweentokens", avg_tbt)
 
         # Calculate additional latency metrics
         median = np.median(inter_token_latencies) if inter_token_latencies else 0

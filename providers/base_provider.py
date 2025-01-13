@@ -79,10 +79,11 @@ class BaseProvider(ProviderInterface):
 
             inter_token_latencies.append(inter_token_latency)
             if verbosity:
-                if len(inter_token_latencies) < 20:
-                    print(chunk.choices[0].delta.content or "", end="", flush=True)
-                elif len(inter_token_latencies) == 20:
-                    print("...")
+                print(chunk.choices[0].delta.content or "", end="", flush=True)
+                # if len(inter_token_latencies) < 20:
+                #     print(chunk.choices[0].delta.content or "", end="", flush=True)
+                # elif len(inter_token_latencies) == 20:
+                #     print("...")
 
         avg_tbt = sum(inter_token_latencies)/len(inter_token_latencies)
         if verbosity:
