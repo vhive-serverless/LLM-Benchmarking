@@ -100,7 +100,6 @@ class PerplexityAI(BaseProvider):
             )
 
         avg_tbt = sum(inter_token_latencies)/len(inter_token_latencies)
-
         # Log metrics
         self.log_metrics(model, "timetofirsttoken", ttft)
         self.log_metrics(model, "response_times", elapsed)
