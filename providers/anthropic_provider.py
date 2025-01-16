@@ -26,7 +26,7 @@ class Anthropic(ProviderInterface):
             "claude-3.5-sonnet": "claude-3-5-sonnet-20241022",  # approx 70b
             "claude-3-opus": "claude-3-opus-latest",  # approx 2T
             "claude-3-haiku": "claude-3-haiku-20240307",  # approx 20b
-            "common-model": "claude-3-5-sonnet-20241022"
+            "common-model": "claude-3-5-sonnet-20241022",
         }
 
     def get_model_name(self, model):
@@ -124,7 +124,7 @@ class Anthropic(ProviderInterface):
                 # print(
                 #     f"\nNumber of output tokens/chunks: {len(inter_token_latencies) + 1}, Avg TBT: {avg_tbt:.4f}, Time to First Token (TTFT): {ttft:.4f} seconds, Total Response Time: {elapsed:.4f} seconds"
                 # )
-        
+
         # Log remaining metrics
         avg_tbt = sum(inter_token_latencies) / len(inter_token_latencies)
 

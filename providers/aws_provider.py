@@ -6,6 +6,7 @@ import numpy as np
 from dotenv import load_dotenv
 from providers.provider_interface import ProviderInterface
 
+
 class AWSBedrock(ProviderInterface):
     def __init__(self):
         """
@@ -24,7 +25,7 @@ class AWSBedrock(ProviderInterface):
         # model names
         self.model_map = {
             "meta-llama-3-70b-instruct": "meta.llama3-70b-instruct-v1:0",
-            "common-model" : "meta.llama3-70b-instruct-v1:0"
+            "common-model": "meta.llama3-70b-instruct-v1:0",
         }
 
     def get_model_name(self, model):
@@ -81,7 +82,9 @@ class AWSBedrock(ProviderInterface):
             print(f"[ERROR] Inference failed: {e}")
             return None, None
 
-    def perform_inference_streaming(self, model, prompt, max_output=100, verbosity=True):
+    def perform_inference_streaming(
+        self, model, prompt, max_output=100, verbosity=True
+    ):
         """
         Performs a streaming inference using AWS Bedrock.
         """
@@ -155,7 +158,9 @@ class AWSBedrock(ProviderInterface):
             self.log_metrics(model, "timebetweentokens_median", median)
             self.log_metrics(model, "timebetweentokens_p95", p95)
             self.log_metrics(model, "totaltokens", len(inter_token_latencies) + 1)
-            self.log_metrics(model, "tps", (len(inter_token_latencies) + 1) / total_time)
+            self.log_metrics(
+                model, "tps", (len(inter_token_latencies) + 1) / total_time
+            )
 
             return total_time, inter_token_latencies
 

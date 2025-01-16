@@ -17,7 +17,7 @@ class GoogleGemini(ProviderInterface):
             "gemini-1.5-flash": "gemini-1.5-flash",
             "gemini-1.5-flash-8b": "gemini-1.5-flash-8b",
             "gemini-1.5-pro": "gemini-1.5-pro",
-            "common-model": "gemini-1.5-flash"
+            "common-model": "gemini-1.5-flash",
         }
 
         # Configure API key for Google Gemini
@@ -91,7 +91,7 @@ class GoogleGemini(ProviderInterface):
         prev_token_time = start_time
         streamed_output = []
         total_tokens = 0
-        
+
         for chunk in response:
             current_time = timer()
 
@@ -128,12 +128,18 @@ class GoogleGemini(ProviderInterface):
         self.log_metrics(model, "timebetweentokens", avg_tbt)
 
         # Calculate additional latency metrics
-        median_latency = np.median(inter_token_latencies) if inter_token_latencies else 0
-        p95_latency = np.percentile(inter_token_latencies, 95) if inter_token_latencies else 0
+        median_latency = (
+            np.median(inter_token_latencies) if inter_token_latencies else 0
+        )
+        p95_latency = (
+            np.percentile(inter_token_latencies, 95) if inter_token_latencies else 0
+        )
 
         self.log_metrics(model, "timebetweentokens_median", median_latency)
         self.log_metrics(model, "timebetweentokens_p95", p95_latency)
         self.log_metrics(model, "totaltokens", total_tokens)
-        self.log_metrics(model, "tps", total_tokens / total_time if total_time > 0 else 0)
+        self.log_metrics(
+            model, "tps", total_tokens / total_time if total_time > 0 else 0
+        )
 
         return streamed_output
