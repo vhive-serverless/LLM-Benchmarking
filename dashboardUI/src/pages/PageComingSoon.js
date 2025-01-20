@@ -34,7 +34,7 @@ export default function PageComingSoon() {
 
           <Box
             component="img"
-            src="/vhive-serverless/LLM-Benchmarking/dynamic/graph.gif"
+            src="/LLM-Benchmarking/dynamic/graph.gif"
             sx={{ height: 300, mx: 'auto', my: { xs: 5, sm: 10 } }}
           />
 
