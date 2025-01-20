@@ -1,0 +1,15 @@
+{
+  "files": {
+    "main.css": "/vhive-serverless/LLM-Benchmarking/static/css/main.feeb957e.css",
+    "main.js": "/vhive-serverless/LLM-Benchmarking/static/js/main.b81414b3.js",
+    "static/js/787.1199a6d1.chunk.js": "/vhive-serverless/LLM-Benchmarking/static/js/787.1199a6d1.chunk.js",
+    "index.html": "/vhive-serverless/LLM-Benchmarking/index.html",
+    "main.feeb957e.css.map": "/vhive-serverless/LLM-Benchmarking/static/css/main.feeb957e.css.map",
+    "main.b81414b3.js.map": "/vhive-serverless/LLM-Benchmarking/static/js/main.b81414b3.js.map",
+    "787.1199a6d1.chunk.js.map": "/vhive-serverless/LLM-Benchmarking/static/js/787.1199a6d1.chunk.js.map"
+  },
+  "entrypoints": [
+    "static/css/main.feeb957e.css",
+    "static/js/main.b81414b3.js"
+  ]
+}
