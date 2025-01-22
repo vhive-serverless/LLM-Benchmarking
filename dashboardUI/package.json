@@ -3,7 +3,7 @@
   "author": "minimals.cc",
   "licence": "MIT",
   "version": "1.4.0",
-  "homepage": "https://github.com/vhive-serverless/LLM-Benchmarking",
+  "homepage": "https://vhive-serverless.github.io/LLM-Benchmarking/",
   "private": false,
   "scripts": {
     "start": "react-scripts start",

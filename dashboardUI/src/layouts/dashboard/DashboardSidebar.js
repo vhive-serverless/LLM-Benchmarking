@@ -65,7 +65,7 @@ export default function DashboardSidebar({ isOpenSidebar, onCloseSidebar }) {
         <Stack alignItems="center" spacing={3} sx={{ pt: 5, borderRadius: 2, position: 'relative' }}>
           <Box
             component="img"
-            src="/vhive-serverless/LLM-Benchmarking/static/vhive-emblem-rgb.svg"
+            src="/LLM-Benchmarking/static/vhive-emblem-rgb.svg"
             sx={{ width: 70, position: 'absolute', top: -30 }}
           />
 

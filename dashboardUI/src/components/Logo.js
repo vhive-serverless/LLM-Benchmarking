@@ -12,7 +12,7 @@ Logo.propTypes = {
 
 export default function Logo({ disabledLink = false, sx }) {
 
-  const logo = <Box component="img" src="/vhive-serverless/LLM-Benchmarking/static/icon.svg" sx={{ height: '60px', ...sx }} />
+  const logo = <Box component="img" src="/LLM-Benchmarking/static/icon.svg" sx={{ height: '60px', ...sx }} />
 
   if (disabledLink) {
     return <>{logo}</>;

@@ -21,7 +21,7 @@ const AppMetricsPage = ({ metricType, streaming = true, title = 'Metrics Dashboa
     const [dateRange, setDateRange] = useState("three-month");
     const [selectedDate, setSelectedDate] = useState('latest');
 
-    const baseURL = "http://localhost:8000";
+    const baseURL = process.env.REACT_APP_BASE_URL
 
     const fetchMetrics = useCallback(async () => {
         setLoadingMetrics(true);

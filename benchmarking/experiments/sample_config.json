@@ -1,13 +1,16 @@
 {
     "providers": [
-        "Anthropic"
+        "PerplexityAI",
+        "Cloudflare",
+        "Groq"
+
     ],
     "models": [
         "common-model"
     ],
-    "num_requests": 10,
+    "num_requests": 3,
     "input_tokens": 10,
-    "streaming": true,
+    "streaming": false,
     "max_output": 100,
     "verbose": true
 }

@@ -37,6 +37,7 @@ class PerplexityAI(BaseProvider):
     def perform_inference_streaming(
         self, model, prompt, max_output=100, verbosity=True
     ):
+
         try:
             model_id = self.get_model_name(model)
             if model_id is None:

@@ -27,6 +27,11 @@ def get_dynamodb_table():
 
 table = get_dynamodb_table()
 
+@app.get("/")
+def intro():
+    if not table:
+        return {"status": "500", "message": "DynamoDB table not initialized"}
+    return {"status": "200", "message": "Welcome to the Benchmark Metrics API!"}
 
 def get_latest_run_id(streaming: bool):
     """

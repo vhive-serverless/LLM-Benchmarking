@@ -35,7 +35,7 @@ export default function Page404() {
 
           <Box
             component="img"
-            src="/vhive-serverless/LLM-Benchmarking/static/illustrations/illustration_404.svg"
+            src="/LLM-Benchmarking/static/illustrations/illustration_404.svg"
             sx={{ height: 260, mx: 'auto', my: { xs: 5, sm: 10 } }}
           />
 
