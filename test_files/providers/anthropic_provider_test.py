@@ -28,10 +28,10 @@ def test_anthropic_provider_initialization(setup_anthropic_provider):
 
     # Ensure model_map is set correctly
     assert provider.model_map == {
-        "claude-3.5-sonnet": "claude-3-5-sonnet-20241022",
-        "claude-3-opus": "claude-3-opus-latest",
-        "claude-3-haiku": "claude-3-haiku-20240307",
-        "common-model": "claude-3-5-sonnet-20241022",
+            "claude-3.5-sonnet": "claude-3-5-sonnet-20241022",  # approx 70b
+            "claude-3-opus": "claude-3-opus-20240229",  # approx 2T
+            "claude-3-haiku": "claude-3-5-haiku-20241022",  # approx 20b
+            "common-model": "claude-3-5-sonnet-20241022",
     }
 
 
@@ -67,6 +67,7 @@ def test_perform_inference(mock_anthropic_client_class, setup_anthropic_provider
         messages=[{"role": "user", "content": "Test prompt"}],
         # temperature=0.7,
         stop_sequences=["\nUser:"],
+        timeout=500,
     )
 
     # Check if elapsed_time is a float (indicating the timer was used)
@@ -102,6 +103,7 @@ def test_perform_inference_streaming(
         messages=[{"role": "user", "content": "Test prompt"}],
         # temperature=0.7,
         stop_sequences=["\nUser:"],
+        timeout=500,
     )
 
     # Verify the output contains expected chunks and latency information

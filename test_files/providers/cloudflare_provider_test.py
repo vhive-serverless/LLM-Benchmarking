@@ -65,7 +65,7 @@ def test_perform_inference(mock_post, setup_cloudflare_provider):
             ],
             "max_tokens": 100,
         },
-        timeout=1800,
+        timeout=500,
     )
 
     # Ensure the response time is a float
@@ -106,7 +106,7 @@ def test_perform_inference_streaming(mock_post, setup_cloudflare_provider, capfd
             "max_tokens": 100,
         },
         stream=True,
-        timeout=1800,
+        timeout=500,
     )
 
     # Verify the output contains expected tokens

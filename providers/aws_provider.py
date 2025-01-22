@@ -48,6 +48,7 @@ class AWSBedrock(ProviderInterface):
         """
         Performs a single-prompt inference using AWS Bedrock.
         """
+
         print("[INFO] Performing inference...")
         model_id = self.get_model_name(model)
         formatted_prompt = self.format_prompt(prompt)

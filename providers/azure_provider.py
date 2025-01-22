@@ -42,39 +42,44 @@ class Azure(ProviderInterface):
 
     def perform_inference(self, model, prompt, max_output=100, verbosity=True):
         """Performs non-streaming inference request to Azure."""
-        model_id = self.get_model_name(model)
-        api_key = self.get_model_api_key(model)
-        if model_id is None:
-            print(f"Model {model} not available.")
-            return None
-        start_time = timer()
-        endpoint = f"https://{model_id}.eastus.models.ai.azure.com/chat/completions"
-        response = requests.post(
-            f"{endpoint}",
-            headers={
-                "Authorization": f"Bearer {api_key}",
-                "Content-Type": "application/json",
-            },
-            json={
-                "messages": [
-                    {"role": "system", "content": self.system_prompt},
-                    {"role": "user", "content": prompt},
-                ],
-                "max_tokens": max_output,
-            },
-            timeout=1800,
-        )
-        elapsed = timer() - start_time
-        if response.status_code != 200:
-            print(f"Error: {response.status_code} - {response.text}")
-            return None
+        try:
+            model_id = self.get_model_name(model)
+            api_key = self.get_model_api_key(model)
+            if model_id is None:
+                print(f"Model {model} not available.")
+                return None
+            start_time = timer()
+            endpoint = f"https://{model_id}.eastus.models.ai.azure.com/chat/completions"
+            response = requests.post(
+                f"{endpoint}",
+                headers={
+                    "Authorization": f"Bearer {api_key}",
+                    "Content-Type": "application/json",
+                },
+                json={
+                    "messages": [
+                        {"role": "system", "content": self.system_prompt},
+                        {"role": "user", "content": prompt},
+                    ],
+                    "max_tokens": max_output,
+                },
+                timeout=500,
+            )
+            elapsed = timer() - start_time
+            if response.status_code != 200:
+                print(f"Error: {response.status_code} - {response.text}")
+                return None
 
-        # Parse and display response
-        inference = response.json()
-        self.log_metrics(model, "response_times", elapsed)
-        if verbosity:
-            print(f"Response: {inference['choices'][0]['message']['content'][:50]}")
-        return inference
+            # Parse and display response
+            inference = response.json()
+            self.log_metrics(model, "response_times", elapsed)
+            if verbosity:
+                print(f"Response: {inference['choices'][0]['message']['content'][:50]}")
+            return inference
+        
+        except Exception as e:
+            print(f"[ERROR] Inference failed for model '{model}': {e}")
+            return None, None
 
     def perform_inference_streaming(
         self, model, prompt, max_output=100, verbosity=True
@@ -105,7 +110,7 @@ class Azure(ProviderInterface):
                 "stream": True,
             },
             stream=True,
-            timeout=1800,
+            timeout=500,
         )
 
         first_token_time = None
