@@ -4,7 +4,7 @@ on:
   workflow_dispatch:
   # push:
   schedule:
-    - cron: "0 0 * * 0"
+    - cron: "0 0 * * 1"
 
 
 jobs:
@@ -26,6 +26,9 @@ jobs:
         AWS_BEDROCK_ACCESS_KEY_ID: ${{ secrets.AWS_BEDROCK_ACCESS_KEY_ID }}
         AWS_BEDROCK_SECRET_ACCESS_KEY: ${{ secrets.AWS_BEDROCK_SECRET_ACCESS_KEY }}
         AWS_BEDROCK_REGION: ${{ secrets.AWS_BEDROCK_REGION }}
+        AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        AWS_REGION: ${{ secrets.AWS_REGION }}
         
     steps:
     - name: Check out repository
@@ -48,7 +51,7 @@ jobs:
 
     - name: Upload Experiment Outputs
       if: success()
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         name: results
         path: benchmark_graph

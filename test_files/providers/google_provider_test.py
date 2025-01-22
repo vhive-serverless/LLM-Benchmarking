@@ -56,7 +56,6 @@ def test_perform_inference(mock_gen_model_class, setup_google_gemini):
     mock_gen_model_instance.generate_content.assert_called_once_with(
         "Test prompt",
         generation_config=genai.types.GenerationConfig(max_output_tokens=100),
-        timeout=500,
     )
 
     # Check if elapsed_time is a float (indicating the timer was used)
@@ -90,7 +89,6 @@ def test_perform_inference_streaming(mock_gen_model_class, setup_google_gemini, 
         "Test prompt",
         generation_config=genai.types.GenerationConfig(max_output_tokens=100),
         stream=True,
-        timeout=500,
     )
 
     # Verify the output contains expected chunks and latency information
