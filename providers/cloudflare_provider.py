@@ -41,38 +41,43 @@ class Cloudflare(ProviderInterface):
         return self.model_map.get(model, None)  # or model
 
     def perform_inference(self, model, prompt, max_output=100, verbosity=True):
-        model_id = self.get_model_name(model)
-        if model_id is None:
-            print(f"Model {model} not available for provider {model_id}")
-        start_time = timer()
-        response = requests.post(
-            f"https://api.cloudflare.com/client/v4/accounts/{self.cloudflare_account_id}/ai/run/{model_id}",
-            headers={"Authorization": f"Bearer {self.cloudflare_api_token}"},
-            json={
-                "messages": [
-                    # {"role": "system", "content": "Explain your answer step-by-step."},
-                    {"role": "system", "content": self.system_prompt},
-                    {"role": "user", "content": prompt},
-                ],
-                "max_tokens": max_output,  # self.max_tokens
-            },
-            timeout=1800,
-        )
+        try:
+            model_id = self.get_model_name(model)
+            if model_id is None:
+                print(f"Model {model} not available for provider {model_id}")
+            start_time = timer()
+            response = requests.post(
+                f"https://api.cloudflare.com/client/v4/accounts/{self.cloudflare_account_id}/ai/run/{model_id}",
+                headers={"Authorization": f"Bearer {self.cloudflare_api_token}"},
+                json={
+                    "messages": [
+                        # {"role": "system", "content": "Explain your answer step-by-step."},
+                        {"role": "system", "content": self.system_prompt},
+                        {"role": "user", "content": prompt},
+                    ],
+                    "max_tokens": max_output,  # self.max_tokens
+                },
+                timeout=500,
+            )
 
-        elapsed = timer() - start_time
-        # print("request sucess")
-        # log response times metric
-        self.log_metrics(model, "response_times", elapsed)
+            elapsed = timer() - start_time
+            # print("request sucess")
+            # log response times metric
+            self.log_metrics(model, "response_times", elapsed)
 
-        inference = response.json()
-        print(inference)
-        # logging.debug(inference["result"]["response"])
-        if verbosity:
-            print(inference["result"]["response"][:50])
+            inference = response.json()
+            print(inference)
+            # logging.debug(inference["result"]["response"])
+            if verbosity:
+                print(inference["result"]["response"][:50])
 
-            print(f"#### _Generated in *{elapsed:.2f}* seconds_")
-        return elapsed
+                print(f"#### _Generated in *{elapsed:.2f}* seconds_")
+            return elapsed
 
+        except Exception as e:
+            print(f"[ERROR] Inference failed for model '{model}': {e}")
+            return None, None
+            
     def perform_inference_streaming(
         self, model, prompt, max_output=100, verbosity=True
     ):
@@ -95,7 +100,7 @@ class Cloudflare(ProviderInterface):
                 "max_tokens": max_output,
             },
             stream=True,
-            timeout=1800,
+            timeout=500,
         )
 
         first_token_time = None
@@ -123,7 +128,9 @@ class Cloudflare(ProviderInterface):
 
                 inter_token_latencies.append(inter_token_latency)
                 # logging.debug(line_str[19:].split('"')[0], end='')
+                
                 if verbosity:
+                    # print(line_str[19:].split('"')[0], end="")
                     if len(inter_token_latencies) < 20:
                         print(line_str[19:].split('"')[0], end="")
                     elif len(inter_token_latencies) == 20:

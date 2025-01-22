@@ -44,26 +44,32 @@ class GoogleGemini(ProviderInterface):
         """
         Performs inference on a single prompt and returns the time taken for response generation.
         """
-        model_id = self.get_model_name(model)
-        if model_id is None:
-            raise ValueError(f"Model {model} is not supported by GoogleGeminiProvider.")
+        try:
+            model_id = self.get_model_name(model)
+            if model_id is None:
+                raise ValueError(f"Model {model} is not supported by GoogleGeminiProvider.")
 
-        self._initialize_model(model_id)
+            self._initialize_model(model_id)
 
-        start_time = timer()
-        response = self.model.generate_content(
-            prompt,
-            generation_config=genai.types.GenerationConfig(
-                max_output_tokens=max_output
-            ),
-        )
-        elapsed = timer() - start_time
+            start_time = timer()
+            response = self.model.generate_content(
+                prompt,
+                generation_config=genai.types.GenerationConfig(
+                    max_output_tokens=max_output
+                ),
+                timeout=500
+            )
+            elapsed = timer() - start_time
 
-        self.log_metrics(model, "response_times", elapsed)
-        if verbosity:
-            print(response.text)
-            print(f"\nGenerated in {elapsed:.2f} seconds")
-        return elapsed
+            self.log_metrics(model, "response_times", elapsed)
+            if verbosity:
+                print(response.text)
+                print(f"\nGenerated in {elapsed:.2f} seconds")
+            return elapsed
+        
+        except Exception as e:
+            print(f"[ERROR] Inference failed for model '{model}': {e}")
+            return None, None
 
     def perform_inference_streaming(
         self, model, prompt, max_output=100, verbosity=True
@@ -85,6 +91,7 @@ class GoogleGemini(ProviderInterface):
                 max_output_tokens=max_output
             ),
             stream=True,
+            timeout=500
         )
 
         first_token_time = None
