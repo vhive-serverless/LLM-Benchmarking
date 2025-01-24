@@ -1,7 +1,11 @@
 {
     "providers": [
-        "Google",
         "Groq",
+        "Google",
+        "AWSBedrock", 
+        "Anthropic", 
+        "Azure", 
+        "Cloudflare",
         "Hyperbolic",
         "OpenAI",
         "PerplexityAI",
@@ -10,7 +14,7 @@
     "models": [
         "common-model"
     ],
-    "num_requests": 1,
+    "num_requests": 100,
     "input_tokens": 10,
     "streaming": true,
     "max_output": 100,
