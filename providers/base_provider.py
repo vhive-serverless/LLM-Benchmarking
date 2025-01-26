@@ -65,9 +65,8 @@ class BaseProvider(ProviderInterface):
                 ],
                 stream=True,
                 max_tokens=max_output,
-                timeout=(1, 2)
+                timeout=(10, 100)
             )
-
             for chunk in response:
                 if first_token_time is None:
                     first_token_time = timer()
@@ -88,11 +87,11 @@ class BaseProvider(ProviderInterface):
 
                 inter_token_latencies.append(inter_token_latency)
                 if verbosity:
-                    # print(chunk.choices[0].delta.content or "", end="", flush=True)
-                    if len(inter_token_latencies) < 20:
-                        print(chunk.choices[0].delta.content or "", end="", flush=True)
-                    elif len(inter_token_latencies) == 20:
-                        print("...")
+                    print(chunk.choices[0].delta.content or "", end="", flush=True)
+                    # if len(inter_token_latencies) < 20:
+                    #     print(chunk.choices[0].delta.content or "", end="", flush=True)
+                    # elif len(inter_token_latencies) == 20:
+                    #     print("...")
 
             avg_tbt = sum(inter_token_latencies) / len(inter_token_latencies)
             if verbosity:
