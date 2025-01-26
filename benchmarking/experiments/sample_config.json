@@ -1,11 +1,11 @@
 {
     "providers": [
-        "Groq"
+        "PerplexityAI"
     ],
     "models": [
         "common-model"
     ],
-    "num_requests": 100,
+    "num_requests": 10,
     "input_tokens": 10,
     "streaming": true,
     "max_output": 100,

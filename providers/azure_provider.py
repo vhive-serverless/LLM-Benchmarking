@@ -92,9 +92,8 @@ class Azure(ProviderInterface):
             return None
 
         inter_token_latencies = []
-        start_time = timer()
         endpoint = f"https://{model_id}.eastus.models.ai.azure.com/chat/completions"
-
+        start_time = timer()
         response = requests.post(
             f"{endpoint}",
             headers={
@@ -126,6 +125,9 @@ class Azure(ProviderInterface):
 
                 line_str = line.decode("utf-8").strip()
                 if line_str == "data: [DONE]":
+                    # print(line_str)
+                    # print("here")
+                    total_time = timer() - start_time
                     break
 
                 # Capture token timing
@@ -135,6 +137,7 @@ class Azure(ProviderInterface):
                 inter_token_latencies.append(inter_token_latency)
 
                 # Display token if verbosity is enabled
+                # print(line_str[19:].split('"')[5], end=f"{time_to_next_token:.2f}, {inter_token_latency:.4f}")
                 if verbosity:
                     if len(inter_token_latencies) < 20:
                         print(line_str[19:].split('"')[5], end="")
@@ -142,13 +145,14 @@ class Azure(ProviderInterface):
                         print("...")
 
         # Calculate total metrics
-        total_time = timer() - start_time
+        
         if verbosity:
             print(f"\nTotal Response Time: {total_time:.4f} seconds")
             print(len(inter_token_latencies))
 
         # Log metrics
         avg_tbt = sum(inter_token_latencies) / len(inter_token_latencies)
+        print(f"{avg_tbt:.4f}, {len(inter_token_latencies)}")
         self.log_metrics(model, "timetofirsttoken", ttft)
         self.log_metrics(model, "response_times", total_time)
         self.log_metrics(model, "timebetweentokens", avg_tbt)
