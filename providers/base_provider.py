@@ -1,5 +1,6 @@
 # base_provider.py for chat completions api
 from timeit import default_timer as timer
+import time
 import numpy as np
 from providers.provider_interface import ProviderInterface
 
@@ -26,6 +27,7 @@ class BaseProvider(ProviderInterface):
             model_id = self.get_model_name(model)
             if model_id is None:
                 raise ValueError(f"Model {model} not available for provider.")
+            time.sleep(0.5)
             start = timer()
             response = self.client.chat.completions.create(
                 model=model_id,
@@ -55,7 +57,7 @@ class BaseProvider(ProviderInterface):
                 raise ValueError(f"Model {model} not available for provider.")
             first_token_time = None
             inter_token_latencies = []
-
+            time.sleep(0.5)
             start = timer()
             response = self.client.chat.completions.create(
                 model=model_id,
