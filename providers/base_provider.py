@@ -34,7 +34,7 @@ class BaseProvider(ProviderInterface):
                     {"role": "user", "content": prompt},
                 ],
                 max_tokens=max_output,
-                timeout=(1, 2)
+                timeout=(10, 100)
             )
             elapsed = timer() - start
             self.log_metrics(model, "response_times", elapsed)
