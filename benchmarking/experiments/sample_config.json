@@ -1,6 +1,6 @@
 {
     "providers": [
-        "PerplexityAI"
+        "AWSBedrock"
     ],
     "models": [
         "common-model"

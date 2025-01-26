@@ -103,9 +103,9 @@ class AWSBedrock(ProviderInterface):
         request_body = json.dumps(native_request)
 
         inter_token_latencies = []
-        start_time = time.perf_counter()
         first_token_time = None
         ttft = None
+        start_time = time.perf_counter()
         try:
             streaming_response = self.bedrock_client.invoke_model_with_response_stream(
                 modelId=model_id, body=request_body
@@ -117,9 +117,15 @@ class AWSBedrock(ProviderInterface):
                     try:
                         # print(f"[DEBUG] {event}")
                         chunk = json.loads(event["chunk"]["bytes"].decode("utf-8"))
+                        # print(chunk)
                     except Exception:
                         # print(f"[DEBUG] Failed to decode chunk: {e}")
                         continue
+                    
+                    if chunk["stop_reason"] == 'length':
+                        total_time = time.perf_counter() - start_time
+                        print("here")
+                        break
 
                     if "generation" in chunk:
                         current_token = chunk["generation"]
@@ -129,15 +135,26 @@ class AWSBedrock(ProviderInterface):
                         if first_token_time is None:
                             first_token_time = current_time
                             ttft = first_token_time - start_time
+                            prev_token_time = first_token_time
                             print(
                                 f"\n##### Time to First Token (TTFT): {ttft:.4f} seconds"
                             )
 
-                        if first_token_time:
-                            inter_token_latency = current_time - first_token_time
-                            inter_token_latencies.append(inter_token_latency)
+                        # if first_token_time:
+                        #     inter_token_latency = current_time - first_token_time
+                        #     inter_token_latencies.append(inter_token_latency)
 
-                            if verbosity:
+                        #     if verbosity:
+                        #         if len(inter_token_latencies) < 20:
+                        #             print(current_token, end="")  # Print the token
+                        #         elif len(inter_token_latencies) == 21:
+                        #             print("...")
+                                        # Capture token timing
+                        time_to_next_token = time.perf_counter()
+                        inter_token_latency = time_to_next_token - prev_token_time
+                        prev_token_time = time_to_next_token
+                        inter_token_latencies.append(inter_token_latency)
+                        if verbosity:
                                 if len(inter_token_latencies) < 20:
                                     print(current_token, end="")  # Print the token
                                 elif len(inter_token_latencies) == 21:
@@ -151,7 +168,7 @@ class AWSBedrock(ProviderInterface):
                 avg_tbt = sum(inter_token_latencies) / len(inter_token_latencies)
                 median = np.percentile(inter_token_latencies, 50)
                 p95 = np.percentile(inter_token_latencies, 95)
-                print("[INFO] tbt - ", avg_tbt, median, p95)
+                print("[INFO] avg_tbt - ", avg_tbt, median, p95)
             self.log_metrics(model, "timetofirsttoken", ttft)
             self.log_metrics(model, "response_times", total_time)
             self.log_metrics(model, "timebetweentokens", avg_tbt)

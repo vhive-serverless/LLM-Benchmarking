@@ -96,6 +96,7 @@ class BaseProvider(ProviderInterface):
                     #     print("...")
 
             avg_tbt = sum(inter_token_latencies) / len(inter_token_latencies)
+            print(f"\nAvg TBT: {avg_tbt:.4f}, {len(inter_token_latencies)}")
             if verbosity:
 
                 print(
