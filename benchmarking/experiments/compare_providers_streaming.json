@@ -1,11 +1,11 @@
+
 {
     "providers": [
-        "Groq",
-        "Google",
-        "AWSBedrock", 
-        "Anthropic", 
-        "Azure", 
+        "Anthropic",
+        "AWSBedrock",
+        "Azure",
         "Cloudflare",
+        "Google",
         "Hyperbolic",
         "OpenAI",
         "PerplexityAI",
@@ -18,6 +18,9 @@
     "input_tokens": 10,
     "streaming": true,
     "max_output": 100,
-    "verbose": true,
-    "backend": true
+    "verbose": true
 }
+
+
+
+

@@ -27,7 +27,7 @@ class BaseProvider(ProviderInterface):
             model_id = self.get_model_name(model)
             if model_id is None:
                 raise ValueError(f"Model {model} not available for provider.")
-            time.sleep(0.5)
+            # time.sleep(0.5)
             start = timer()
             response = self.client.chat.completions.create(
                 model=model_id,
@@ -57,7 +57,7 @@ class BaseProvider(ProviderInterface):
                 raise ValueError(f"Model {model} not available for provider.")
             first_token_time = None
             inter_token_latencies = []
-            time.sleep(0.5)
+            # time.sleep(0.5)
             start = timer()
             response = self.client.chat.completions.create(
                 model=model_id,
