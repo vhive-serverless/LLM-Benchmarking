@@ -18,7 +18,7 @@ jobs:
         GROQ_API_KEY: ${{ secrets.GROQ_API_KEY }}
         HYPERBOLIC_API: ${{ secrets.HYPERBOLIC_API }}
         OPEN_AI_API: ${{ secrets.OPEN_AI_API }}
-        PERPLEXITY_AI_API: ${{ secrets.PERPLEXITY_AI_API }}
+        PERPLEXITY_AI_API: "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"
         TOGETHER_AI_API: ${{ secrets.TOGETHER_AI_API }}
         ANTHROPIC_API: ${{ secrets.ANTHROPIC_API }}
         AZURE_LLAMA_70B_API: ${{ secrets.AZURE_LLAMA_70B_API }}
