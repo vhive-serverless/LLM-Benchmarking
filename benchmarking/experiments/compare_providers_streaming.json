@@ -1,15 +1,15 @@
 
 {
     "providers": [
-        "Anthropic",
-        "AWSBedrock",
-        "Azure",
+        "OpenAI",
+        "PerplexityAI",
+        "TogetherAI",
         "Cloudflare",
         "Google",
         "Hyperbolic",
-        "OpenAI",
-        "PerplexityAI",
-        "TogetherAI"
+        "AWSBedrock",
+        "Azure",
+        "Anthropic"
     ],
     "models": [
         "common-model"
