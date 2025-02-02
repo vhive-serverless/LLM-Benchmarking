@@ -102,8 +102,8 @@ class Azure(ProviderInterface):
             },
             json={
                 "messages": [
-                    {"role": "system", "content": self.system_prompt},
-                    {"role": "user", "content": prompt},
+                    {"role": "system", "content": self.system_prompt + "\nThe number appended at the end is not important."},
+                    {"role": "user", "content": prompt + " " + str(timer())},
                 ],
                 "max_tokens": max_output,
                 "stream": True,
@@ -137,12 +137,12 @@ class Azure(ProviderInterface):
                 inter_token_latencies.append(inter_token_latency)
 
                 # Display token if verbosity is enabled
-                # print(line_str[19:].split('"')[5], end=f"{time_to_next_token:.2f}, {inter_token_latency:.4f}")
-                if verbosity:
-                    if len(inter_token_latencies) < 20:
-                        print(line_str[19:].split('"')[5], end="")
-                    elif len(inter_token_latencies) == 20:
-                        print("...")
+                print(line_str[19:].split('"')[5], end="")
+                # if verbosity:
+                #     if len(inter_token_latencies) < 20:
+                #         print(line_str[19:].split('"')[5], end="")
+                #     elif len(inter_token_latencies) == 20:
+                #         print("...")
 
         # Calculate total metrics
         
