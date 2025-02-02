@@ -18,7 +18,8 @@
     "input_tokens": 10,
     "streaming": true,
     "max_output": 100,
-    "verbose": true
+    "verbose": true,
+    "backend": true
 }
 
 
