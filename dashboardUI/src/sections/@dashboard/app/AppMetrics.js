@@ -26,7 +26,7 @@ const AppMetrics = ({ title, subheader, metrics }) => {
                 name: `${provider} - ${model}`,
                 type: "line", // Line with points
                 data: latencies.map((latency, index) => ({
-                    x: latency,
+                    x: Math.log10(latency),
                     y: cdf[index],
                 })),
             };
@@ -40,12 +40,12 @@ const AppMetrics = ({ title, subheader, metrics }) => {
             width: 2, // Ensure lines are prominent
         },
         xaxis: {
-            type: "logarithmic", // Logarithmic X-axis for latency
+            type: "linear", // Logarithmic X-axis for latency
             title: {
                 text: "Latency (ms)",
             },
             labels: {
-                formatter: (value) => `${value.toFixed(0)} ms`,
+                formatter: (value) => `${Math.exp(value).toFixed(3)} ms`,
             },
             tickAmount: 10,
         },
@@ -64,7 +64,7 @@ const AppMetrics = ({ title, subheader, metrics }) => {
             shared: true, // Shared tooltip for better interactivity
             intersect: false,
             x: {
-                formatter: (value) => `${value.toFixed(2)} ms`,
+                formatter: (value) => `${Math.exp(value).toFixed(3)} ms`,
             },
             y: {
                 formatter: (value) => value.toFixed(3),
