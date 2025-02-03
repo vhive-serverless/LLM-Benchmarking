@@ -1,9 +1,14 @@
 {
-    "providers": ["Anthropic"],  
-    "models": ["claude-3.5-sonnet"],
+    "providers": [
+        "Anthropic"
+    ],
+    "models": [
+        "claude-3.5-sonnet"
+    ],
     "num_requests": 100,
     "input_tokens": 10,
     "streaming": true,
     "max_output": 100,
-    "verbose": true
+    "verbose": true,
+    "backend": true
 }

@@ -1,9 +1,14 @@
 {
-    "providers": ["Azure"],  
-    "models": ["meta-llama-3.1-8b-instruct"],
+    "providers": [
+        "Azure"
+    ],
+    "models": [
+        "meta-llama-3.1-8b-instruct"
+    ],
     "num_requests": 100,
     "input_tokens": 10,
     "streaming": true,
     "max_output": 100,
-    "verbose": true
+    "verbose": true,
+    "backend": true
 }
