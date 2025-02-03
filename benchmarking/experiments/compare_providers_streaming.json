@@ -1,6 +1,7 @@
 
 {
     "providers": [
+        "Groq",
         "Hyperbolic",
         "OpenAI",
         "PerplexityAI",
