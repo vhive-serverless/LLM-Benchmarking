@@ -4,6 +4,7 @@ results in a DynamoDB table.
 """
 import json
 import os
+import time
 import uuid
 from datetime import datetime
 
@@ -148,8 +149,22 @@ class Benchmark:
         Execute the benchmark and store metrics in DynamoDB.
         """
         for provider in self.providers:
+            provider_name = provider.__class__.__name__
+            print(f"{provider_name}")
             for model in self.models:
-                for _ in range(self.num_requests):
+                model_name = provider.get_model_name(model)
+                print(f"Model: {model_name}\nPrompt: {self.prompt}")
+
+                for i in range(self.num_requests):
+                    if self.verbosity:
+                        print(f"Request {i + 1}/{self.num_requests}")
+                    elif i % 10 == 0 or i == self.num_requests - 1:
+                        print(f"\nRequest {i + 1}/{self.num_requests}")
+
+                    if i % 30 == 0:
+                        print("[DEBUG] Sleeping for 2s to bypass rate limit...")
+                        time.sleep(2)
+
                     if self.streaming:
                         provider.perform_inference_streaming(
                             model, self.prompt, self.max_output, self.verbosity

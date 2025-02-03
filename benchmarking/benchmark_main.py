@@ -1,8 +1,8 @@
 import matplotlib.pyplot as plt
 import numpy as np
 import os
+import time
 from datetime import datetime
-
 
 class Benchmark:
     """
@@ -128,6 +128,10 @@ class Benchmark:
                         print(f"Request {i + 1}/{self.num_requests}")
                     elif i % 10 == 0 or i == self.num_requests - 1:
                         print(f"\nRequest {i + 1}/{self.num_requests}")
+
+                    if i % 10 == 0:
+                        print("[DEBUG] Sleeping for 1s to bypass rate limit...")
+                        time.sleep(1)
 
                     if self.streaming:
                         provider.perform_inference_streaming(
