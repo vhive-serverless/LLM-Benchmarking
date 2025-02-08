@@ -22,22 +22,21 @@ const AppMetricsPage = ({ metricType, streaming = true, title = 'Metrics Dashboa
     const [selectedDate, setSelectedDate] = useState('latest');
 
     const baseURL = process.env.REACT_APP_BASE_URL
-
+   
     const fetchMetrics = useCallback(async () => {
         setLoadingMetrics(true);
-        let metricsResponse
         try {
-            metricsResponse = await axios.get(`${baseURL}/metrics/date`, {
+            const response = await axios.get(`${baseURL}/metrics/date`, {
                 params: { date: selectedDate, metricType, streaming },
             });
-            setMetrics(metricsResponse.data.metrics);
+            setMetrics(response.data.metrics);
         } catch (error) {
             console.error("Error fetching metrics:", error);
             setError(true);
         } finally {
             setLoadingMetrics(false);
         }
-    }, [baseURL, selectedDate, metricType, streaming]);
+    }, [baseURL,selectedDate, metricType, streaming]);
 
     const fetchPeriodMetrics = useCallback(async () => {
         setLoadingPeriodMetrics(true);
@@ -46,14 +45,14 @@ const AppMetricsPage = ({ metricType, streaming = true, title = 'Metrics Dashboa
                 params: { timeRange: dateRange, metricType, streaming },
             });
             setPeriodMetrics(response.data.aggregated_metrics);
-            setDateList(response.data.date_array)
+            setDateList(response.data.date_array);
         } catch (error) {
             console.error("Error fetching period metrics:", error);
             setError(true);
         } finally {
             setLoadingPeriodMetrics(false);
         }
-    }, [baseURL, dateRange, metricType, streaming]);
+    }, [baseURL,dateRange, metricType, streaming]);
 
     useEffect(() => {
         fetchMetrics();

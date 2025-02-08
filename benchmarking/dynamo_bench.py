@@ -160,7 +160,7 @@ class Benchmark:
                         )
 
         metrics_to_plot = (
-            ["timetofirsttoken", "response_times", "timebetweentokens"]
+            ["timetofirsttoken", "response_times", "timebetweentokens","tps","timebetweentokens_p95","timebetweentokens_median"]
             if self.streaming
             else ["response_times"]
         )
