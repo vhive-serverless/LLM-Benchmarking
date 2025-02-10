@@ -57,7 +57,6 @@ class GoogleGemini(ProviderInterface):
                 generation_config=genai.types.GenerationConfig(
                     max_output_tokens=max_output
                 ),
-                timeout=500
             )
             elapsed = timer() - start_time
 
@@ -91,7 +90,6 @@ class GoogleGemini(ProviderInterface):
                 max_output_tokens=max_output
             ),
             stream=True,
-            timeout=500
         )
 
         first_token_time = None
