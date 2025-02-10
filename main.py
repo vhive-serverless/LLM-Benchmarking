@@ -14,6 +14,7 @@ from providers import (
     Hyperbolic,
     Azure,
     AWSBedrock,
+    vLLM
 )
 from utils.prompt_generator import get_prompt
 
@@ -54,6 +55,7 @@ def get_available_providers():
         "Groq": GroqProvider(),
         "Azure": Azure(),
         "AWSBedrock": AWSBedrock(),
+        "vLLM": vLLM()
     }
 
     return available_providers
