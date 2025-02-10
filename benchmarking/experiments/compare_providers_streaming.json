@@ -1,6 +1,7 @@
 
 {
     "providers": [
+        "vLLM",
         "Groq",
         "Hyperbolic",
         "OpenAI",
