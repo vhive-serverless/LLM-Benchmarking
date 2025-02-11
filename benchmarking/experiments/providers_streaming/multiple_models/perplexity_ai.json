@@ -1,9 +1,16 @@
 {
-    "providers": ["PerplexityAI"],  
-    "models": ["meta-llama-3.1-8b-instruct", "meta-llama-3.1-70b-instruct", "meta-llama-3.1-sonar-405B"],
+    "providers": [
+        "PerplexityAI"
+    ],
+    "models": [
+        "meta-llama-3.1-8b-instruct",
+        "meta-llama-3.1-70b-instruct",
+        "meta-llama-3.1-sonar-405B"
+    ],
     "num_requests": 100,
     "input_tokens": 10,
     "streaming": true,
     "max_output": 100,
-    "verbose": true
+    "verbose": true,
+    "backend": true
 }

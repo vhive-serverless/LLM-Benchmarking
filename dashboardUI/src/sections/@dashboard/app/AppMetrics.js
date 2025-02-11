@@ -9,14 +9,14 @@ import { BaseOptionChart } from "../../../components/chart";
 
 // ----------------------------------------------------------------------
 
-const AppMetrics = ({ title, subheader, metrics }) => {
+const AppMetrics = ({ title, metricType, subheader, metrics }) => {
     // Combine latencies and CDFs for all providers
     const chartData = Object.keys(metrics).map((provider) => {
         const providerData = metrics[provider];
         const modelKeys = Object.keys(providerData);
 
         return modelKeys.map((model) => {
-            const metricData = providerData[model][title];
+            const metricData = providerData[model][metricType];
             if (!metricData) return null;
 
             const latencies = metricData.latencies.map(parseFloat);
@@ -26,7 +26,7 @@ const AppMetrics = ({ title, subheader, metrics }) => {
                 name: `${provider} - ${model}`,
                 type: "line", // Line with points
                 data: latencies.map((latency, index) => ({
-                    x: latency,
+                    x: Math.log10(latency),
                     y: cdf[index],
                 })),
             };
@@ -40,12 +40,12 @@ const AppMetrics = ({ title, subheader, metrics }) => {
             width: 2, // Ensure lines are prominent
         },
         xaxis: {
-            type: "logarithmic", // Logarithmic X-axis for latency
+            type: "linear", // Logarithmic X-axis for latency
             title: {
                 text: "Latency (ms)",
             },
             labels: {
-                formatter: (value) => `${value.toFixed(0)} ms`,
+                formatter: (value) => `${Math.exp(value).toFixed(3)} ms`,
             },
             tickAmount: 10,
         },
@@ -64,7 +64,7 @@ const AppMetrics = ({ title, subheader, metrics }) => {
             shared: true, // Shared tooltip for better interactivity
             intersect: false,
             x: {
-                formatter: (value) => `${value.toFixed(2)} ms`,
+                formatter: (value) => `${Math.exp(value).toFixed(3)} ms`,
             },
             y: {
                 formatter: (value) => value.toFixed(3),
@@ -98,6 +98,7 @@ const AppMetrics = ({ title, subheader, metrics }) => {
 
 AppMetrics.propTypes = {
     title: PropTypes.string.isRequired, // Metric name (e.g., response_times, timetofirsttoken)
+    metricType: PropTypes.string.isRequired,
     subheader: PropTypes.string, // Additional information to display
     metrics: PropTypes.object.isRequired, // Metrics object with provider -> model -> metric structure
 };

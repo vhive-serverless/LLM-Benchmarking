@@ -19,6 +19,9 @@ jobs:
         ANTHROPIC_API: ${{ secrets.ANTHROPIC_API }}
         AZURE_LLAMA_70B_API: ${{ secrets.AZURE_LLAMA_70B_API }}
         AZURE_LLAMA_8B_API: ${{ secrets.AZURE_LLAMA_8B_API }}
+        AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        AWS_REGION: ${{ secrets.AWS_REGION }}
         filepath: benchmarking/experiments/providers_test.json
 
     steps:

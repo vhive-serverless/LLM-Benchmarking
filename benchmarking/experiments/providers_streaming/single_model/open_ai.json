@@ -1,9 +1,14 @@
 {
-    "providers": ["OpenAI"],  
-    "models": ["meta-llama-3.2-3b-instruct"],
+    "providers": [
+        "OpenAI"
+    ],
+    "models": [
+        "meta-llama-3.2-3b-instruct"
+    ],
     "num_requests": 100,
     "input_tokens": 10,
     "streaming": true,
     "max_output": 100,
-    "verbose": true
+    "verbose": true,
+    "backend": true
 }

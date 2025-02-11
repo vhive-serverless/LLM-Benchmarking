@@ -1,9 +1,14 @@
 {
-    "providers": ["Groq"],  
-    "models": ["google-gemma-7b-it"],
+    "providers": [
+        "Groq"
+    ],
+    "models": [
+        "google-gemma-7b-it"
+    ],
     "num_requests": 100,
     "input_tokens": 10,
     "streaming": true,
     "max_output": 100,
-    "verbose": true
+    "verbose": true,
+    "backend": true
 }

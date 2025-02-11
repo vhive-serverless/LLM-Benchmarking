@@ -8,13 +8,21 @@ import { Card, CardHeader, Box } from "@mui/material";
 import { BaseOptionChart } from "../../../components/chart";
 
 const AppMetricsDate = ({ title, subheader, metrics, dateArray }) => {
+    // Prepare chart data with normalized dates and log-transform values
+    const logTransformedMetrics = {};
 
-    // Prepare chart data with normalized dates
-    const chartData = Object.keys(metrics).map((provider) => ({
+    Object.keys(metrics).forEach((provider) => {
+        logTransformedMetrics[provider] = metrics[provider].map((metric) => ({
+            ...metric,
+            aggregated_metric: metric.aggregated_metric > 0 ? Math.log10(metric.aggregated_metric) : null,
+        }));
+    });
+
+    const chartData = Object.keys(logTransformedMetrics).map((provider) => ({
         name: provider,
         type: "line",
         data: dateArray.map((date) => {
-            const entry = metrics[provider].find((metric) => metric.date === date);
+            const entry = logTransformedMetrics[provider].find((metric) => metric.date === date);
             return entry ? entry.aggregated_metric : null;
         }),
     }));
@@ -38,11 +46,12 @@ const AppMetricsDate = ({ title, subheader, metrics, dateArray }) => {
         },
         yaxis: {
             title: {
-                text: "Latency (ms)",
+                text: "Log Latency (log10 ms)",
             },
             labels: {
-                formatter: (value) => (value !== null ? `${value.toFixed(2)} ms` : "N/A"),
+                formatter: (value) => (value !== null ? `${value.toFixed(2)}` : "N/A"),
             },
+            type: "linear", // Since we've manually log-transformed, keep this linear
         },
         tooltip: {
             shared: true,
@@ -51,7 +60,7 @@ const AppMetricsDate = ({ title, subheader, metrics, dateArray }) => {
                 formatter: (value) => value,
             },
             y: {
-                formatter: (value) => (value !== null ? `${value.toFixed(2)} ms` : "N/A"),
+                formatter: (value) => (value !== null ? `${value.toFixed(2)}` : "N/A"),
             },
         },
     });
