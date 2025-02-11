@@ -9,14 +9,14 @@ import { BaseOptionChart } from "../../../components/chart";
 
 // ----------------------------------------------------------------------
 
-const AppMetrics = ({ title, subheader, metrics }) => {
+const AppMetrics = ({ title, metricType, subheader, metrics }) => {
     // Combine latencies and CDFs for all providers
     const chartData = Object.keys(metrics).map((provider) => {
         const providerData = metrics[provider];
         const modelKeys = Object.keys(providerData);
 
         return modelKeys.map((model) => {
-            const metricData = providerData[model][title];
+            const metricData = providerData[model][metricType];
             if (!metricData) return null;
 
             const latencies = metricData.latencies.map(parseFloat);
@@ -98,6 +98,7 @@ const AppMetrics = ({ title, subheader, metrics }) => {
 
 AppMetrics.propTypes = {
     title: PropTypes.string.isRequired, // Metric name (e.g., response_times, timetofirsttoken)
+    metricType: PropTypes.string.isRequired,
     subheader: PropTypes.string, // Additional information to display
     metrics: PropTypes.object.isRequired, // Metrics object with provider -> model -> metric structure
 };

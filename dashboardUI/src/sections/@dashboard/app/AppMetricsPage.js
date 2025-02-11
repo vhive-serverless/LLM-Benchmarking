@@ -11,19 +11,41 @@ import AppMetricsDate from "./AppMetricsDate";
 
 // ----------------------------------------------------------------------
 
-const AppMetricsPage = ({ metricType, streaming = true, title = 'Metrics Dashboard' }) => {
+const AppMetricsPage = ({ metricType, streaming = true, title = "Metrics Dashboard", metricName }) => {
     const [metrics, setMetrics] = useState(null);
     const [periodMetrics, setPeriodMetrics] = useState(null);
-    const [dateList, setDateList] = useState(null)
+    const [dateList, setDateList] = useState(null);
     const [loadingMetrics, setLoadingMetrics] = useState(true);
     const [loadingPeriodMetrics, setLoadingPeriodMetrics] = useState(true);
     const [error, setError] = useState(false);
     const [dateRange, setDateRange] = useState("three-month");
-    const [selectedDate, setSelectedDate] = useState('latest');
+    const [selectedDate, setSelectedDate] = useState(null); // Initially null to ensure correct fetch order
 
-    const baseURL = process.env.REACT_APP_BASE_URL
-   
+    const baseURL = process.env.REACT_APP_BASE_URL;
+
+    const fetchPeriodMetrics = useCallback(async () => {
+        setLoadingPeriodMetrics(true);
+        try {
+            const response = await axios.get(`${baseURL}/metrics/period`, {
+                params: { timeRange: dateRange, metricType, streaming },
+            });
+            setPeriodMetrics(response.data.aggregated_metrics);
+            setDateList(response.data.date_array);
+
+            // If dateList has values, set selectedDate to the first element
+            if (response.data.date_array.length > 0) {
+                setSelectedDate(response.data.date_array[0]);
+            }
+        } catch (error) {
+            console.error("Error fetching period metrics:", error);
+            setError(true);
+        } finally {
+            setLoadingPeriodMetrics(false);
+        }
+    }, [baseURL, dateRange, metricType, streaming]);
+
     const fetchMetrics = useCallback(async () => {
+        if (!selectedDate) return; // Ensure selectedDate is set before fetching metrics
         setLoadingMetrics(true);
         try {
             const response = await axios.get(`${baseURL}/metrics/date`, {
@@ -36,40 +58,28 @@ const AppMetricsPage = ({ metricType, streaming = true, title = 'Metrics Dashboa
         } finally {
             setLoadingMetrics(false);
         }
-    }, [baseURL,selectedDate, metricType, streaming]);
-
-    const fetchPeriodMetrics = useCallback(async () => {
-        setLoadingPeriodMetrics(true);
-        try {
-            const response = await axios.get(`${baseURL}/metrics/period`, {
-                params: { timeRange: dateRange, metricType, streaming },
-            });
-            setPeriodMetrics(response.data.aggregated_metrics);
-            setDateList(response.data.date_array);
-        } catch (error) {
-            console.error("Error fetching period metrics:", error);
-            setError(true);
-        } finally {
-            setLoadingPeriodMetrics(false);
-        }
-    }, [baseURL,dateRange, metricType, streaming]);
+    }, [baseURL, selectedDate, metricType, streaming]);
 
     useEffect(() => {
-        fetchMetrics();
         fetchPeriodMetrics();
-    }, [fetchMetrics, fetchPeriodMetrics]);
+    }, [fetchPeriodMetrics]);
+
+    useEffect(() => {
+        if (selectedDate) {
+            fetchMetrics();
+        }
+    }, [selectedDate, fetchMetrics]);
 
     const handleDateRangeChange = (event) => {
         setDateRange(event.target.value);
     };
 
     const handleDateChange = (event) => {
-        setSelectedDate(event.target.value)
+        setSelectedDate(event.target.value);
     };
 
     // Combine loading states
     const loading = loadingMetrics || loadingPeriodMetrics;
-
     if (loading) return <CircularProgress />;
     if (error)
         return (
@@ -103,7 +113,7 @@ const AppMetricsPage = ({ metricType, streaming = true, title = 'Metrics Dashboa
 
                     <Grid item xs={12}>
                         <AppMetricsDate
-                            title={`Aggregated Metrics for ${metricType.replace("_", " ")}`}
+                            title={`Aggregated Metrics for ${metricName}`}
                             subheader={`Aggregated Latency Metrics (${dateRange})`}
                             metrics={periodMetrics}
                             dateArray={dateList}
@@ -124,7 +134,6 @@ const AppMetricsPage = ({ metricType, streaming = true, title = 'Metrics Dashboa
                                 },
                             }}
                         >
-                            <MenuItem value="latest">Latest</MenuItem>
                             {dateList.map((date, index) => (
                                 <MenuItem key={index} value={date}>
                                     {`${date}`}
@@ -135,7 +144,8 @@ const AppMetricsPage = ({ metricType, streaming = true, title = 'Metrics Dashboa
 
                     <Grid item xs={12}>
                         <AppMetrics
-                            title={metricType}
+                            title={metricName}
+                            metricType={metricType}
                             subheader={`Latency vs CDF across all providers`}
                             metrics={metrics}
                         />
@@ -148,7 +158,8 @@ const AppMetricsPage = ({ metricType, streaming = true, title = 'Metrics Dashboa
 AppMetricsPage.propTypes = {
     metricType: PropTypes.string.isRequired,
     streaming: PropTypes.bool,
-    title: PropTypes.string
+    title: PropTypes.string,
+    metricName: PropTypes.string.isRequired,
 
 };
 export default AppMetricsPage;
