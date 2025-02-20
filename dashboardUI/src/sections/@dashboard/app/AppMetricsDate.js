@@ -7,6 +7,20 @@ import { Card, CardHeader, Box } from "@mui/material";
 // Base chart options
 import { BaseOptionChart } from "../../../components/chart";
 
+export const providerColors = {
+    "PerplexityAI": "#FF5733",   // Red-Orange
+    "AWSBedrock": "#33FF57",     // Green
+    "Hyperbolic": "#3357FF",     // Blue
+    "Open_AI": "#FF33A8",        // Pink
+    "Azure": "#FFA500",          // Orange
+    "TogetherAI": "#800080",     // Purple
+    "Cloudflare": "#FFD700",     // Gold
+    "Anthropic": "#008080",      // Teal
+    "GoogleGemini": "#00BFFF",   // Deep Sky Blue
+    "GroqProvider": "#A52A2A",   // Brown
+    "VLLM": "#4B0082"            // Indigo
+};
+
 const AppMetricsDate = ({ title, subheader, metrics, dateArray }) => {
     // Prepare chart data with normalized dates and log-transform values
     const logTransformedMetrics = {};
@@ -17,8 +31,9 @@ const AppMetricsDate = ({ title, subheader, metrics, dateArray }) => {
             aggregated_metric: metric.aggregated_metric > 0 ? Math.log10(metric.aggregated_metric) : null,
         }));
     });
+    const sortedProviders = Object.keys(logTransformedMetrics).sort();
 
-    const chartData = Object.keys(logTransformedMetrics).map((provider) => ({
+    const chartData = sortedProviders.map((provider) => ({
         name: provider,
         type: "line",
         data: dateArray.map((date) => {
@@ -29,12 +44,13 @@ const AppMetricsDate = ({ title, subheader, metrics, dateArray }) => {
 
     const chartOptions = merge(BaseOptionChart(), {
         stroke: {
-            curve: "smooth",
+            curve: "straight",
             width: 2,
         },
         markers: {
             size: 5,
         },
+        colors: sortedProviders.map((provider) => providerColors[provider] || "#999999"), // Default gray if no match
         xaxis: {
             categories: dateArray,
             title: {
@@ -46,10 +62,10 @@ const AppMetricsDate = ({ title, subheader, metrics, dateArray }) => {
         },
         yaxis: {
             title: {
-                text: "Log Latency (log10 ms)",
+                text: "Latency ms",
             },
             labels: {
-                formatter: (value) => (value !== null ? `${value.toFixed(2)}` : "N/A"),
+                formatter: (value) => (value !== null ? `${(value ** 10).toFixed(3)}` : "N/A"),
             },
             type: "linear", // Since we've manually log-transformed, keep this linear
         },
@@ -60,7 +76,7 @@ const AppMetricsDate = ({ title, subheader, metrics, dateArray }) => {
                 formatter: (value) => value,
             },
             y: {
-                formatter: (value) => (value !== null ? `${value.toFixed(2)}` : "N/A"),
+                formatter: (value) => (value !== null ? `${(value ** 10).toFixed(3)}` : "N/A"),
             },
         },
     });

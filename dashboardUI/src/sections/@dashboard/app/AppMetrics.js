@@ -6,6 +6,7 @@ import ReactApexChart from "react-apexcharts";
 import { Card, CardHeader, Box } from "@mui/material";
 // Base chart options
 import { BaseOptionChart } from "../../../components/chart";
+import { providerColors } from "./AppMetricsDate";
 
 // ----------------------------------------------------------------------
 
@@ -29,9 +30,11 @@ const AppMetrics = ({ title, metricType, subheader, metrics }) => {
                     x: Math.log10(latency),
                     y: cdf[index],
                 })),
+                color: providerColors[provider] || "#999999",
             };
         }).filter(Boolean); // Remove null entries
     }).flat();
+    const colors = chartData.map((entry) => entry.color);
 
     // Chart options
     const chartOptions = merge(BaseOptionChart(), {
@@ -39,13 +42,14 @@ const AppMetrics = ({ title, metricType, subheader, metrics }) => {
             curve: "smooth",
             width: 2, // Ensure lines are prominent
         },
+        colors,
         xaxis: {
             type: "linear", // Logarithmic X-axis for latency
             title: {
                 text: "Latency (ms)",
             },
             labels: {
-                formatter: (value) => `${Math.exp(value).toFixed(3)} ms`,
+                formatter: (value) => `${(value ** 10).toFixed(3)} ms`, // Convert back to linear scale for display
             },
             tickAmount: 10,
         },
@@ -64,7 +68,7 @@ const AppMetrics = ({ title, metricType, subheader, metrics }) => {
             shared: true, // Shared tooltip for better interactivity
             intersect: false,
             x: {
-                formatter: (value) => `${Math.exp(value).toFixed(3)} ms`,
+                formatter: (value) => `${(value ** 10).toFixed(3)} ms`,
             },
             y: {
                 formatter: (value) => value.toFixed(3),
