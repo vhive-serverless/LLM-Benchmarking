@@ -26,11 +26,6 @@ const navConfig = [
     path: '/dashboard/metric/time-between-token',
     icon: getIcon('bx:bar-chart'),
   },
-  {
-    title: 'Single Request End to End',
-    path: '/dashboard/metric/single-request',
-    icon: getIcon('bx:bar-chart'),
-  },
   // {
   //   title: 'Data Transfer Delays',
   //   path: '/dashboard/data-transfer/',

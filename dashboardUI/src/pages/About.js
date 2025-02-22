@@ -1,4 +1,3 @@
-// material
 import { Grid, Card, Container, Stack, Box, Typography, CardContent, Link } from '@mui/material';
 import ListItem from '@mui/material/ListItem';
 // components
@@ -17,30 +16,61 @@ export default function LLMetrics() {
         <Grid item xs={12} mb={3}>
           <Card>
             <CardContent>
-              <Typography variant='h4' marginBottom={3}>
+              <Typography variant="h4" marginBottom={3}>
                 What is LLMetrics? (Large Language Model Metrics)
               </Typography>
-              <Typography variant='p'>
-                LLMetrics is a benchmarking tool designed to evaluate and compare the performance of Large Language Model (LLM) service providers. By using a fixed prompt, input token, and output token across all providers, LLMetrics ensures a standardized testing environment for accurate performance assessments. <br /><br />
+              <Typography variant="p">
+                LLMetrics is a comprehensive benchmarking tool designed to evaluate and compare the performance of Large Language Model (LLM) service providers. By standardizing the testing environment with fixed prompts, input tokens, and output tokens, LLMetrics ensures consistent and accurate performance assessments across providers. <br /><br />
 
-                The tool measures essential benchmarks, such as:
+                Our goal is to provide developers and organizations with actionable insights into the efficiency, responsiveness, and reliability of LLM providers, enabling them to make informed decisions for their applications.
+              </Typography>
+
+              <Typography variant="h5" marginTop={4} marginBottom={2}>
+                Key Features
               </Typography>
               <Box sx={{ ml: 5, my: 2 }}>
                 <ListItem sx={{ display: 'list-item' }}>
-                  <b>Time to First Token:</b> The time it takes for the first token of a response to be generated.
+                  <b>Standardized Testing Environment:</b> Ensures consistency by using fixed prompts, input tokens, and output tokens across all providers.
                 </ListItem>
                 <ListItem sx={{ display: 'list-item' }}>
-                  <b>Time Between Tokens:</b> The time interval between the generation of consecutive tokens.
+                  <b>Core Framework:</b> Built primarily in Python, LLMetrics includes dedicated classes for each provider with methods like <code>get_model_name</code>, <code>perform_inference_streaming</code>, <code>perform_inference</code>, and <code>log_metrics</code>.
                 </ListItem>
                 <ListItem sx={{ display: 'list-item' }}>
-                  <b>Total Response Time:</b> The overall time taken to generate the complete response.
+                  <b>Configuration Management:</b> The <code>main.py</code> script uses a JSON configuration to specify the provider, model, number of requests, input token count, max output size, and whether the request is streaming or non-streaming.
+                </ListItem>
+                <ListItem sx={{ display: 'list-item' }}>
+                  <b>Data Persistence:</b> All benchmarking results are securely stored in a DynamoDB database for consistency, scalability, and easy retrieval.
+                </ListItem>
+                <ListItem sx={{ display: 'list-item' }}>
+                  <b>Data Visualization:</b> Results are visualized through an interactive dashboard deployed on GitHub Pages, providing clear and actionable insights.
                 </ListItem>
               </Box>
 
-              <Typography variant='p'>
-                This data-driven approach provides valuable insights into the efficiency and responsiveness of various LLM providers, empowering developers and organizations to make informed decisions when selecting a provider for their applications. <br /><br />
+              <Typography variant="h5" marginTop={4} marginBottom={2}>
+                Metrics Analyzed
+              </Typography>
+              <Box sx={{ ml: 5, my: 2 }}>
+                <ListItem sx={{ display: 'list-item' }}>
+                  <b>Time to First Token:</b> Measures how quickly the first token of a response is generated.
+                </ListItem>
+                <ListItem sx={{ display: 'list-item' }}>
+                  <b>Time Between Tokens:</b> Tracks the interval between the generation of consecutive tokens. This metric is analyzed using:
+                  <Box sx={{ ml: 3, mt: 1 }}>
+                    <ListItem sx={{ display: 'list-item' }}>
+                      <b>Median:</b> Represents the middle value of all recorded intervals, providing a measure of typical performance.
+                    </ListItem>
+                    <ListItem sx={{ display: 'list-item' }}>
+                      <b>95th Percentile (p95):</b> Captures the upper bound of latency, ensuring that 95% of token intervals fall below this value. This metric is critical for identifying outliers and ensuring consistent performance.
+                    </ListItem>
+                  </Box>
+                </ListItem>
+                <ListItem sx={{ display: 'list-item' }}>
+                  <b>Total Response Time:</b> Captures the overall time taken to generate the complete response.
+                </ListItem>
+              </Box>
 
-                LLMetrics currently benchmarks the following providers:
+              <Typography variant="h5" marginTop={4} marginBottom={2}>
+                Benchmarked Providers
               </Typography>
               <Box sx={{ ml: 5, my: 2 }}>
                 <ListItem sx={{ display: 'list-item' }}>Anthropic</ListItem>
@@ -53,23 +83,77 @@ export default function LLMetrics() {
                 <ListItem sx={{ display: 'list-item' }}>OpenAI</ListItem>
                 <ListItem sx={{ display: 'list-item' }}>Perplexity</ListItem>
                 <ListItem sx={{ display: 'list-item' }}>Together AI</ListItem>
+                <ListItem sx={{ display: 'list-item' }}>
+                  <b>Local Server (VLLM):</b> A local server running the <Link target="_blank" href={'https://github.com/vllm-project/vllm'}>VLLM</Link> framework to serve LLM services, acting as a control for comparison with cloud providers.
+                </ListItem>
               </Box>
 
-              <Typography variant='p'>
-                To achieve these benchmarks, we make requests to all providers using the same input and output token configurations. Our benchmarking runs are conducted weekly via a GitHub Actions workflow, ensuring consistency and regularity in the performance evaluations. The collected experiment data is securely stored in a DynamoDB database for analysis and visualization. <br /><br />
-                LLMetrics is a part of the <Link target="_blank" href={'https://vhive-serverless.github.io/'}>vHive Ecosystem.</Link>
+              <Typography variant="h5" marginTop={4} marginBottom={2}>
+                VLLM Implementation
+              </Typography>
+              <Typography variant="p">
+                {/* Placeholder for VLLM Implementation details */}
+                Details about the VLLM implementation will be added here.
               </Typography>
 
-              <Typography variant='h4' marginTop={5} marginBottom={3}>
-                Single Request End-to-End Metric
+              <Typography variant="h5" marginTop={4} marginBottom={2}>
+                Process Overview
               </Typography>
-              <Typography variant='p'>
-                The single request end-to-end metric measures the total response time for a non-streaming request sent to an LLM provider. Unlike streaming benchmarks, this metric captures the duration from the moment the request is initiated until the complete response is received. <br /><br />
-
-                This metric is critical for evaluating the performance of non-streaming LLM workflows, where latency directly impacts user experience in applications such as chatbots, content generation tools, and other interactive systems. <br /><br />
-
-                By analyzing the single request end-to-end metric, developers can identify bottlenecks in response handling and optimize their integration with LLM providers for improved efficiency.
+              <Typography variant="p">
+                LLMetrics automates the benchmarking process through a robust infrastructure:
               </Typography>
+              <Box sx={{ ml: 5, my: 2 }}>
+                <ListItem sx={{ display: 'list-item' }}>
+                  <b>Automation with GitHub Actions:</b> Weekly benchmarking runs are scheduled via GitHub Actions, ensuring regular and consistent evaluations.
+                </ListItem>
+                <ListItem sx={{ display: 'list-item' }}>
+                  <b>CI Pipeline:</b> GitHub Actions also supports running CI tests and linters to maintain code quality and reliability.
+                </ListItem>
+                <ListItem sx={{ display: 'list-item' }}>
+                  <b>Data Storage:</b> Experiment data is securely stored in a DynamoDB database for analysis and visualization.
+                </ListItem>
+                <ListItem sx={{ display: 'list-item' }}>
+                  <b>Dashboard Deployment:</b> The interactive dashboard is deployed on GitHub Pages, pulling data from DynamoDB using Lambda functions.
+                </ListItem>
+              </Box>
+
+              <Typography variant="h5" marginTop={4} marginBottom={2}>
+                Infrastructure Overview
+              </Typography>
+              <Typography variant="p">
+                LLMetrics leverages a robust infrastructure to ensure seamless benchmarking and visualization:
+              </Typography>
+              <Box sx={{ ml: 5, my: 2 }}>
+                <ListItem sx={{ display: 'list-item' }}>
+                  <b>GitHub Actions:</b> Automates weekly benchmarking runs and CI pipelines.
+                </ListItem>
+                <ListItem sx={{ display: 'list-item' }}>
+                  <b>DynamoDB:</b> Securely stores experiment data for analysis.
+                </ListItem>
+                <ListItem sx={{ display: 'list-item' }}>
+                  <b>Lambda Functions:</b> Facilitate data retrieval for the dashboard.
+                </ListItem>
+                <ListItem sx={{ display: 'list-item' }}>
+                  <b>GitHub Pages:</b> Hosts the interactive dashboard for visualizing results.
+                </ListItem>
+              </Box>
+
+              <Typography variant="p" marginTop={4}>
+                LLMetrics is a part of the <Link target="_blank" href={'https://vhive-serverless.github.io/'}>vHive Ecosystem</Link>, a platform dedicated to advancing serverless computing and AI-driven solutions.
+              </Typography>
+
+              {/* Space for Image */}
+              <Typography variant="h6" marginBottom={2} marginTop={4}>
+                Infrastructure Diagram
+              </Typography>
+              <Box sx={{ my: 4, display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+              
+              <img
+                src="/LLM-Benchmarking/static/icons/architecure.jpg"
+                alt="LLMetrics Infrastructure"
+                style={{ maxWidth: '100%', height: 'auto', borderRadius: '8px' }}
+              />
+            </Box>
             </CardContent>
           </Card>
         </Grid>

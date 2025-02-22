@@ -56,7 +56,7 @@ jobs:
     runs-on: ubuntu-latest
     env:
         ANTHROPIC_API: ${{ secrets.ANTHROPIC_API }}
-        folder: ${{ benchmarking/experiments/providers_streaming/multiple_models }}
+        folder: benchmarking/experiments/providers_streaming/multiple_models
     
     steps:
       - name: Check out repository
@@ -320,3 +320,15 @@ jobs:
         with:
           name: groq-experiment-results
           path: benchmark_graph
+
+  download-artifacts:
+      runs-on: ubuntu-latest
+      needs: [test, anthropic, cloudflare, aws, azure, togetherai, openai, hyperbolic, google_gemini, groq]
+      steps:
+        - name: Download All Artifacts
+          uses: actions/download-artifact@v3
+          with:
+            path: artifacts
+
+        - name: List Downloaded Artifacts
+          run: ls -R artifacts

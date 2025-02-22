@@ -8,7 +8,6 @@ import NotFound from './pages/Page404';
 import TimeBetweenToken from './pages/TimeBetweenToken';
 import TimeToFirstToken from './pages/TimeToFirstToken';
 import About from './pages/About';
-import SingleRequest from './pages/SingleRequest';
 import ResponseTimes from './pages/ResponseTimes';
 
 // ----------------------------------------------------------------------
@@ -29,7 +28,7 @@ export default function Router() {
             { path: 'time-to-first-token', element: <TimeToFirstToken /> },
             { path: 'time-between-token', element: <TimeBetweenToken /> },
             { path: 'response-times', element: <ResponseTimes /> },
-            { path: 'single-request', element: <SingleRequest /> },
+
             // { path: 'deployment-language', element: <ComingSoon /> }
           ]
         },
