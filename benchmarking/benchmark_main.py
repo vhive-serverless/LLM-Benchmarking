@@ -101,7 +101,8 @@ class Benchmark:
         ax = plt.gca()
 
         # display 5 minor ticks between each major tick
-        minorLocator = LogLocator(subs=np.linspace(2, 10, 6, endpoint=False))
+        # minorLocator = LogLocator(subs=np.linspace(2, 10, 6, endpoint=False))
+        minorLocator = LogLocator(base=10.0, subs='auto')
         # format the labels (if they're the x values)
         minorFormatter = FormatStrFormatter('%1.1f')
         
