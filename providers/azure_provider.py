@@ -143,7 +143,7 @@ class Azure(ProviderInterface):
                     inter_token_latencies.append(inter_token_latency)
 
                     # Display token if verbosity is enabled
-                    # print(line_str) 
+                    # print(line_str)
                     # ['data: {', 'id', ':', 'cmpl-6d29738f-e50d-4d14-a33a-6690cdcfb90e', ',', 'object', ':', 'chat.completion.chunk', ',', 'created', ':1740385923,', 'model', ':', 'Llama-3.3-70B-Instruct', ',', 'choices', ':[{', 'index', ':0,', 'delta', ':{', 'role', ':', 'assistant', ',', 'content', ':', ' at', ',', 'tool_calls', ':null},', 'finish_reason', ':', 'length', '}],', 'usage', ':null}']
                     match = re.search(r'"content"\s*:\s*"(.*?)"', line_str)
                     if match:
@@ -155,8 +155,7 @@ class Azure(ProviderInterface):
                     #         print("...")
 
             # Calculate total metrics
-            
-            
+
             if verbosity:
                 print(f"\nTotal Response Time: {total_time:.4f} seconds")
                 print(len(inter_token_latencies))
@@ -178,4 +177,3 @@ class Azure(ProviderInterface):
         except Exception as e:
             print(f"[ERROR] Streaming inference failed for model '{model}': {e}")
             return None, None
-            

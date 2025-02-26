@@ -4,7 +4,6 @@ import requests
 import numpy as np
 from timeit import default_timer as timer
 from providers.provider_interface import ProviderInterface
-import re
 
 # from IPython.display import display, Image, Markdown, Audio
 # import logging
@@ -129,18 +128,7 @@ class Cloudflare(ProviderInterface):
 
                 inter_token_latencies.append(inter_token_latency)
                 print(line_str[19:].split('"')[0], end='')
-            
-                # if verbosity:
-                    # print(line_str[19:].split('"')[0], end="")
-                    # match = re.search(r'"response"\s*:\s*"(.*?)"', line_str)
-                    # if match:
-                    #     print(match.group(1), end="")
-                    # if len(inter_token_latencies) < 20:
-                    #     print(line_str[19:].split('"')[0], end="")
-                    # elif len(inter_token_latencies) == 20:
-                    #     print("...")
 
-        # logging.debug(f'##### Number of output tokens/chunks: {len(inter_token_latencies) + 1}')
         if verbosity:
             print(
                 f"\nNumber of output tokens/chunks: {len(inter_token_latencies) + 1}, Time to First Token (TTFT): {ttft:.4f} seconds, Total Response Time: {total_time:.4f} seconds"

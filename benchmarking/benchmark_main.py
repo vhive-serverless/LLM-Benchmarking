@@ -3,6 +3,7 @@ import numpy as np
 import os
 import time
 from datetime import datetime
+from matplotlib.ticker import LogLocator, FormatStrFormatter
 
 class Benchmark:
     """
@@ -96,8 +97,21 @@ class Benchmark:
         # Add legend
         plt.legend(loc="best")
         plt.xscale("log")
+        # **Ensure all ticks are labeled**
+        ax = plt.gca()
 
-        # Show and save the plot
+        # display 5 minor ticks between each major tick
+        minorLocator = LogLocator(subs=np.linspace(2, 10, 6, endpoint=False))
+        # format the labels (if they're the x values)
+        minorFormatter = FormatStrFormatter('%1.1f')
+        
+        # for no labels use default NullFormatter
+        ax.xaxis.set_minor_locator(minorLocator)
+        
+        ax.xaxis.set_minor_formatter(minorFormatter)
+        for label in ax.get_xminorticklabels():
+            label.set_fontsize(8)   # smaller font for minor labels
+            label.set_rotation(45)  # rotate 90 degrees for readability
         plt.tight_layout()
 
         current_time = datetime.now().strftime("%y%m%d_%H%M")
@@ -126,12 +140,10 @@ class Benchmark:
                 for i in range(self.num_requests):
                     if self.verbosity:
                         print(f"Request {i + 1}/{self.num_requests}")
-                    elif i % 10 == 0 or i == self.num_requests - 1:
-                        print(f"\nRequest {i + 1}/{self.num_requests}")
 
-                    if i % 10 == 0:
-                        print("[DEBUG] Sleeping for 1s to bypass rate limit...")
-                        time.sleep(1)
+                    if i % 30 == 0:
+                        # print("[DEBUG] Sleeping for 2 mins to bypass rate limit...")
+                        time.sleep(120)
 
                     if self.streaming:
                         provider.perform_inference_streaming(
