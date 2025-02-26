@@ -25,12 +25,11 @@ class PerplexityAI(BaseProvider):
         super().__init__(
             api_key=perplexity_api, client_class=client_class, base_url=base_url
         )
-
         # model names mapping
         self.model_map = {
-            "sonar": "sonar",  
-            "sonar-pro": "sonar-pro", 
-            "sonar-reasoning-pro": "sonar-reasoning-pro",  
+            "sonar": "sonar",
+            "sonar-pro": "sonar-pro",
+            "sonar-reasoning-pro": "sonar-reasoning-pro",
             "common-model": "sonar-pro",
         }
 
