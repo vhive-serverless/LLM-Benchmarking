@@ -1,5 +1,5 @@
 import pytest
-from unittest.mock import MagicMock
+from unittest.mock import MagicMock,patch
 import os
 import json
 import numpy as np
@@ -15,7 +15,7 @@ class MockProvider:
             "timebetweentokens_median": {"mock_model": [0.02]},
             "timebetweentokens_p95": {"mock_model": [0.04]},
         }
-
+        
     def get_model_name(self, model):
         return model
 
@@ -36,6 +36,7 @@ def benchmark_instance():
     prompt = "test prompt"
     max_output = 100
     verbosity = True
+    graph_dir='/'
 
     # Mock DynamoDB
     mock_dynamodb = MagicMock()
@@ -116,10 +117,11 @@ def test_store_data_points(benchmark_instance):
     assert item["prompt"] == benchmark_instance.prompt
     assert isinstance(item["metrics"], str)
 
-def test_plot_metrics(benchmark_instance, mocker):
-    mocker.patch("matplotlib.pyplot.savefig")
-    
-    benchmark_instance.plot_metrics("response_times")
+def test_plot_metrics(benchmark_instance):
+    with patch("matplotlib.pyplot.savefig") as mock_savefig:
+        benchmark_instance.graph_dir='/'
+        benchmark_instance.plot_metrics("response_times")
+        mock_savefig.assert_called_once()  # Ensure savefig was called once
     
     provider_name = "MockProvider"
     model_name = "mock_model"
