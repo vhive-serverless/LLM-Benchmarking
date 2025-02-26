@@ -3,7 +3,7 @@ import numpy as np
 import os
 import time
 from datetime import datetime
-from matplotlib.ticker import LogLocator, FormatStrFormatter
+from matplotlib.ticker import LogLocator, FormatStrFormatter, ScalarFormatter
 
 class Benchmark:
     """
@@ -29,6 +29,7 @@ class Benchmark:
         prompt,
         streaming=False,
         verbosity=False,
+        vllm_ip=None
     ):
         """
         Initializes the Benchmark instance with provided parameters.
@@ -49,6 +50,7 @@ class Benchmark:
         self.streaming = streaming
         self.max_output = max_output
         self.verbosity = verbosity
+        self.vllm_ip = None
 
         base_dir = "streaming" if streaming else "end_to_end"
 
@@ -81,15 +83,27 @@ class Benchmark:
                 cdf = np.arange(1, len(latencies_sorted) + 1) / len(latencies_sorted)
                 model_name = provider.get_model_name(model)
 
-                plt.plot(
-                    latencies_sorted,
-                    cdf,
-                    marker="o",
-                    linestyle="-",
-                    markersize=5,
-                    label=f"{provider_name} - {model_name}",
-                )
-
+                if provider_name.lower() == "vllm":
+                    plt.plot(
+                        latencies_sorted,
+                        cdf,
+                        marker="o",
+                        linestyle="-",
+                        markersize=6,  # Slightly larger marker size
+                        color="black",  # Black color for the marker
+                        label=f"{provider_name} - {model_name}",
+                        linewidth=2,  # Bold line
+                    )
+                else:
+                    plt.plot(
+                        latencies_sorted,
+                        cdf,
+                        marker="o",
+                        linestyle="-",
+                        markersize=5,
+                        label=f"{provider_name} - {model_name}",
+                    )
+                
         plt.xlabel("Latency (ms)", fontsize=12)
         plt.ylabel("Portion of requests", fontsize=12)
         plt.grid(True)
@@ -147,13 +161,23 @@ class Benchmark:
                         time.sleep(120)
 
                     if self.streaming:
-                        provider.perform_inference_streaming(
-                            model, self.prompt, self.max_output, self.verbosity
-                        )
+                        if provider_name == "vLLM":
+                            provider.perform_inference_streaming(
+                                model, self.prompt, self.max_output, self.verbosity, self.vllm_ip
+                            )
+                        else:
+                            provider.perform_inference_streaming(
+                                model, self.prompt, self.max_output, self.verbosity
+                            )
                     else:
-                        provider.perform_inference(
-                            model, self.prompt, self.max_output, self.verbosity
-                        )
+                        if provider_name == "vLLM":
+                            provider.perform_inference(
+                                model, self.prompt, self.max_output, self.verbosity, self.vllm_ip
+                            )
+                        else:
+                            provider.perform_inference(
+                                model, self.prompt, self.max_output, self.verbosity
+                            )
 
         if not self.streaming:
             self.plot_metrics("response_times", "response_times")

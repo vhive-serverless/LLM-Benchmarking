@@ -14,6 +14,7 @@ from providers import (
     Hyperbolic,
     Azure,
     AWSBedrock,
+    vLLM
 )
 from utils.prompt_generator import get_prompt
 
@@ -31,6 +32,9 @@ parser.add_argument(
 )
 parser.add_argument(
     "--list", action="store_true", help="List available providers and models"
+)
+parser.add_argument(
+    "--vllm_ip", type=str, default=None, help="IP address of vLLM provider"
 )
 
 # Define possible input sizes
@@ -54,6 +58,7 @@ def get_available_providers():
         "Groq": GroqProvider(),
         "Azure": Azure(),
         "AWSBedrock": AWSBedrock(),
+        "vLLM": vLLM()
     }
 
     return available_providers
@@ -155,6 +160,8 @@ def run_benchmark(config):
     # max_output = config.get("max_output", [100])
     verbose = config.get("verbose", False)
     backend = config.get("backend", False)
+    vllm_ip = config.get("vllm_ip", None)
+
     # Select Benchmark class based on backend flag
     if backend:
         from benchmarking.dynamo_bench import Benchmark
@@ -201,6 +208,11 @@ def run_benchmark(config):
             {OUTPUT_SIZE_LOWER_LIMIT} and {OUTPUT_SIZE_UPPER_LIMIT}."
         )
         return
+    
+    if "vLLM" in providers and not vllm_ip:
+        print("\n[ERROR] vLLM provider is selected, but `vllm_ip` is missing!")
+        print("   ➜ Please add `vllm_ip` in the config file or pass it via CLI using `--vllm_ip`.")
+        return
 
     print("\nRunning benchmark...")
     benchmark = Benchmark(
@@ -211,19 +223,31 @@ def run_benchmark(config):
         prompt=prompt,
         streaming=streaming,
         verbosity=verbose,
+        vllm_ip=vllm_ip if "vLLM" in providers else None,
     )
+
     benchmark.run()
 
 
 def main():
     """Main function to parse arguments and run the program."""
     args = parser.parse_args()
+    vllm_ip = getattr(args, "vllm_ip", None)
     # Display available providers and models if --list flag is used
     if args.list:
         display_available_providers()
     elif args.config:
         config = load_config(args.config)
         if config:
+            if "vLLM" in config.get("providers", []) and not vllm_ip:
+                print("\n[ERROR] vLLM provider is selected, but `vllm_ip` is missing!")
+                print("   ➜ Please add `vllm_ip` in the config file or pass it via CLI using `--vllm_ip`.")
+                return  # Stop execution
+
+            # If CLI argument is provided, override config
+            if vllm_ip:
+                config["vllm_ip"] = args.vllm_ip
+
             run_benchmark(config)
     else:
         parser.print_help()

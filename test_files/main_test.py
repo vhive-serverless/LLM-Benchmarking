@@ -267,7 +267,7 @@ class TestCommandLineInterface(unittest.TestCase):
     @patch("main.load_config", return_value={"providers": ["TogetherAI"]})
     def test_config_flag(self, mock_load_config, mock_run_benchmark):
         """Test -c/--config flag functionality"""
-        test_args = ["main.py", "-c", "config.json"]
+        test_args = ["main.py", "-c", "config.json", "--vllm_ip", "192.168.1.10"]
         with patch.object(sys, "argv", test_args):
             main.__name__ = "__main__"
             main.main()
