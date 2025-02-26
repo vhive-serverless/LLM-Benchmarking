@@ -1,4 +1,3 @@
-import os
 import time
 import requests
 import numpy as np
@@ -21,8 +20,8 @@ class vLLM(ProviderInterface):
 
         # Define available models
         self.model_map = {
-           "common-model": "meta-llama/Llama-3.3-70B-Instruct",
-           "common-model-small": "meta-llama/Llama-3.1-8B"
+            "common-model": "meta-llama/Llama-3.3-70B-Instruct",
+            "common-model-small": "meta-llama/Llama-3.1-8B"
         }
 
     def get_model_name(self, model):
@@ -74,8 +73,7 @@ class vLLM(ProviderInterface):
         inter_token_latencies = []
         model_id = self.get_model_name(model)
         formatted_prompt = f"System: {self.system_prompt} \n User: {prompt}"
-        #start_time = time.perf_counter()
-        generated_text = ""  # To accumulate the full response
+        generated_text = ""
 
         try:
             start_time = time.perf_counter()
@@ -118,11 +116,6 @@ class vLLM(ProviderInterface):
 
                     # Extract text from chunk
                     if line_str.startswith("data:"):
-                        #chunk = line_str[6:]  # Remove "data: " prefix
-                        #chunk_json = json.loads(chunk)
-                        #token_text = chunk_json["choices"][0]["text"]
-                        # generated_text += token_text  # Accumulate the response
-			 
                         time_to_next_token = time.perf_counter()
                         inter_token_latency = time_to_next_token - prev_token_time
                         prev_token_time = time_to_next_token
@@ -135,10 +128,7 @@ class vLLM(ProviderInterface):
                         # print(token_text, inter_token_latency)
                         inter_token_latencies.append(inter_token_latency)
 
-                        #if verbosity:
-                         #   print(token_text, end="")
-
-            avg_tbt = sum(inter_token_latencies)/len(inter_token_latencies)
+            avg_tbt = sum(inter_token_latencies) / len(inter_token_latencies)
             if verbosity:
     
                 print(

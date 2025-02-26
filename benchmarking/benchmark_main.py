@@ -3,7 +3,7 @@ import numpy as np
 import os
 import time
 from datetime import datetime
-from matplotlib.ticker import LogLocator, FormatStrFormatter, ScalarFormatter
+from matplotlib.ticker import LogLocator, FormatStrFormatter
 
 class Benchmark:
     """
