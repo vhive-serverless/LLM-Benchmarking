@@ -3,6 +3,7 @@ import requests
 import numpy as np
 from providers.base_provider import ProviderInterface
 from time import perf_counter as timer
+import re
 
 
 class Azure(ProviderInterface):
@@ -15,7 +16,7 @@ class Azure(ProviderInterface):
             # "mistral-7b-instruct-v0.1": "mistral-7b-instruct-v0.1",
             "meta-llama-3.1-8b-instruct": "Meta-Llama-3-1-8B-Instruct-fyp",
             "meta-llama-3.1-70b-instruct": "Meta-Llama-3-1-70B-Instruct-fyp",
-            "common-model": "Meta-Llama-3-1-70B-Instruct-fyp",
+            "common-model": "Llama-3-3-70B-Instruct-enzzg",
         }
 
         # Define API keys for each model
@@ -23,7 +24,7 @@ class Azure(ProviderInterface):
             # "mistral-7b-instruct-v0.1": os.environ.get("MISTRAL_API_KEY"),
             "meta-llama-3.1-8b-instruct": os.environ.get("AZURE_LLAMA_8B_API"),
             "meta-llama-3.1-70b-instruct": os.environ.get("AZURE_LLAMA_70B_API"),
-            "common-model": os.environ.get("AZURE_LLAMA_70B_API"),
+            "common-model": os.environ.get("AZURE_LLAMA_3.3_70B_API"),
             # "common-model": os.environ.get("MISTRAL_API_KEY")
         }
 
@@ -74,7 +75,7 @@ class Azure(ProviderInterface):
             inference = response.json()
             self.log_metrics(model, "response_times", elapsed)
             if verbosity:
-                print(f"Response: {inference['choices'][0]['message']['content'][:50]}")
+                print(f"Response: {inference['choices'][0]['message']['content']}")
             return inference
         
         except Exception as e:
@@ -94,72 +95,87 @@ class Azure(ProviderInterface):
         inter_token_latencies = []
         endpoint = f"https://{model_id}.eastus.models.ai.azure.com/chat/completions"
         start_time = timer()
-        response = requests.post(
-            f"{endpoint}",
-            headers={
-                "Authorization": f"Bearer {api_key}",
-                "Content-Type": "application/json",
-            },
-            json={
-                "messages": [
-                    {"role": "system", "content": self.system_prompt + "\nThe number appended at the end is not important."},
-                    {"role": "user", "content": prompt + " " + str(timer())},
-                ],
-                "max_tokens": max_output,
-                "stream": True,
-            },
-            stream=True,
-            timeout=500,
-        )
+        try:
+            response = requests.post(
+                f"{endpoint}",
+                headers={
+                    "Authorization": f"Bearer {api_key}",
+                    "Content-Type": "application/json",
+                },
+                json={
+                    "messages": [
+                        # {"role": "system", "content": self.system_prompt + "\nThe number appended at the end is not important."},
+                        # {"role": "user", "content": prompt + " " + str(timer())},
+                        {"role": "system", "content": self.system_prompt},
+                        {"role": "user", "content": prompt},
+                    ],
+                    "max_tokens": max_output,
+                    "stream": True,
+                },
+                stream=True,
+                timeout=500,
+            )
 
-        first_token_time = None
-        for line in response.iter_lines():
-            if line:
-                if first_token_time is None:
+            first_token_time = None
+            for line in response.iter_lines():
+                if line:
                     # print(line)
-                    first_token_time = timer()
-                    ttft = first_token_time - start_time
-                    prev_token_time = first_token_time
-                    if verbosity:
-                        print(f"##### Time to First Token (TTFT): {ttft:.4f} seconds\n")
+                    if first_token_time is None:
+                        # print(line)
+                        first_token_time = timer()
+                        ttft = first_token_time - start_time
+                        prev_token_time = first_token_time
+                        if verbosity:
+                            print(f"##### Time to First Token (TTFT): {ttft:.4f} seconds\n")
 
-                line_str = line.decode("utf-8").strip()
-                if line_str == "data: [DONE]":
-                    # print(line_str)
-                    # print("here")
-                    total_time = timer() - start_time
-                    break
+                    line_str = line.decode("utf-8").strip()
+                    
+                    if line_str == "data: [DONE]":
+                        # print(line_str)
+                        print("here")
+                        total_time = timer() - start_time
+                        break
 
-                # Capture token timing
-                time_to_next_token = timer()
-                inter_token_latency = time_to_next_token - prev_token_time
-                prev_token_time = time_to_next_token
-                inter_token_latencies.append(inter_token_latency)
+                    # Capture token timing
+                    time_to_next_token = timer()
+                    inter_token_latency = time_to_next_token - prev_token_time
+                    prev_token_time = time_to_next_token
+                    inter_token_latencies.append(inter_token_latency)
 
-                # Display token if verbosity is enabled
-                print(line_str[19:].split('"')[5], end="")
-                # if verbosity:
-                #     if len(inter_token_latencies) < 20:
-                #         print(line_str[19:].split('"')[5], end="")
-                #     elif len(inter_token_latencies) == 20:
-                #         print("...")
+                    # Display token if verbosity is enabled
+                    # print(line_str) 
+                    # ['data: {', 'id', ':', 'cmpl-6d29738f-e50d-4d14-a33a-6690cdcfb90e', ',', 'object', ':', 'chat.completion.chunk', ',', 'created', ':1740385923,', 'model', ':', 'Llama-3.3-70B-Instruct', ',', 'choices', ':[{', 'index', ':0,', 'delta', ':{', 'role', ':', 'assistant', ',', 'content', ':', ' at', ',', 'tool_calls', ':null},', 'finish_reason', ':', 'length', '}],', 'usage', ':null}']
+                    match = re.search(r'"content"\s*:\s*"(.*?)"', line_str)
+                    if match:
+                        print(match.group(1), end="")
+                    # if verbosity:
+                    #     if len(inter_token_latencies) < 20:
+                    #         print(line_str[19:].split('"')[5], end="")
+                    #     elif len(inter_token_latencies) == 20:
+                    #         print("...")
 
-        # Calculate total metrics
-        
-        if verbosity:
-            print(f"\nTotal Response Time: {total_time:.4f} seconds")
-            print(len(inter_token_latencies))
+            # Calculate total metrics
+            
+            
+            if verbosity:
+                print(f"\nTotal Response Time: {total_time:.4f} seconds")
+                print(len(inter_token_latencies))
 
-        # Log metrics
-        avg_tbt = sum(inter_token_latencies) / len(inter_token_latencies)
-        print(f"{avg_tbt:.4f}, {len(inter_token_latencies)}")
-        self.log_metrics(model, "timetofirsttoken", ttft)
-        self.log_metrics(model, "response_times", total_time)
-        self.log_metrics(model, "timebetweentokens", avg_tbt)
-        self.log_metrics(
-            model, "timebetweentokens_median", np.median(inter_token_latencies)
-        )
-        self.log_metrics(
-            model, "timebetweentokens_p95", np.percentile(inter_token_latencies, 95)
-        )
-        self.log_metrics(model, "totaltokens", len(inter_token_latencies) + 1)
+            # Log metrics
+            avg_tbt = sum(inter_token_latencies) / len(inter_token_latencies)
+            print(f"{avg_tbt:.4f}, {len(inter_token_latencies)}")
+            self.log_metrics(model, "timetofirsttoken", ttft)
+            self.log_metrics(model, "response_times", total_time)
+            self.log_metrics(model, "timebetweentokens", avg_tbt)
+            self.log_metrics(
+                model, "timebetweentokens_median", np.median(inter_token_latencies)
+            )
+            self.log_metrics(
+                model, "timebetweentokens_p95", np.percentile(inter_token_latencies, 95)
+            )
+            self.log_metrics(model, "totaltokens", len(inter_token_latencies) + 1)
+
+        except Exception as e:
+            print(f"[ERROR] Streaming inference failed for model '{model}': {e}")
+            return None, None
+            

@@ -28,10 +28,10 @@ class PerplexityAI(BaseProvider):
 
         # model names mapping
         self.model_map = {
-            "meta-llama-3.1-70b-instruct": "llama-3.1-sonar-large-128k-online",  # 70b
-            "meta-llama-3.1-8b-instruct": "llama-3.1-sonar-small-128k-online",  # 8b
-            "meta-llama-3.1-sonar-405B": "llama-3.1-sonar-huge-128k-online",  # 405B
-            "common-model": "llama-3.1-sonar-large-128k-online",
+            "meta-llama-3.1-70b-instruct": "sonar",  # 70b
+            "meta-llama-3.1-8b-instruct": "sonar-deep-research",  # 8b
+            "meta-llama-3.1-405b-instruct": "sonar-pro",  # 405B
+            "common-model": "sonar",
         }
 
     def perform_inference_streaming(

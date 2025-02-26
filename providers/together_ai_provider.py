@@ -2,7 +2,6 @@ import os
 from together import Together
 from providers.base_provider import BaseProvider
 
-
 class TogetherAI(BaseProvider):
     def __init__(self):
         """
