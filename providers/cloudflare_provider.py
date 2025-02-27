@@ -151,4 +151,3 @@ class Cloudflare(ProviderInterface):
         except Exception as e:
             print(f"[ERROR] Streaming inference failed for model '{model}': {e}")
             return None, None
-            
