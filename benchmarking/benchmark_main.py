@@ -50,7 +50,7 @@ class Benchmark:
         self.streaming = streaming
         self.max_output = max_output
         self.verbosity = verbosity
-        self.vllm_ip = None
+        self.vllm_ip = vllm_ip
 
         base_dir = "streaming" if streaming else "end_to_end"
 
@@ -163,7 +163,7 @@ class Benchmark:
                     if self.streaming:
                         if provider_name == "vLLM":
                             provider.perform_inference_streaming(
-                                model, self.prompt, self.max_output, self.verbosity, self.vllm_ip
+                                model, self.prompt, self.vllm_ip, self.max_output, self.verbosity
                             )
                         else:
                             provider.perform_inference_streaming(
@@ -172,7 +172,7 @@ class Benchmark:
                     else:
                         if provider_name == "vLLM":
                             provider.perform_inference(
-                                model, self.prompt, self.max_output, self.verbosity, self.vllm_ip
+                                model, self.prompt, self.vllm_ip, self.max_output, self.verbosity
                             )
                         else:
                             provider.perform_inference(

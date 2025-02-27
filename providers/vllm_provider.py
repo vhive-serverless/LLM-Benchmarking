@@ -38,7 +38,7 @@ class vLLM(ProviderInterface):
         start_time = timer()
         try:
             response = requests.post(
-                f"{vllm_ip}:{self.vllm_port}/v1/completions",
+                f"http:/{vllm_ip}:{self.vllm_port}/v1/completions",
                 headers={"Content-Type": "application/json"},
                 json={
                     "model": model_id,
@@ -78,7 +78,7 @@ class vLLM(ProviderInterface):
         try:
             start_time = time.perf_counter()
             response = requests.post(
-                f"{vllm_ip}:{self.vllm_port}/v1/completions",
+                f"http://{vllm_ip}:{self.vllm_port}/v1/completions",
                 headers={
                     "Content-Type": "application/json",
                 },
