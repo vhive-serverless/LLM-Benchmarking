@@ -1,6 +1,7 @@
 
 {
     "providers": [
+        "Azure",
         "Groq",
         "Hyperbolic",
         "OpenAI",
@@ -9,7 +10,6 @@
         "Cloudflare",
         "Google",
         "AWSBedrock",
-        "Azure",
         "Anthropic"
     ],
     "models": [
