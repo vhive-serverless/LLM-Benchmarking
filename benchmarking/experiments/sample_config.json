@@ -1,6 +1,6 @@
 {
     "providers": [
-        "Groq"
+        "Azure"
     ],
     "models": [
         "common-model"
@@ -9,5 +9,6 @@
     "input_tokens": 10,
     "streaming": true,
     "max_output": 100,
-    "verbose": true
+    "verbose": true,
+    "vllm_ip": "10.160.18.13"
 }

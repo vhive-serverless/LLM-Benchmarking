@@ -23,8 +23,8 @@ class Azure(ProviderInterface):
         self.model_api_keys = {
             # "mistral-7b-instruct-v0.1": os.environ.get("MISTRAL_API_KEY"),
             "meta-llama-3.1-8b-instruct": os.environ.get("AZURE_LLAMA_8B_API"),
-            "meta-llama-3.1-70b-instruct": os.environ.get("AZURE_LLAMA_70B_API"),
-            "common-model": os.environ.get("AZURE_LLAMA_3.3_70B_API"),
+            "meta-llama-3.1-70b-instruct": os.environ.get("AZURE_LLAMA_3.1_70B_API"),
+            "common-model": os.environ.get("AZURE_LLAMA_70B_API"),
             # "common-model": os.environ.get("MISTRAL_API_KEY")
         }
 
