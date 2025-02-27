@@ -215,6 +215,7 @@ def run_benchmark(config):
         return
 
     print("\nRunning benchmark...")
+    print(f"{selected_providers}")
     benchmark = Benchmark(
         selected_providers,
         num_requests,
