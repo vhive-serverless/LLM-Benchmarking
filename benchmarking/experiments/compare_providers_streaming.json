@@ -1,13 +1,13 @@
 
 {
     "providers": [
+        "PerplexityAI",
         "TogetherAI",
         "Cloudflare",
         "Azure",
         "Groq",
         "Hyperbolic",
         "OpenAI",
-        "PerplexityAI",
         "Google",
         "AWSBedrock",
         "Anthropic"
