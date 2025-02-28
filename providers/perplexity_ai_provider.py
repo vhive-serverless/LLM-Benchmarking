@@ -37,7 +37,7 @@ class PerplexityAI(BaseProvider):
     def perform_inference_streaming(
         self, model, prompt, max_output=100, verbosity=True
     ):
-
+        print("here!")
         try:
             model_id = self.get_model_name(model)
             if model_id is None:
@@ -86,15 +86,16 @@ class PerplexityAI(BaseProvider):
 
                 total_tokens += new_tokens
 
-            # Print the content of the chunk if verbosity is enabled
-            if verbosity:
-                if len(inter_token_latencies) < 20:
-                    print(chunk.choices[0].delta.content or "", end="", flush=True)
-                elif len(inter_token_latencies) == 20:
-                    print("...")
+                print(chunk.choices[0].delta.content or "", end="")
+                # Print the content of the chunk if verbosity is enabled
+                # if verbosity:
+                #     if len(inter_token_latencies) < 20:
+                #         print(chunk.choices[0].delta.content or "", end="", flush=True)
+                #     elif len(inter_token_latencies) == 20:
+                #         print("...")
 
-            # Calculate total response time
-            elapsed = timer() - start
+            # # Calculate total response time
+            # elapsed = timer() - start
 
             if verbosity:
                 print(
