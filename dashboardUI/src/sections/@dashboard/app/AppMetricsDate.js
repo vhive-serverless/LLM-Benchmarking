@@ -65,7 +65,7 @@ const AppMetricsDate = ({ title, subheader, metrics, dateArray }) => {
                 text: "Latency ms",
             },
             labels: {
-                formatter: (value) => (value !== null ? `${(value ** 10).toFixed(3)}` : "N/A"),
+                formatter: (value) => (value !== null ? `${(10 ** value).toFixed(3)}` : "N/A"),
             },
             type: "linear", // Since we've manually log-transformed, keep this linear
         },
@@ -76,7 +76,7 @@ const AppMetricsDate = ({ title, subheader, metrics, dateArray }) => {
                 formatter: (value) => value,
             },
             y: {
-                formatter: (value) => (value !== null ? `${(value ** 10).toFixed(3)}` : "N/A"),
+                formatter: (value) => (value !== null ? `${(10 ** value).toFixed(3)}` : "N/A"),
             },
         },
     });

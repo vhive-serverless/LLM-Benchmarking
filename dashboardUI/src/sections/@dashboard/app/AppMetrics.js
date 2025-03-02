@@ -49,7 +49,7 @@ const AppMetrics = ({ title, metricType, subheader, metrics }) => {
                 text: "Latency (ms)",
             },
             labels: {
-                formatter: (value) => `${(value ** 10).toFixed(3)} ms`, // Convert back to linear scale for display
+                formatter: (value) => `${(10 ** value).toFixed(3)} ms`, // Convert back to linear scale for display
             },
             tickAmount: 10,
         },
@@ -68,7 +68,7 @@ const AppMetrics = ({ title, metricType, subheader, metrics }) => {
             shared: true, // Shared tooltip for better interactivity
             intersect: false,
             x: {
-                formatter: (value) => `${(value ** 10).toFixed(3)} ms`,
+                formatter: (value) => `${(10 ** value).toFixed(3)} ms`,
             },
             y: {
                 formatter: (value) => value.toFixed(3),
