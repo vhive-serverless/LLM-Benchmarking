@@ -25,13 +25,12 @@ class PerplexityAI(BaseProvider):
         super().__init__(
             api_key=perplexity_api, client_class=client_class, base_url=base_url
         )
-
         # model names mapping
         self.model_map = {
-            "meta-llama-3.1-70b-instruct": "llama-3.1-sonar-large-128k-online",  # 70b
-            "meta-llama-3.1-8b-instruct": "llama-3.1-sonar-small-128k-online",  # 8b
-            "meta-llama-3.1-sonar-405B": "llama-3.1-sonar-huge-128k-online",  # 405B
-            "common-model": "llama-3.1-sonar-large-128k-online",
+            "sonar": "sonar",
+            "sonar-pro": "sonar-pro",
+            "sonar-reasoning-pro": "sonar-reasoning-pro",
+            "common-model": "sonar-pro",
         }
 
     def perform_inference_streaming(

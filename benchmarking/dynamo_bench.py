@@ -6,7 +6,7 @@ import json
 import os
 import uuid
 from datetime import datetime
-
+import matplotlib.pyplot as plt
 import boto3
 import numpy as np
 from botocore.exceptions import ClientError
@@ -94,16 +94,19 @@ class Benchmark:
         try:
             for provider_name, models in self.benchmark_data["providers"].items():
                 for model_name, metrics in models.items():
+                    model_key = "common" if self.models[0] == "common-model" else "multi"
                     item = {
                         "id": str(uuid.uuid4()),
                         "run_id": self.benchmark_data["run_id"],
                         "timestamp": self.benchmark_data["timestamp"],
                         "provider_name": provider_name,
                         "model_name": model_name,
+                        "model_key": model_key,
                         "prompt": self.benchmark_data["prompt"],
                         "metrics": json.dumps(metrics),  # Serialize metrics as JSON string
                         "streaming": self.streaming,
                     }
+                    print(item)
                     table.put_item(Item=item)
             print(f"Successfully stored benchmark data for run ID {self.run_id}")
         except ClientError as e:
@@ -133,15 +136,47 @@ class Benchmark:
     def plot_metrics(self, metric):
         """
         Collect and add latency and CDF data points for each provider and model.
-
+        
         Args:
             metric (str): The metric type to collect (e.g., response_times).
         """
+        plt.figure(figsize=(8, 8))
         for provider in self.providers:
             provider_name = provider.__class__.__name__
             for model, latencies in provider.metrics[metric].items():
                 model_name = provider.get_model_name(model)
                 self.add_metric_data(provider_name, model_name, metric, latencies)
+                latencies_sorted = np.sort(latencies) * 1000
+                cdf = np.arange(1, len(latencies_sorted) + 1) / len(latencies_sorted)
+                model_name = provider.get_model_name(model)
+
+                plt.plot(
+                    latencies_sorted,
+                    cdf,
+                    marker="o",
+                    linestyle="-",
+                    markersize=5,
+                    label=f"{provider_name} - {model_name}",
+                )
+
+        plt.xlabel("Latency (ms)", fontsize=12)
+        plt.ylabel("Portion of requests", fontsize=12)
+        plt.grid(True)
+
+        # Add legend
+        plt.legend(loc="best")
+        plt.xscale("log")
+
+        # Show and save the plot
+        plt.tight_layout()
+
+        current_time = datetime.now().strftime("%y%m%d_%H%M")
+        filename = f"{metric}_{current_time}.png"
+        filepath = os.path.join(self.graph_dir, filename)
+        plt.savefig(filepath)
+        plt.close()
+
+        print(f"Saved graph: {filepath}")
 
     def run(self):
         """

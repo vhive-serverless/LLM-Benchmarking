@@ -55,3 +55,17 @@ jobs:
       with:
         name: results
         path: benchmark_graph
+        
+  download-artifacts:
+    runs-on: ubuntu-latest
+    needs: compare-providers
+    steps:
+      - name: Download Artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: results
+          path: artifacts
+
+      - name: List Downloaded Artifacts
+        run: ls -R artifacts
+  
