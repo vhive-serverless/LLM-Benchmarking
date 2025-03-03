@@ -92,7 +92,6 @@ class PerplexityAI(BaseProvider):
                 #     elif len(inter_token_latencies) == 20:
                 #         print("...")
 
-
             if verbosity:
                 print(
                     f"\nNumber of output tokens: {total_tokens}, "
