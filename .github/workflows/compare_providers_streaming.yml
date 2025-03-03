@@ -54,7 +54,7 @@ jobs:
       uses: actions/upload-artifact@v4
       with:
         name: results
-        path: benchmark_graph
+        path: ${{ github.workspace }}/benchmark_graph
         
   download-artifacts:
     runs-on: ubuntu-latest
