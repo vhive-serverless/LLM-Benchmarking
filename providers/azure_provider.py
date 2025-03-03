@@ -16,7 +16,7 @@ class Azure(ProviderInterface):
             # "mistral-7b-instruct-v0.1": "mistral-7b-instruct-v0.1",
             "meta-llama-3.1-8b-instruct": "Meta-Llama-3-1-8B-Instruct-fyp",
             "meta-llama-3.1-70b-instruct": "Meta-Llama-3-1-70B-Instruct-fyp",
-            "common-model": "Llama-3-3-70B-Instruct-enzzg",
+            "common-model": "Mistral-Large-2411-yatcd",
         }
 
         # Define API keys for each model
@@ -24,7 +24,8 @@ class Azure(ProviderInterface):
             # "mistral-7b-instruct-v0.1": os.environ.get("MISTRAL_API_KEY"),
             "meta-llama-3.1-8b-instruct": os.environ.get("AZURE_LLAMA_8B_API"),
             "meta-llama-3.1-70b-instruct": os.environ.get("AZURE_LLAMA_3.1_70B_API"),
-            "common-model": os.environ.get("AZURE_LLAMA_70B_API"),
+            # "common-model": os.environ.get("AZURE_LLAMA_70B_API"),
+            "common-model": os.environ.get("MISTRAL_LARGE_API"),
             # "common-model": os.environ.get("MISTRAL_API_KEY")
         }
 
@@ -143,7 +144,7 @@ class Azure(ProviderInterface):
                     inter_token_latencies.append(inter_token_latency)
 
                     # Display token if verbosity is enabled
-                    # print(line_str)
+                    print(line_str)
                     # ['data: {', 'id', ':', 'cmpl-6d29738f-e50d-4d14-a33a-6690cdcfb90e', ',', 'object', ':', 'chat.completion.chunk', ',', 'created', ':1740385923,', 'model', ':', 'Llama-3.3-70B-Instruct', ',', 'choices', ':[{', 'index', ':0,', 'delta', ':{', 'role', ':', 'assistant', ',', 'content', ':', ' at', ',', 'tool_calls', ':null},', 'finish_reason', ':', 'length', '}],', 'usage', ':null}']
                     match = re.search(r'"content"\s*:\s*"(.*?)"', line_str)
                     if match:
