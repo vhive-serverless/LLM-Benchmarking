@@ -8,6 +8,8 @@ import time
 import uuid
 from datetime import datetime
 import matplotlib.pyplot as plt
+from matplotlib.ticker import LogLocator, FormatStrFormatter
+
 import boto3
 import numpy as np
 from botocore.exceptions import ClientError
