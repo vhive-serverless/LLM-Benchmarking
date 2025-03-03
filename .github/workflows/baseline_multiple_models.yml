@@ -50,7 +50,7 @@ jobs:
       uses: actions/upload-artifact@v3
       with:
         name: test-experiment-results
-        path: benchmark_graph
+        path: ${{ github.workspace }}/benchmark_graph
 
   anthropic:
     runs-on: ubuntu-latest
@@ -80,7 +80,7 @@ jobs:
         uses: actions/upload-artifact@v3
         with:
           name: anthropic-experiment-results
-          path: benchmark_graph
+          path: ${{ github.workspace }}/benchmark_graph
 
   cloudflare:
     runs-on: ubuntu-latest
@@ -111,7 +111,7 @@ jobs:
         uses: actions/upload-artifact@v3
         with:
           name: cloudflare-experiment-results
-          path: benchmark_graph
+          path: ${{ github.workspace }}/benchmark_graph
 
   aws:
     runs-on: ubuntu-latest
@@ -138,7 +138,7 @@ jobs:
         uses: actions/upload-artifact@v3
         with:
           name: aws-experiment-results
-          path: benchmark_graph
+          path: ${{ github.workspace }}/benchmark_graph
 
   azure:
     runs-on: ubuntu-latest
@@ -165,7 +165,7 @@ jobs:
         uses: actions/upload-artifact@v3
         with:
           name: azure-experiment-results
-          path: benchmark_graph
+          path: ${{ github.workspace }}/benchmark_graph
 
   togetherai:
     runs-on: ubuntu-latest
@@ -195,7 +195,7 @@ jobs:
         uses: actions/upload-artifact@v3
         with:
           name: togetherai-experiment-results
-          path: benchmark_graph
+          path: ${{ github.workspace }}/benchmark_graph
 
   # OpenAI
   openai:
@@ -226,7 +226,7 @@ jobs:
         uses: actions/upload-artifact@v3
         with:
           name: openai-experiment-results
-          path: benchmark_graph
+          path: ${{ github.workspace }}/benchmark_graph
 
   # Hyperbolic
   hyperbolic:
@@ -257,7 +257,7 @@ jobs:
         uses: actions/upload-artifact@v3
         with:
           name: hyperbolic-experiment-results
-          path: benchmark_graph
+          path: ${{ github.workspace }}/benchmark_graph
 
   # Google Gemini
   google_gemini:
@@ -288,7 +288,7 @@ jobs:
         uses: actions/upload-artifact@v3
         with:
           name: google-gemini-experiment-results
-          path: benchmark_graph
+          path: ${{ github.workspace }}/benchmark_graph
 
   # Groq
   groq:
@@ -319,7 +319,7 @@ jobs:
         uses: actions/upload-artifact@v3
         with:
           name: groq-experiment-results
-          path: benchmark_graph
+          path: ${{ github.workspace }}/benchmark_graph
 
   download-artifacts:
       runs-on: ubuntu-latest
