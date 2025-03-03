@@ -187,14 +187,31 @@ class Benchmark:
         for provider in self.providers:
             for model in self.models:
                 for _ in range(self.num_requests):
+                    if self.verbosity:
+                        print(f"Request {i + 1}/{self.num_requests}")
+
+                    if i % 30 == 0:
+                        # print("[DEBUG] Sleeping for 2 mins to bypass rate limit...")
+                        time.sleep(120)
+
                     if self.streaming:
-                        provider.perform_inference_streaming(
-                            model, self.prompt, self.max_output, self.verbosity
-                        )
+                        if provider_name == "vLLM":
+                            provider.perform_inference_streaming(
+                                model, self.prompt, self.vllm_ip, self.max_output, self.verbosity
+                            )
+                        else:
+                            provider.perform_inference_streaming(
+                                model, self.prompt, self.max_output, self.verbosity
+                            )
                     else:
-                        provider.perform_inference(
-                            model, self.prompt, self.max_output, self.verbosity
-                        )
+                        if provider_name == "vLLM":
+                            provider.perform_inference(
+                                model, self.prompt, self.vllm_ip, self.max_output, self.verbosity
+                            )
+                        else:
+                            provider.perform_inference(
+                                model, self.prompt, self.max_output, self.verbosity
+                            )
 
         metrics_to_plot = (
             ["timetofirsttoken", "response_times", "timebetweentokens", "tps", "timebetweentokens_p95", "timebetweentokens_median"]
