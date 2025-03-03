@@ -4,6 +4,7 @@ results in a DynamoDB table.
 """
 import json
 import os
+import time
 import uuid
 from datetime import datetime
 import matplotlib.pyplot as plt
@@ -26,6 +27,7 @@ class Benchmark:
         prompt,
         streaming=False,
         verbosity=False,
+        vllm_ip=None
     ):
         """
         Initialize the Benchmark object.
@@ -133,32 +135,45 @@ class Benchmark:
             model_name, {}
         )[metric] = {"latencies": latencies_sorted, "cdf": cdf}
 
-    def plot_metrics(self, metric):
+    def plot_metrics(self, metric, filename_suffix):
         """
-        Collect and add latency and CDF data points for each provider and model.
-        
+        Plots and saves graphs for the given metric.
+
         Args:
-            metric (str): The metric type to collect (e.g., response_times).
+            metric (str): The name of the metric to plot (e.g., "response_times").
+            filename_suffix (str): Suffix to append to the filename for saving the plot.
         """
         plt.figure(figsize=(8, 8))
+
         for provider in self.providers:
             provider_name = provider.__class__.__name__
             for model, latencies in provider.metrics[metric].items():
-                model_name = provider.get_model_name(model)
-                self.add_metric_data(provider_name, model_name, metric, latencies)
+                # Convert to milliseconds and sort for CDF
                 latencies_sorted = np.sort(latencies) * 1000
                 cdf = np.arange(1, len(latencies_sorted) + 1) / len(latencies_sorted)
                 model_name = provider.get_model_name(model)
 
-                plt.plot(
-                    latencies_sorted,
-                    cdf,
-                    marker="o",
-                    linestyle="-",
-                    markersize=5,
-                    label=f"{provider_name} - {model_name}",
-                )
-
+                if provider_name.lower() == "vllm":
+                    plt.plot(
+                        latencies_sorted,
+                        cdf,
+                        marker="o",
+                        linestyle="-",
+                        markersize=6,  # Slightly larger marker size
+                        color="black",  # Black color for the marker
+                        label=f"{provider_name} - {model_name}",
+                        linewidth=2,  # Bold line
+                    )
+                else:
+                    plt.plot(
+                        latencies_sorted,
+                        cdf,
+                        marker="o",
+                        linestyle="-",
+                        markersize=5,
+                        label=f"{provider_name} - {model_name}",
+                    )
+                
         plt.xlabel("Latency (ms)", fontsize=12)
         plt.ylabel("Portion of requests", fontsize=12)
         plt.grid(True)
@@ -166,12 +181,26 @@ class Benchmark:
         # Add legend
         plt.legend(loc="best")
         plt.xscale("log")
+        # **Ensure all ticks are labeled**
+        ax = plt.gca()
 
-        # Show and save the plot
+        # display 5 minor ticks between each major tick
+        # minorLocator = LogLocator(subs=np.linspace(2, 10, 6, endpoint=False))
+        minorLocator = LogLocator(base=10.0, subs='auto')
+        # format the labels (if they're the x values)
+        minorFormatter = FormatStrFormatter('%1.1f')
+        
+        # for no labels use default NullFormatter
+        ax.xaxis.set_minor_locator(minorLocator)
+        
+        ax.xaxis.set_minor_formatter(minorFormatter)
+        for label in ax.get_xminorticklabels():
+            label.set_fontsize(8)   # smaller font for minor labels
+            label.set_rotation(45)  # rotate 90 degrees for readability
         plt.tight_layout()
 
         current_time = datetime.now().strftime("%y%m%d_%H%M")
-        filename = f"{metric}_{current_time}.png"
+        filename = f"{filename_suffix}_{current_time}.png"
         filepath = os.path.join(self.graph_dir, filename)
         plt.savefig(filepath)
         plt.close()
@@ -183,16 +212,35 @@ class Benchmark:
         Execute the benchmark and store metrics in DynamoDB.
         """
         for provider in self.providers:
+            provider_name = provider.__class__.__name__
+            print(f"{provider_name}")
             for model in self.models:
-                for _ in range(self.num_requests):
+                for i in range(self.num_requests):
+                    if self.verbosity:
+                        print(f"Request {i + 1}/{self.num_requests}")
+
+                    if i % 30 == 0:
+                        # print("[DEBUG] Sleeping for 2 mins to bypass rate limit...")
+                        time.sleep(120)
+
                     if self.streaming:
-                        provider.perform_inference_streaming(
-                            model, self.prompt, self.max_output, self.verbosity
-                        )
+                        if provider_name == "vLLM":
+                            provider.perform_inference_streaming(
+                                model, self.prompt, self.vllm_ip, self.max_output, self.verbosity
+                            )
+                        else:
+                            provider.perform_inference_streaming(
+                                model, self.prompt, self.max_output, self.verbosity
+                            )
                     else:
-                        provider.perform_inference(
-                            model, self.prompt, self.max_output, self.verbosity
-                        )
+                        if provider_name == "vLLM":
+                            provider.perform_inference(
+                                model, self.prompt, self.vllm_ip, self.max_output, self.verbosity
+                            )
+                        else:
+                            provider.perform_inference(
+                                model, self.prompt, self.max_output, self.verbosity
+                            )
 
         metrics_to_plot = (
             ["timetofirsttoken", "response_times", "timebetweentokens", "tps", "timebetweentokens_p95", "timebetweentokens_median"]
