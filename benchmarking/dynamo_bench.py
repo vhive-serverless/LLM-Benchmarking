@@ -50,6 +50,19 @@ class Benchmark:
         self.verbosity = verbosity
         self.run_id = str(uuid.uuid4())  # Generate a unique ID for each benchmark run
 
+        base_dir = "streaming" if streaming else "end_to_end"
+
+        provider_names = sorted(
+            [provider.__class__.__name__.lower() for provider in providers]
+        )
+        provider_dir_name = "_".join(provider_names)
+
+        self.graph_dir = os.path.join("benchmark_graph", base_dir, provider_dir_name)
+
+        # Create directories if they don't exist
+        if not os.path.exists(self.graph_dir):
+            os.makedirs(self.graph_dir)
+
         # Initialize DynamoDB
         self.dynamodb = boto3.resource(
             "dynamodb",
