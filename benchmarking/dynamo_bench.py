@@ -185,8 +185,10 @@ class Benchmark:
         Execute the benchmark and store metrics in DynamoDB.
         """
         for provider in self.providers:
+            provider_name = provider.__class__.__name__
+            print(f"{provider_name}")
             for model in self.models:
-                for _ in range(self.num_requests):
+                for i in range(self.num_requests):
                     if self.verbosity:
                         print(f"Request {i + 1}/{self.num_requests}")
 
