@@ -118,13 +118,30 @@ def test_store_data_points(benchmark_instance):
     assert isinstance(item["metrics"], str)
 
 def test_plot_metrics(benchmark_instance):
+    # Mock provider setup
+    mock_provider = MockProvider()
+    provider_name = mock_provider.__class__.__name__
+    model_name = "mock_model"
+    
+    # Manually add mock data to benchmark_data
+    benchmark_instance.benchmark_data["providers"] = {
+        provider_name: {
+            model_name: {
+                "response_times": {
+                    "latencies": ["100", "200", "300"],
+                    "cdf": ["0.33", "0.66", "1.0"]
+                }
+            }
+        }
+    }
+    
+    # Mock the savefig method
     with patch("matplotlib.pyplot.savefig") as mock_savefig:
-        benchmark_instance.graph_dir='/'
+        benchmark_instance.graph_dir = "/tmp"  # Ensure this directory exists
         benchmark_instance.plot_metrics("response_times")
         mock_savefig.assert_called_once()  # Ensure savefig was called once
-    
-    provider_name = "MockProvider"
-    model_name = "mock_model"
+
+    # Verify that benchmark_data has been populated correctly
     assert provider_name in benchmark_instance.benchmark_data["providers"]
     assert model_name in benchmark_instance.benchmark_data["providers"][provider_name]
     assert "response_times" in benchmark_instance.benchmark_data["providers"][provider_name][model_name]

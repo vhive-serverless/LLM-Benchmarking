@@ -22,7 +22,8 @@ jobs:
         AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
         AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
         AWS_REGION: ${{ secrets.AWS_REGION }}
-        filepath: benchmarking/experiments/providers_test.json
+        MISTRAL_LARGE_API: ${{ secrets.MISTRAL_LARGE_API }}
+        filepath: benchmarking/experiments/sample_config.json
 
     steps:
     - name: Check out repository
@@ -44,7 +45,7 @@ jobs:
 
     - name: Upload Experiment Outputs
       if: success()
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         name: sample-experiment-results
         path: ${{ github.workspace }}/benchmark_graph

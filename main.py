@@ -14,6 +14,7 @@ from providers import (
     Hyperbolic,
     Azure,
     AWSBedrock,
+    vLLM
 )
 from utils.prompt_generator import get_prompt
 
@@ -31,6 +32,9 @@ parser.add_argument(
 )
 parser.add_argument(
     "--list", action="store_true", help="List available providers and models"
+)
+parser.add_argument(
+    "--vllm_ip", type=str, default=None, help="IP address of vLLM provider"
 )
 
 # Define possible input sizes
@@ -54,6 +58,7 @@ def get_available_providers():
         "Groq": GroqProvider(),
         "Azure": Azure(),
         "AWSBedrock": AWSBedrock(),
+        "vLLM": vLLM()
     }
 
     return available_providers
@@ -143,7 +148,7 @@ def validate_selected_models(selected_models, common_models, selected_providers)
 
 
 # Main function to run the benchmark
-def run_benchmark(config):
+def run_benchmark(config, vllm_ip=None):
     """Runs the benchmark based on the given configuration."""
     providers = config.get("providers", [])
     num_requests = config.get("num_requests", 1)
@@ -211,6 +216,7 @@ def run_benchmark(config):
         prompt=prompt,
         streaming=streaming,
         verbosity=verbose,
+        vllm_ip=vllm_ip,
     )
     benchmark.run()
 
@@ -218,13 +224,19 @@ def run_benchmark(config):
 def main():
     """Main function to parse arguments and run the program."""
     args = parser.parse_args()
+    vllm_ip = getattr(args, "vllm_ip", None)
     # Display available providers and models if --list flag is used
     if args.list:
         display_available_providers()
     elif args.config:
         config = load_config(args.config)
         if config:
-            run_benchmark(config)
+            if "vLLM" in config.get("providers", []) and not vllm_ip:
+                print("\n[ERROR] vLLM provider is selected, but `vllm_ip` is missing!")
+                print("   ➜ Please add `vllm_ip' via CLI using `--vllm_ip <ip-addr>`.")
+                return  # Stop execution
+        
+            run_benchmark(config, vllm_ip)
     else:
         parser.print_help()
 
