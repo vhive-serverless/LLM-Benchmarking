@@ -133,7 +133,7 @@ class Azure(ProviderInterface):
                     
                     if line_str == "data: [DONE]":
                         # print(line_str)
-                        print("here")
+                        # print("here")
                         total_time = timer() - start_time
                         break
 
