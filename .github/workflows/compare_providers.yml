@@ -45,10 +45,10 @@ jobs:
 
     - name: Upload Experiment Outputs
       if: success()
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         name: sample-experiment-results
-        path: benchmark_graph
+        path: ${{ github.workspace }}/benchmark_graph
 
   download-artifacts:
       runs-on: ubuntu-latest
