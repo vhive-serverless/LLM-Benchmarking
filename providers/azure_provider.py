@@ -16,7 +16,8 @@ class Azure(ProviderInterface):
             # "mistral-7b-instruct-v0.1": "mistral-7b-instruct-v0.1",
             "meta-llama-3.1-8b-instruct": "Meta-Llama-3-1-8B-Instruct-fyp",
             "meta-llama-3.1-70b-instruct": "Meta-Llama-3-1-70B-Instruct-fyp",
-            "common-model": "Llama-3-3-70B-Instruct-enzzg",
+            "mistral-large": "Mistral-Large-2411-yatcd",
+            "common-model": "Mistral-Large-2411-yatcd",
         }
 
         # Define API keys for each model
@@ -24,8 +25,8 @@ class Azure(ProviderInterface):
             # "mistral-7b-instruct-v0.1": os.environ.get("MISTRAL_API_KEY"),
             "meta-llama-3.1-8b-instruct": os.environ.get("AZURE_LLAMA_8B_API"),
             "meta-llama-3.1-70b-instruct": os.environ.get("AZURE_LLAMA_3.1_70B_API"),
-            "common-model": os.environ.get("AZURE_LLAMA_70B_API"),
-            # "common-model": os.environ.get("MISTRAL_API_KEY")
+            "mistral-large": os.environ.get("MISTRAL_LARGE_API"),
+            "common-model": os.environ.get("MISTRAL_LARGE_API")
         }
 
     def get_model_name(self, model):

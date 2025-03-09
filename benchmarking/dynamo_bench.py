@@ -11,7 +11,7 @@ import matplotlib.pyplot as plt
 import boto3
 import numpy as np
 from botocore.exceptions import ClientError
-
+from matplotlib.ticker import LogLocator, FormatStrFormatter
 
 class Benchmark:
     """
@@ -148,7 +148,7 @@ class Benchmark:
             model_name, {}
         )[metric] = {"latencies": latencies_sorted, "cdf": cdf}
 
-    def plot_metrics(self, metric, filename_suffix):
+    def plot_metrics(self, metric):
         """
         Plots and saves graphs for the given metric.
 
@@ -213,7 +213,7 @@ class Benchmark:
         plt.tight_layout()
 
         current_time = datetime.now().strftime("%y%m%d_%H%M")
-        filename = f"{filename_suffix}_{current_time}.png"
+        filename = f"{metric}_{current_time}.png"
         filepath = os.path.join(self.graph_dir, filename)
         plt.savefig(filepath)
         plt.close()
