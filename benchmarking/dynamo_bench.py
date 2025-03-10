@@ -49,7 +49,8 @@ class Benchmark:
         self.max_output = max_output
         self.verbosity = verbosity
         self.run_id = str(uuid.uuid4())  # Generate a unique ID for each benchmark run
-
+        self.vllm_ip = vllm_ip
+        
         base_dir = "streaming" if streaming else "end_to_end"
 
         provider_names = sorted(

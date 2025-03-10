@@ -146,5 +146,6 @@ class GoogleGemini(ProviderInterface):
         self.log_metrics(
             model, "tps", total_tokens / total_time if total_time > 0 else 0
         )
+        print(f"{inter_token_latencies} | {len(inter_token_latencies)} | {avg_tbt} | {total_tokens / total_time} | {total_time} | {TTFT}")
 
         return streamed_output

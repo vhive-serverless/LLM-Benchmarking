@@ -161,7 +161,8 @@ class Azure(ProviderInterface):
 
             # Log metrics
             avg_tbt = sum(inter_token_latencies) / len(inter_token_latencies)
-            print(f"{avg_tbt:.4f}, {len(inter_token_latencies)}")
+           
+            # print(f"{avg_tbt:.4f}, {len(inter_token_latencies)}")
             self.log_metrics(model, "timetofirsttoken", ttft)
             self.log_metrics(model, "response_times", total_time)
             self.log_metrics(model, "timebetweentokens", avg_tbt)
@@ -172,7 +173,7 @@ class Azure(ProviderInterface):
                 model, "timebetweentokens_p95", np.percentile(inter_token_latencies, 95)
             )
             self.log_metrics(model, "totaltokens", len(inter_token_latencies) + 1)
-
+            print(f"{inter_token_latencies} | {len(inter_token_latencies)} | {avg_tbt} | {total_time} | {ttft}")
         except Exception as e:
             print(f"[ERROR] Streaming inference failed for model '{model}': {e}")
             return None, None

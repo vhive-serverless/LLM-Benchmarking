@@ -147,7 +147,7 @@ class vLLM(ProviderInterface):
             self.log_metrics(model, "timebetweentokens_p95", p95)
             self.log_metrics(model, "totaltokens", len(inter_token_latencies) + 1)
             self.log_metrics(model, "tps", (len(inter_token_latencies) + 1) / total_time)
-
+            print(f"{inter_token_latencies} | {len(inter_token_latencies)} | {avg_tbt} | {total_time} | {ttft}")
             return generated_text, total_time
 
         except Exception as e:

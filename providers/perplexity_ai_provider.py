@@ -111,7 +111,7 @@ class PerplexityAI(BaseProvider):
             self.log_metrics(model, "timebetweentokens_p95", p95)
             self.log_metrics(model, "totaltokens", total_tokens)
             self.log_metrics(model, "tps", total_tokens / elapsed if elapsed > 0 else 0)
-
+            print(f"{inter_token_latencies} | {len(inter_token_latencies)} | {avg_tbt} | {total_tokens / elapsed} | {elapsed} | {ttft}")
         except Exception as e:
             print(f"[ERROR] Streaming inference failed for model '{model}': {e}")
             return None, None

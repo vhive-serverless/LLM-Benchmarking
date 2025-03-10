@@ -109,7 +109,7 @@ class BaseProvider(ProviderInterface):
             self.log_metrics(model, "timebetweentokens_p95", p95)
             self.log_metrics(model, "totaltokens", len(inter_token_latencies) + 1)
             self.log_metrics(model, "tps", (len(inter_token_latencies) + 1) / elapsed)
-
+            print(f"{inter_token_latencies} | {len(inter_token_latencies)} | {avg_tbt} | {elapsed} | {ttft}")
         except Exception as e:
             print(f"[ERROR] Streaming inference failed for model '{model}': {e}")
             return None, None

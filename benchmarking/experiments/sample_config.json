@@ -1,11 +1,11 @@
 {
     "providers": [
-        "Azure"
+        "Groq"
     ],
     "models": [
         "common-model"
     ],
-    "num_requests": 3,
+    "num_requests": 100,
     "input_tokens": 10,
     "streaming": true,
     "max_output": 100,

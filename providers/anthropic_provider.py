@@ -137,17 +137,19 @@ class Anthropic(ProviderInterface):
             # Log remaining metrics
             # avg_tbt = sum(inter_token_latencies) / len(inter_token_latencies)
             avg_tbt = sum(inter_token_latencies) / max_output
-
+            tps = (len(inter_token_latencies) + 1) / elapsed
             self.log_metrics(model, "response_times", elapsed)
             self.log_metrics(model, "timebetweentokens", avg_tbt)
             self.log_metrics(model, "totaltokens", len(inter_token_latencies) + 1)
-            self.log_metrics(model, "tps", (len(inter_token_latencies) + 1) / elapsed)
+            self.log_metrics(model, "tps", tps)
             self.log_metrics(
                 model, "timebetweentokens_median", np.percentile(inter_token_latencies, 50)
             )
             self.log_metrics(
                 model, "timebetweentokens_p95", np.percentile(inter_token_latencies, 95)
             )
+
+            print(f"{inter_token_latencies} | {len(inter_token_latencies)} | {avg_tbt} | {tps} | {elapsed} | {TTFT}")
 
         except Exception as e:
             print(f"[ERROR] Streaming inference failed for model '{model}': {e}")

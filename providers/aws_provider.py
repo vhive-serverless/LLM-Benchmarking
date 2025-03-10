@@ -172,6 +172,8 @@ class AWSBedrock(ProviderInterface):
                 model, "tps", (len(inter_token_latencies) + 1) / total_time
             )
 
+            print(f"{inter_token_latencies} | {len(inter_token_latencies)} | {avg_tbt} | {total_time} | {ttft}")
+
             return total_time, inter_token_latencies
 
         except Exception as e:
