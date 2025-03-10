@@ -232,7 +232,7 @@ class Benchmark:
                     if self.verbosity:
                         print(f"Request {i + 1}/{self.num_requests}")
 
-                    if i % 30 == 0:
+                    if i % 20 == 0:
                         # print("[DEBUG] Sleeping for 2 mins to bypass rate limit...")
                         time.sleep(120)
 
