@@ -1,16 +1,13 @@
 {
     "providers": [
-        "PerplexityAI",
-        "Cloudflare",
-        "Groq"
+        "Azure"
     ],
     "models": [
         "common-model"
     ],
     "num_requests": 3,
     "input_tokens": 10,
-    "streaming": false,
+    "streaming": true,
     "max_output": 100,
-    "verbose": true,
-    "backend": true
+    "verbose": true
 }

@@ -1,8 +1,9 @@
 import matplotlib.pyplot as plt
 import numpy as np
 import os
+import time
 from datetime import datetime
-
+from matplotlib.ticker import LogLocator, FormatStrFormatter
 
 class Benchmark:
     """
@@ -28,6 +29,7 @@ class Benchmark:
         prompt,
         streaming=False,
         verbosity=False,
+        vllm_ip=None
     ):
         """
         Initializes the Benchmark instance with provided parameters.
@@ -48,6 +50,7 @@ class Benchmark:
         self.streaming = streaming
         self.max_output = max_output
         self.verbosity = verbosity
+        self.vllm_ip = vllm_ip
 
         base_dir = "streaming" if streaming else "end_to_end"
 
@@ -80,15 +83,27 @@ class Benchmark:
                 cdf = np.arange(1, len(latencies_sorted) + 1) / len(latencies_sorted)
                 model_name = provider.get_model_name(model)
 
-                plt.plot(
-                    latencies_sorted,
-                    cdf,
-                    marker="o",
-                    linestyle="-",
-                    markersize=5,
-                    label=f"{provider_name} - {model_name}",
-                )
-
+                if provider_name.lower() == "vllm":
+                    plt.plot(
+                        latencies_sorted,
+                        cdf,
+                        marker="o",
+                        linestyle="-",
+                        markersize=6,  # Slightly larger marker size
+                        color="black",  # Black color for the marker
+                        label=f"{provider_name} - {model_name}",
+                        linewidth=2,  # Bold line
+                    )
+                else:
+                    plt.plot(
+                        latencies_sorted,
+                        cdf,
+                        marker="o",
+                        linestyle="-",
+                        markersize=5,
+                        label=f"{provider_name} - {model_name}",
+                    )
+                
         plt.xlabel("Latency (ms)", fontsize=12)
         plt.ylabel("Portion of requests", fontsize=12)
         plt.grid(True)
@@ -96,8 +111,22 @@ class Benchmark:
         # Add legend
         plt.legend(loc="best")
         plt.xscale("log")
+        # **Ensure all ticks are labeled**
+        ax = plt.gca()
 
-        # Show and save the plot
+        # display 5 minor ticks between each major tick
+        # minorLocator = LogLocator(subs=np.linspace(2, 10, 6, endpoint=False))
+        minorLocator = LogLocator(base=10.0, subs='auto')
+        # format the labels (if they're the x values)
+        minorFormatter = FormatStrFormatter('%1.1f')
+        
+        # for no labels use default NullFormatter
+        ax.xaxis.set_minor_locator(minorLocator)
+        
+        ax.xaxis.set_minor_formatter(minorFormatter)
+        for label in ax.get_xminorticklabels():
+            label.set_fontsize(8)   # smaller font for minor labels
+            label.set_rotation(45)  # rotate 90 degrees for readability
         plt.tight_layout()
 
         current_time = datetime.now().strftime("%y%m%d_%H%M")
@@ -126,17 +155,29 @@ class Benchmark:
                 for i in range(self.num_requests):
                     if self.verbosity:
                         print(f"Request {i + 1}/{self.num_requests}")
-                    elif i % 10 == 0 or i == self.num_requests - 1:
-                        print(f"\nRequest {i + 1}/{self.num_requests}")
+
+                    if i % 20 == 0:
+                        # print("[DEBUG] Sleeping for 2 mins to bypass rate limit...")
+                        time.sleep(120)
 
                     if self.streaming:
-                        provider.perform_inference_streaming(
-                            model, self.prompt, self.max_output, self.verbosity
-                        )
+                        if provider_name == "vLLM":
+                            provider.perform_inference_streaming(
+                                model, self.prompt, self.vllm_ip, self.max_output, self.verbosity
+                            )
+                        else:
+                            provider.perform_inference_streaming(
+                                model, self.prompt, self.max_output, self.verbosity
+                            )
                     else:
-                        provider.perform_inference(
-                            model, self.prompt, self.max_output, self.verbosity
-                        )
+                        if provider_name == "vLLM":
+                            provider.perform_inference(
+                                model, self.prompt, self.vllm_ip, self.max_output, self.verbosity
+                            )
+                        else:
+                            provider.perform_inference(
+                                model, self.prompt, self.max_output, self.verbosity
+                            )
 
         if not self.streaming:
             self.plot_metrics("response_times", "response_times")

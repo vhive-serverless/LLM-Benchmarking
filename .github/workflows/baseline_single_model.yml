@@ -22,6 +22,7 @@ env:  # Define global environment variables for all jobs
     AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
     AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
     AWS_REGION: ${{ secrets.AWS_REGION }}
+    MISTRAL_LARGE_API: ${{ secrets.MISTRAL_LARGE_API }}
     folder: benchmarking/experiments/providers_streaming/single_model  # common folder for experiment configs
     
 jobs:
@@ -46,7 +47,7 @@ jobs:
 
     - name: Upload Experiment Outputs
       if: success()
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         name: test-experiment-results
         path: ${{ github.workspace }}/benchmark_graph
@@ -72,7 +73,7 @@ jobs:
 
       - name: Upload Experiment Outputs
         if: success()
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: anthropic-experiment-results
           path: ${{ github.workspace }}/benchmark_graph
@@ -98,7 +99,7 @@ jobs:
 
       - name: Upload Experiment Outputs
         if: success()
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: cloudflare-experiment-results
           path: ${{ github.workspace }}/benchmark_graph
@@ -125,7 +126,7 @@ jobs:
 
       - name: Upload Experiment Outputs
         if: success()
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: perplexityai-experiment-results
           path: ${{ github.workspace }}/benchmark_graph
@@ -152,7 +153,7 @@ jobs:
 
       - name: Upload Experiment Outputs
         if: success()
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: aws-experiment-results
           path: ${{ github.workspace }}/benchmark_graph
@@ -179,7 +180,7 @@ jobs:
 
       - name: Upload Experiment Outputs
         if: success()
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: azure-experiment-results
           path: ${{ github.workspace }}/benchmark_graph
@@ -205,7 +206,7 @@ jobs:
 
       - name: Upload Experiment Outputs
         if: success()
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: togetherai-experiment-results
           path: ${{ github.workspace }}/benchmark_graph
@@ -232,7 +233,7 @@ jobs:
 
       - name: Upload Experiment Outputs
         if: success()
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: openai-experiment-results
           path: ${{ github.workspace }}/benchmark_graph
@@ -259,7 +260,7 @@ jobs:
 
       - name: Upload Experiment Outputs
         if: success()
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: hyperbolic-experiment-results
           path: ${{ github.workspace }}/benchmark_graph
@@ -286,7 +287,7 @@ jobs:
 
       - name: Upload Experiment Outputs
         if: success()
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: google-gemini-experiment-results
           path: ${{ github.workspace }}/benchmark_graph
@@ -313,7 +314,7 @@ jobs:
 
       - name: Upload Experiment Outputs
         if: success()
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: groq-experiment-results
           path: ${{ github.workspace }}/benchmark_graph
