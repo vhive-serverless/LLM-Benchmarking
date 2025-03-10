@@ -161,6 +161,8 @@ class Benchmark:
         for provider in self.providers:
             provider_name = provider.__class__.__name__
             for model, latencies in provider.metrics[metric].items():
+                model_name = provider.get_model_name(model)
+                self.add_metric_data(provider_name, model_name, metric, latencies)
                 # Convert to milliseconds and sort for CDF
                 latencies_sorted = np.sort(latencies) * 1000
                 cdf = np.arange(1, len(latencies_sorted) + 1) / len(latencies_sorted)
@@ -260,7 +262,10 @@ class Benchmark:
             if self.streaming
             else ["response_times"]
         )
+        
         for metric in metrics_to_plot:
             self.plot_metrics(metric)
-
+            
         self.store_data_points()
+
+        
