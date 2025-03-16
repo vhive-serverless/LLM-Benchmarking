@@ -10,7 +10,7 @@ import { providerColors } from "./AppMetricsDate";
 
 // ----------------------------------------------------------------------
 
-const AppMetrics = ({ title, metricType, subheader, metrics }) => {
+const AppMetrics = ({ title, metricType, subheader, metrics, min }) => {
     // Combine latencies and CDFs for all providers
     const chartData = Object.keys(metrics).map((provider) => {
         const providerData = metrics[provider];
@@ -35,7 +35,10 @@ const AppMetrics = ({ title, metricType, subheader, metrics }) => {
         }).filter(Boolean); // Remove null entries
     }).flat();
     const colors = chartData.map((entry) => entry.color);
-
+    const allLatencies = chartData.flatMap(series => series.data.map(point => point.x));
+    const maxLatency = Math.max(...allLatencies);
+    const minLatency = Math.min(...allLatencies);
+    console.log(min)
     // Chart options
     const chartOptions = merge(BaseOptionChart(), {
         stroke: {
@@ -44,10 +47,12 @@ const AppMetrics = ({ title, metricType, subheader, metrics }) => {
         },
         colors,
         xaxis: {
-            type: "linear", // Logarithmic X-axis for latency
+            type: "numeric", // Logarithmic X-axis for latency
             title: {
                 text: "Latency (ms)",
             },
+            min: Math.log10(min) ?? minLatency,
+            max: maxLatency,
             labels: {
                 formatter: (value) => `${(10 ** value).toFixed(3)} ms`, // Convert back to linear scale for display
             },
@@ -105,6 +110,7 @@ AppMetrics.propTypes = {
     metricType: PropTypes.string.isRequired,
     subheader: PropTypes.string, // Additional information to display
     metrics: PropTypes.object.isRequired, // Metrics object with provider -> model -> metric structure
+    min: PropTypes.number,
 };
 
 export default AppMetrics;

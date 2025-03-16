@@ -11,7 +11,7 @@ import AppMetricsDate from "./AppMetricsDate";
 
 // ----------------------------------------------------------------------
 
-const AppMetricsPage = ({ metricType, streaming = true, title = "Metrics Dashboard", metricName }) => {
+const AppMetricsPage = ({ metricType, streaming = true, title = "Metrics Dashboard", metricName, min }) => {
     const [metrics, setMetrics] = useState(null);
     const [periodMetrics, setPeriodMetrics] = useState(null);
     const [dateList, setDateList] = useState(null);
@@ -148,6 +148,7 @@ const AppMetricsPage = ({ metricType, streaming = true, title = "Metrics Dashboa
                             metricType={metricType}
                             subheader={`Latency vs CDF across all providers`}
                             metrics={metrics}
+                            min={min}
                         />
                     </Grid>
                 </Grid>
@@ -160,6 +161,6 @@ AppMetricsPage.propTypes = {
     streaming: PropTypes.bool,
     title: PropTypes.string,
     metricName: PropTypes.string.isRequired,
-
+    min: PropTypes.number,
 };
 export default AppMetricsPage;
