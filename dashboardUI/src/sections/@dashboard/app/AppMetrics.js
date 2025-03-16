@@ -38,7 +38,7 @@ const AppMetrics = ({ title, metricType, subheader, metrics, min }) => {
     const allLatencies = chartData.flatMap(series => series.data.map(point => point.x));
     const maxLatency = Math.max(...allLatencies);
     const minLatency = Math.min(...allLatencies);
-    console.log(min)
+    const computedMin = (min != null && min > 0) ? Math.log10(min) : minLatency;
     // Chart options
     const chartOptions = merge(BaseOptionChart(), {
         stroke: {
@@ -51,7 +51,7 @@ const AppMetrics = ({ title, metricType, subheader, metrics, min }) => {
             title: {
                 text: "Latency (ms)",
             },
-            min: Math.log10(min) ?? minLatency,
+            min: computedMin,
             max: maxLatency,
             labels: {
                 formatter: (value) => `${(10 ** value).toFixed(3)} ms`, // Convert back to linear scale for display
