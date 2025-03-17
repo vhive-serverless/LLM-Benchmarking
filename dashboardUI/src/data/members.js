@@ -21,7 +21,7 @@ export const members = [
     name: 'Kavita Sriram',
     affiliation: 'Nanyang Technological University, Singapore',
     link: 'https://www.linkedin.com/in/kavita-sriram/',
-    photo: '/LLM-Benchmarking/static/avatars/ian.jpg',
+    photo: '/LLM-Benchmarking/static/avatars/kavita.jpg',
   }
 ]
 

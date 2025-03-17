@@ -96,17 +96,19 @@ export default function LLMetrics() {
                 In addition to benchmarking various cloud-based LLM service providers, LLMetrics incorporates a local deployment using vLLM to serve as a performance baseline. vLLM is a high-throughput and memory-efficient inference and serving engine for LLMs, developed to optimize token generation and resource management.
                 <br /><br />
                 vLLM is integrated as a local provider to facilitate direct comparisons with cloud-based services. This integration involves the following steps:
-                <ol>
-                  <li>
-                    <strong>Setting Up vLLM Server:</strong> Deploy a vLLM server locally to handle inference requests, ensuring control over the environment and resources for consistent, reproducible benchmarking conditions.
-                  </li>
-                  <li>
-                    <strong>Provider Class Implementation:</strong> Create a dedicated provider class within LLMetrics to interface with the vLLM server. This class implements essential methods such as <code>get_model_name</code>, <code>perform_inference_streaming</code>, <code>perform_inference</code>, and <code>log_metrics</code>, aligning with the structure used for other providers.
-                  </li>
-                  <li>
-                    <strong>Configuration Management:</strong> Utilize the existing JSON configuration system in LLMetrics to specify parameters for the vLLM provider, including model selection, number of requests, input token count, maximum output size, and streaming preferences.
-                  </li>
-                </ol>
+                <Box sx={{ ml: 5, my: 2 }}>
+                  <ol>
+                    <li>
+                      <strong>Setting Up vLLM Server:</strong> Deploy a vLLM server locally to handle inference requests, ensuring control over the environment and resources for consistent, reproducible benchmarking conditions.
+                    </li>
+                    <li>
+                      <strong>Provider Class Implementation:</strong> Create a dedicated provider class within LLMetrics to interface with the vLLM server. This class implements essential methods such as <code>get_model_name</code>, <code>perform_inference_streaming</code>, <code>perform_inference</code>, and <code>log_metrics</code>, aligning with the structure used for other providers.
+                    </li>
+                    <li>
+                      <strong>Configuration Management:</strong> Utilize the existing JSON configuration system in LLMetrics to specify parameters for the vLLM provider, including model selection, number of requests, input token count, maximum output size, and streaming preferences.
+                    </li>
+                  </ol>
+                </Box>
               </Typography>
               <Typography variant="h5" marginTop={4} marginBottom={2}>
                 Process Overview
