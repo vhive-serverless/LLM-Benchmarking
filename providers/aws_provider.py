@@ -28,7 +28,7 @@ class AWSBedrock(ProviderInterface):
             "meta-llama-3-8b-instruct": "meta.llama3-8b-instruct-v1:0",
             "mistral-48b-instruct-v0.1": "mistral.mixtral-8x7b-instruct-v0:1",
             "mistral-23b-instruct-v0.1": "mistral.mistral-small-2402-v1:0",
-            "mistral-124b-instruct-v0.1":"mistral.mistral-large-2402-v1:0",
+            "mistral-124b-instruct-v0.1": "mistral.mistral-large-2402-v1:0",
             "common-model": "meta.llama3-70b-instruct-v1:0",
             "common-model-small": "meta.llama3-8b-instruct-v1:0"
         }

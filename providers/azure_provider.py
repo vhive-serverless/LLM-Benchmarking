@@ -1,9 +1,9 @@
 import os
-import requests
+# import requests
 import numpy as np
 from providers.base_provider import ProviderInterface
 from time import perf_counter as timer
-import re
+# import re
 
 from azure.ai.inference import ChatCompletionsClient
 from azure.ai.inference.models import SystemMessage, UserMessage
@@ -120,7 +120,7 @@ class Azure(ProviderInterface):
             return None
 
         inter_token_latencies = []
-        endpoint = f"https://{model_id}.eastus.models.ai.azure.com/chat/completions"
+        # endpoint = f"https://{model_id}.eastus.models.ai.azure.com/chat/completions"
         # endpoint = f"https://ai-kavifyp0693ai007107396570.services.ai.azure.com/models"
         # print(model_id, endpoint)
         start_time = timer()
