@@ -236,7 +236,7 @@ class Benchmark:
 
                     if i % 20 == 0:
                         # print("[DEBUG] Sleeping for 2 mins to bypass rate limit...")
-                        time.sleep(400)
+                        time.sleep(300)
 
                     if self.streaming:
                         if provider_name == "vLLM":
