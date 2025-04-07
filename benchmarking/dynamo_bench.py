@@ -234,7 +234,7 @@ class Benchmark:
                     if self.verbosity:
                         print(f"Request {i + 1}/{self.num_requests}")
 
-                    if i % 5 == 0 and (provider_name == "Groq" or provider_name == "Hyperbolic"):
+                    if i % 2 == 0 and (provider_name == "Groq" or provider_name == "Hyperbolic"):
                         # print("[DEBUG] Sleeping for 2 mins to bypass rate limit...")
                         time.sleep(100)
                         print("finished sleeping")
