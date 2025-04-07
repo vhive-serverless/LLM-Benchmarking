@@ -75,9 +75,9 @@ export default function Info() {
             >
               Find us on :
             </Typography>
-            <Link target="_blank" href={'https://github.com/vhive-serverless'}><Box component="img" src="LLM-Benchmarking/static/icons/github.png" sx={{ height: '30px', marginX: 2 }} /></Link>
-            <Link target="_blank" href={'https://www.youtube.com/playlist?list=PLVdxPJaekjWqBsEUwnrYRQCaMqvcDVsBE'}><Box component="img" src="LLM-Benchmarking/static/icons/youtube.png" sx={{ height: '30px', marginX: 2 }} /></Link>
-            <Link target="_blank" href={'https://join.slack.com/t/vhivetutorials/shared_invite/zt-1fk4v71gn-nV5oev5sc9F4fePg3_OZMQ'}><Box component="img" src="LLM-Benchmarking/static/icons/slack.png" sx={{ height: '30px', marginX: 2 }} /></Link>
+            <Link target="_blank" href={'https://github.com/vhive-serverless'}><Box component="img" src="static/icons/github.png" sx={{ height: '30px', marginX: 2 }} /></Link>
+            <Link target="_blank" href={'https://www.youtube.com/playlist?list=PLVdxPJaekjWqBsEUwnrYRQCaMqvcDVsBE'}><Box component="img" src="static/icons/youtube.png" sx={{ height: '30px', marginX: 2 }} /></Link>
+            <Link target="_blank" href={'https://join.slack.com/t/vhivetutorials/shared_invite/zt-1fk4v71gn-nV5oev5sc9F4fePg3_OZMQ'}><Box component="img" src="static/icons/slack.png" sx={{ height: '30px', marginX: 2 }} /></Link>
           </Stack>
 
         </Card>
