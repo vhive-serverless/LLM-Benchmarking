@@ -66,22 +66,6 @@ class Azure(ProviderInterface):
                 print(f"Model {model} not available.")
                 return None
             start_time = timer()
-            # endpoint = f"https://{model_id}.eastus.models.ai.azure.com/chat/completions"
-            # response = requests.post(
-            #     f"{endpoint}",
-            #     headers={
-            #         "Authorization": f"Bearer {api_key}",
-            #         "Content-Type": "application/json",
-            #     },
-            #     json={
-            #         "messages": [
-            #             {"role": "system", "content": self.system_prompt},
-            #             {"role": "user", "content": prompt},
-            #         ],
-            #         "max_tokens": max_output,
-            #     },
-            #     timeout=500,
-            # )
 
             response = self.client.complete(
                 messages=[
@@ -125,26 +109,6 @@ class Azure(ProviderInterface):
         # print(model_id, endpoint)
         start_time = timer()
         try:
-            # response = requests.post(
-            #     f"{endpoint}",
-            #     headers={
-            #         "Authorization": f"Bearer {api_key}",
-            #         "Content-Type": "application/json",
-            #     },
-            #     json={
-            #         # "model": model_id,
-            #         "messages": [
-            #             # {"role": "system", "content": self.system_prompt + "\nThe number appended at the end is not important."},
-            #             # {"role": "user", "content": prompt + " " + str(timer())},
-            #             {"role": "system", "content": self.system_prompt},
-            #             {"role": "user", "content": prompt},
-            #         ],
-            #         "max_tokens": max_output,
-            #         "stream": True,
-            #     },
-            #     stream=True,
-            #     timeout=500,
-            # )
             response = self.client.complete(
                 stream=True,
                 messages=[
@@ -172,40 +136,6 @@ class Azure(ProviderInterface):
                     print(update.choices[0].delta.content or "", end="")
 
             total_time = timer() - start_time
-            # for line in response.iter_lines():
-            #     if line:
-            #         # print(line)
-            #         if first_token_time is None:
-            #             # print(line)
-            #             first_token_time = timer()
-            #             ttft = first_token_time - start_time
-            #             prev_token_time = first_token_time
-            #             if verbosity:
-            #                 print(f"##### Time to First Token (TTFT): {ttft:.4f} seconds\n")
-
-            #         line_str = line.decode("utf-8").strip()
-                    
-            #         if line_str == "data: [DONE]":
-            #             # print(line_str)
-            #             # print("here")
-            #             total_time = timer() - start_time
-            #             break
-
-            #         # Capture token timing
-            #         time_to_next_token = timer()
-            #         inter_token_latency = time_to_next_token - prev_token_time
-            #         prev_token_time = time_to_next_token
-            #         inter_token_latencies.append(inter_token_latency)
-
-            #         # Display token if verbosity is enabled
-            #         match = re.search(r'"content"\s*:\s*"(.*?)"', line_str)
-            #         if match:
-            #             print(match.group(1), end="")
-            #         # if verbosity:
-            #         #     if len(inter_token_latencies) < 20:
-            #         #         print(line_str[19:].split('"')[5], end="")
-            #         #     elif len(inter_token_latencies) == 20:
-            #         #         print("...")
 
             # Calculate total metrics
 
