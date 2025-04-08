@@ -1,12 +1,12 @@
 {
     "providers": [
+        "Groq",
+        "Hyperbolic",
         "Anthropic",
         "AWSBedrock",
         "Azure",
         "Cloudflare",
         "Google",
-        "Groq",
-        "Hyperbolic",
         "OpenAI",
         "PerplexityAI",
         "TogetherAI"

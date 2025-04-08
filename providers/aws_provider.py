@@ -25,11 +25,19 @@ class AWSBedrock(ProviderInterface):
         # model names
         self.model_map = {
             "meta-llama-3-70b-instruct": "meta.llama3-70b-instruct-v1:0",
+            "meta-llama-3-8b-instruct": "meta.llama3-8b-instruct-v1:0",
+            "mistral-48b-instruct-v0.1": "mistral.mixtral-8x7b-instruct-v0:1",
+            "mistral-23b-instruct-v0.1": "mistral.mistral-small-2402-v1:0",
+            "mistral-124b-instruct-v0.1": "mistral.mistral-large-2402-v1:0",
             "common-model": "meta.llama3-70b-instruct-v1:0",
+            "common-model-small": "meta.llama3-8b-instruct-v1:0"
         }
 
     def get_model_name(self, model):
         return self.model_map.get(model, None)  # or model
+
+    def get_model_provider(self, model_id):
+        return model_id[:model_id.find('.')]
 
     def format_prompt(self, user_prompt):
         """
@@ -92,13 +100,18 @@ class AWSBedrock(ProviderInterface):
         print("[INFO] Performing streaming inference...")
 
         model_id = self.get_model_name(model)
+        model_provider = self.get_model_provider(model_id)
 
         # Prepare the request payload
         formatted_prompt = self.format_prompt(prompt)
+        if model_provider == "meta":
+            max_tokens_config = 'max_gen_len'
+        else:
+            max_tokens_config = 'max_tokens'
 
         native_request = {
             "prompt": formatted_prompt,
-            "max_gen_len": max_output,
+            max_tokens_config: max_output,
         }
         request_body = json.dumps(native_request)
 
@@ -122,14 +135,17 @@ class AWSBedrock(ProviderInterface):
                         # print(f"[DEBUG] Failed to decode chunk: {e}")
                         continue
                     
-                    if chunk["stop_reason"] == 'length':
+                    if chunk.get("stop_reason") == "length" or chunk.get("outputs", [{}])[0].get("stop_reason") == "length":
                         total_time = time.perf_counter() - start_time
                         print(chunk)
                         break
-
-                    if "generation" in chunk:
-                        current_token = chunk["generation"]
-
+                    
+                    if "outputs" in chunk or 'generation' in chunk:
+                        if "outputs" in chunk :
+                            current_token = chunk["outputs"][0]['text']
+                        if 'generation' in chunk:
+                            current_token = chunk["generation"]
+                        # print(current_token)
                         # Calculate timing
                         current_time = time.perf_counter()
                         if first_token_time is None:
