@@ -1,4 +1,4 @@
-import { Grid, Card, Container, Stack, Box, Typography, CardContent, Link } from '@mui/material';
+import { Grid, Card, Container, Stack, Box, Typography, CardContent, Link, TableRow, Paper, Table, TableCell, TableContainer, TableBody } from '@mui/material';
 import ListItem from '@mui/material/ListItem';
 // components
 import Page from '../components/Page';
@@ -86,6 +86,69 @@ export default function LLMetrics() {
                 <ListItem sx={{ display: 'list-item' }}>
                   <b>Local Server (VLLM):</b> A local server running the <Link target="_blank" href={'https://github.com/vllm-project/vllm'}>VLLM</Link> framework to serve LLM services, acting as a control for comparison with cloud providers.
                 </ListItem>
+              </Box>
+
+              <Typography variant="h5" marginTop={4} marginBottom={2}>
+                Models Used
+              </Typography>
+              <Typography variant="p">
+                The following table summarizes the specific models being used for benchmarking by each provider.
+              </Typography>
+              <Box sx={{ my: 2 }}>
+                <TableContainer component={Paper}>
+                  <Table>
+                    <TableBody>
+                      <TableRow>
+                        <TableCell><b>Provider</b></TableCell>
+                        <TableCell><b>Model</b></TableCell>
+                      </TableRow>
+                      <TableRow>
+                        <TableCell>AWS Bedrock</TableCell>
+                        <TableCell>meta.llama3-70b-instruct-v1:0</TableCell>
+                      </TableRow>
+                      <TableRow>
+                        <TableCell>Anthropic</TableCell>
+                        <TableCell>claude-3-5-sonnet-20241022</TableCell>
+                      </TableRow>
+                      <TableRow>
+                        <TableCell>Azure</TableCell>
+                        <TableCell>Mistral-Large-2411-yatcd</TableCell>
+                      </TableRow>
+                      <TableRow>
+                        <TableCell>Cloudflare</TableCell>
+                        <TableCell>@cf/meta/llama-3.3-70b-instruct-fp8-fast</TableCell>
+                      </TableRow>
+                      <TableRow>
+                        <TableCell>Google Gemini</TableCell>
+                        <TableCell>gemini-1.5-flash</TableCell>
+                      </TableRow>
+                      <TableRow>
+                        <TableCell>Groq</TableCell>
+                        <TableCell>llama-3.3-70b-versatile</TableCell>
+                      </TableRow>
+                      <TableRow>
+                        <TableCell>Hyperbolic</TableCell>
+                        <TableCell>meta-llama/Meta-Llama-3.1-70B-Instruct</TableCell>
+                      </TableRow>
+                      <TableRow>
+                        <TableCell>OpenAI</TableCell>
+                        <TableCell>gpt-4o</TableCell>
+                      </TableRow>
+                      <TableRow>
+                        <TableCell>Perplexity AI</TableCell>
+                        <TableCell>sonar-pro</TableCell>
+                      </TableRow>
+                      <TableRow>
+                        <TableCell>Together AI</TableCell>
+                        <TableCell>meta-llama/Llama-3.3-70B-Instruct-Turbo</TableCell>
+                      </TableRow>
+                      <TableRow>
+                        <TableCell>vLLM (Local)</TableCell>
+                        <TableCell>../scratch/models--meta-llama--Llama-3.3-70B-Instruct/snapshots/6f6073b423013f6a7d4d9f39144961bfbfbc386b</TableCell>
+                      </TableRow>
+                    </TableBody>
+                  </Table>
+                </TableContainer>
               </Box>
 
               <Typography variant="h5" marginTop={4} marginBottom={2}>

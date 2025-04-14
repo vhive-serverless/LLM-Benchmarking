@@ -22,9 +22,9 @@ const AppMetrics = ({ title, metricType, subheader, metrics, min }) => {
 
             const latencies = metricData.latencies.map(parseFloat);
             const cdf = metricData.cdf.map(parseFloat);
-
+            console.log(provider, model)
             return {
-                name: `${provider} - ${model}`,
+                name: `${provider}`,
                 type: "line", // Line with points
                 data: latencies.map((latency, index) => ({
                     x: Math.log10(latency),
