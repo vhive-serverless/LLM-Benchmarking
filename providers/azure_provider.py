@@ -30,7 +30,7 @@ class Azure(ProviderInterface):
             "mistral-large": "Mistral-Large-2411-yatcd",
             "mistral-23b-instruct-v0.1": "Mistral-small",
             "meta-llama-3.1-405b-instruct": "Meta-Llama-3.1-405B-Instruct",
-            "common-model": "Mistral-Large-2411-yatcd",
+            "common-model": "Llama-3.3-70B-Instruct",
         }
 
         # Define API keys for each model
