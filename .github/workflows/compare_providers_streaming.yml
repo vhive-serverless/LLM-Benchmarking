@@ -5,15 +5,19 @@ run-name: >-
     (github.event.schedule == '0 0 * * 1' && 'Scheduled: Static' ||
      github.event.schedule == '0 0 * * 2' && 'Scheduled: Trace-A Trace-B' ||
      github.event.schedule == '0 0 * * 3' && 'Scheduled: Multiturn-A Multiturn-B Multiturn-C' ||
-     github.event.schedule == '0 0 * * 4' && 'Scheduled: VQA-A VQA-B' ||
+     github.event.schedule == '0 0 * * 4' && 'Scheduled: Multiturn-NoCache-A Multiturn-NoCache-B Multiturn-NoCache-C' ||
+     github.event.schedule == '0 0 * * 5' && 'Scheduled: VQA-A VQA-B' ||
      'Scheduled') ||
-    format('Manual:{0}{1}{2}{3}{4}{5}{6}{7}{8}',
+    format('Manual:{0}{1}{2}{3}{4}{5}{6}{7}{8}{9}{10}{11}',
       inputs.run_static && ' Static' || '',
       inputs.run_trace_a && ' Trace-A' || '',
       inputs.run_trace_b && ' Trace-B' || '',
       inputs.run_multiturn_a && ' Multiturn-A' || '',
       inputs.run_multiturn_b && ' Multiturn-B' || '',
       inputs.run_multiturn_c && ' Multiturn-C' || '',
+      inputs.run_multiturn_nocache_a && ' Multiturn-NoCache-A' || '',
+      inputs.run_multiturn_nocache_b && ' Multiturn-NoCache-B' || '',
+      inputs.run_multiturn_nocache_c && ' Multiturn-NoCache-C' || '',
       inputs.run_vqa_a && ' VQA-A' || '',
       inputs.run_vqa_b && ' VQA-B' || '',
       inputs.run_vqa_v2 && ' VQA-V2' || '') }}
@@ -57,6 +61,18 @@ on:
         description: 'Run VQA Benchmark V2'
         type: boolean
         default: false
+      run_multiturn_nocache_a:
+        description: 'Run Multiturn No-Cache Benchmark A'
+        type: boolean
+        default: false
+      run_multiturn_nocache_b:
+        description: 'Run Multiturn No-Cache Benchmark B'
+        type: boolean
+        default: false
+      run_multiturn_nocache_c:
+        description: 'Run Multiturn No-Cache Benchmark C'
+        type: boolean
+        default: false
   # schedule:
   #   # Monday (Static)
   #   - cron: "0 0 * * 1"
@@ -64,8 +80,10 @@ on:
   #   - cron: "0 0 * * 2"
   #   # Wednesday (Multiturn A + B + C)
   #   - cron: "0 0 * * 3"
-  #   # Thursday (VQA A + B)
+  #   # Thursday (Multiturn No-Cache A + B + C)
   #   - cron: "0 0 * * 4"
+  #   # Friday (VQA A + B)
+  #   - cron: "0 0 * * 5"
 
 env:
   HF_TOKEN: ${{ secrets.HF_TOKEN }}
@@ -375,7 +393,7 @@ jobs:
     name: VQA Benchmark A
     runs-on: ubuntu-latest
 
-    if: ${{ (github.event_name == 'workflow_dispatch' && inputs.run_vqa_a == true) || (github.event_name == 'schedule' && github.event.schedule == '0 0 * * 4') }}
+    if: ${{ (github.event_name == 'workflow_dispatch' && inputs.run_vqa_a == true) || (github.event_name == 'schedule' && github.event.schedule == '0 0 * * 5') }}
     steps:
     - name: Check out repository
       uses: actions/checkout@v4
@@ -428,7 +446,7 @@ jobs:
     name: VQA Benchmark B
     runs-on: ubuntu-latest
 
-    if: ${{ (github.event_name == 'workflow_dispatch' && inputs.run_vqa_b == true) || (github.event_name == 'schedule' && github.event.schedule == '0 0 * * 4') }}
+    if: ${{ (github.event_name == 'workflow_dispatch' && inputs.run_vqa_b == true) || (github.event_name == 'schedule' && github.event.schedule == '0 0 * * 5') }}
     steps:
     - name: Check out repository
       uses: actions/checkout@v4
@@ -475,6 +493,153 @@ jobs:
       uses: actions/upload-artifact@v4
       with:
         name: results-vqa-b
+        path: ${{ github.workspace }}/benchmark_graph
+
+  multiturn-nocache-benchmark-a:
+    name: Multiturn No-Cache Benchmark A
+    runs-on: ubuntu-latest
+
+    if: ${{ (github.event_name == 'workflow_dispatch' && inputs.run_multiturn_nocache_a == true) || (github.event_name == 'schedule' && github.event.schedule == '0 0 * * 4') }}
+    steps:
+    - name: Check out repository
+      uses: actions/checkout@v4
+
+    - name: Authenticate to Google Cloud
+      uses: 'google-github-actions/auth@v2'
+      with:
+        credentials_json: '${{ secrets.GOOGLE_CREDENTIALS }}'
+
+    - name: Set up Python 3.12
+      uses: actions/setup-python@v5
+      with:
+        python-version: 3.12
+
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install -r requirements.txt
+
+    - name: Setup Multiturn No-Cache Input
+      env:
+        GH_TOKEN: ${{ github.token }}
+      run: |
+        gh release download -p "multiturn_no_cache.json"
+        echo "MULTITURN_DATASET_PATH=${{ github.workspace }}/multiturn_no_cache.json" >> $GITHUB_ENV
+
+    - name: Run Multiturn No-Cache Experiment A
+      run: python -u main.py -c benchmarking/experiments/compare_providers_streaming_multiturn_nocache_A.json
+
+    - name: Upload Multiturn No-Cache Logs
+      if: always()
+      uses: actions/upload-artifact@v4
+      with:
+        name: logs-multiturn-nocache-a
+        path: |
+          ${{ github.workspace }}/multiturn/logs/*.csv
+        if-no-files-found: warn
+
+    - name: Upload Experiment Outputs
+      uses: actions/upload-artifact@v4
+      with:
+        name: results-multiturn-nocache-a
+        path: ${{ github.workspace }}/benchmark_graph
+
+  multiturn-nocache-benchmark-b:
+    name: Multiturn No-Cache Benchmark B
+    runs-on: ubuntu-latest
+
+    if: ${{ (github.event_name == 'workflow_dispatch' && inputs.run_multiturn_nocache_b == true) || (github.event_name == 'schedule' && github.event.schedule == '0 0 * * 4') }}
+    steps:
+    - name: Check out repository
+      uses: actions/checkout@v4
+
+    - name: Authenticate to Google Cloud
+      uses: 'google-github-actions/auth@v2'
+      with:
+        credentials_json: '${{ secrets.GOOGLE_CREDENTIALS }}'
+
+    - name: Set up Python 3.12
+      uses: actions/setup-python@v5
+      with:
+        python-version: 3.12
+
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install -r requirements.txt
+
+    - name: Setup Multiturn No-Cache Input
+      env:
+        GH_TOKEN: ${{ github.token }}
+      run: |
+        gh release download -p "multiturn_no_cache.json"
+        echo "MULTITURN_DATASET_PATH=${{ github.workspace }}/multiturn_no_cache.json" >> $GITHUB_ENV
+
+    - name: Run Multiturn No-Cache Experiment B
+      run: python -u main.py -c benchmarking/experiments/compare_providers_streaming_multiturn_nocache_B.json
+
+    - name: Upload Multiturn No-Cache Logs
+      if: always()
+      uses: actions/upload-artifact@v4
+      with:
+        name: logs-multiturn-nocache-b
+        path: |
+          ${{ github.workspace }}/multiturn/logs/*.csv
+        if-no-files-found: warn
+
+    - name: Upload Experiment Outputs
+      uses: actions/upload-artifact@v4
+      with:
+        name: results-multiturn-nocache-b
+        path: ${{ github.workspace }}/benchmark_graph
+
+  multiturn-nocache-benchmark-c:
+    name: Multiturn No-Cache Benchmark C
+    runs-on: ubuntu-latest
+
+    if: ${{ (github.event_name == 'workflow_dispatch' && inputs.run_multiturn_nocache_c == true) || (github.event_name == 'schedule' && github.event.schedule == '0 0 * * 4') }}
+    steps:
+    - name: Check out repository
+      uses: actions/checkout@v4
+
+    - name: Authenticate to Google Cloud
+      uses: 'google-github-actions/auth@v2'
+      with:
+        credentials_json: '${{ secrets.GOOGLE_CREDENTIALS }}'
+
+    - name: Set up Python 3.12
+      uses: actions/setup-python@v5
+      with:
+        python-version: 3.12
+
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install -r requirements.txt
+
+    - name: Setup Multiturn No-Cache Input
+      env:
+        GH_TOKEN: ${{ github.token }}
+      run: |
+        gh release download -p "multiturn_no_cache.json"
+        echo "MULTITURN_DATASET_PATH=${{ github.workspace }}/multiturn_no_cache.json" >> $GITHUB_ENV
+
+    - name: Run Multiturn No-Cache Experiment C
+      run: python -u main.py -c benchmarking/experiments/compare_providers_streaming_multiturn_nocache_C.json
+
+    - name: Upload Multiturn No-Cache Logs
+      if: always()
+      uses: actions/upload-artifact@v4
+      with:
+        name: logs-multiturn-nocache-c
+        path: |
+          ${{ github.workspace }}/multiturn/logs/*.csv
+        if-no-files-found: warn
+
+    - name: Upload Experiment Outputs
+      uses: actions/upload-artifact@v4
+      with:
+        name: results-multiturn-nocache-c
         path: ${{ github.workspace }}/benchmark_graph
 
   vqa-benchmark-v2:
@@ -532,10 +697,10 @@ jobs:
 
   download-artifacts:
     runs-on: ubuntu-latest
-    needs: [static-benchmark, trace-benchmark-a, trace-benchmark-b, multiturn-benchmark-a, multiturn-benchmark-b, multiturn-benchmark-c, vqa-benchmark-a, vqa-benchmark-b, vqa-benchmark-v2]
+    needs: [static-benchmark, trace-benchmark-a, trace-benchmark-b, multiturn-benchmark-a, multiturn-benchmark-b, multiturn-benchmark-c, multiturn-nocache-benchmark-a, multiturn-nocache-benchmark-b, multiturn-nocache-benchmark-c, vqa-benchmark-a, vqa-benchmark-b, vqa-benchmark-v2]
 
     # Run if at least one of the previous jobs succeed
-    if: always() && (needs.static-benchmark.result == 'success' || needs.trace-benchmark-a.result == 'success' || needs.trace-benchmark-b.result == 'success' || needs.multiturn-benchmark-a.result == 'success' || needs.multiturn-benchmark-b.result == 'success' || needs.multiturn-benchmark-c.result == 'success' || needs.vqa-benchmark-a.result == 'success' || needs.vqa-benchmark-b.result == 'success' || needs.vqa-benchmark-v2.result == 'success')
+    if: always() && (needs.static-benchmark.result == 'success' || needs.trace-benchmark-a.result == 'success' || needs.trace-benchmark-b.result == 'success' || needs.multiturn-benchmark-a.result == 'success' || needs.multiturn-benchmark-b.result == 'success' || needs.multiturn-benchmark-c.result == 'success' || needs.multiturn-nocache-benchmark-a.result == 'success' || needs.multiturn-nocache-benchmark-b.result == 'success' || needs.multiturn-nocache-benchmark-c.result == 'success' || needs.vqa-benchmark-a.result == 'success' || needs.vqa-benchmark-b.result == 'success' || needs.vqa-benchmark-v2.result == 'success')
     steps:
       - name: Download Artifacts
         uses: actions/download-artifact@v4
