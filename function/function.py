@@ -22,6 +22,17 @@ def apply_input_type_filter(filter_exp, input_type):
         # Logic: Strict match
         return filter_exp & Attr("input_type").eq(input_type)
 
+def apply_caching_filter(filter_exp, caching):
+    """
+    Helper to append caching filter.
+    For caching=True: includes items where caching is True OR caching attr is missing (backward compat).
+    For caching=False: strict match on caching=False.
+    """
+    if caching:
+        return filter_exp & (Attr("caching").eq(True) | Attr("caching").not_exists())
+    else:
+        return filter_exp & Attr("caching").eq(False)
+
 def query_all_items(**query_kwargs):
 
     items = []
@@ -68,7 +79,7 @@ def get_latest_vllm(streaming, input_type):
     )
     return items[0] if items else {}
 
-def get_metrics_period(metricType, timeRange, streaming, input_type):
+def get_metrics_period(metricType, timeRange, streaming, input_type, caching=True):
     time_ranges = {
         "week": timedelta(weeks=1),
         "month": timedelta(days=30),
@@ -88,6 +99,7 @@ def get_metrics_period(metricType, timeRange, streaming, input_type):
     key_condition = Key('model_key').eq('common') & Key('timestamp').between(start_date_str, end_date_str)
     filter_exp = Attr("streaming").eq(streaming)
     filter_exp = apply_input_type_filter(filter_exp, input_type)
+    filter_exp = apply_caching_filter(filter_exp, caching)
     items = query_all_items(
         IndexName='ModelKey-Timestamp-Index',
         KeyConditionExpression=key_condition,
@@ -129,7 +141,7 @@ def get_metrics_period(metricType, timeRange, streaming, input_type):
     return {"metricType": metricType, "timeRange": timeRange, "aggregated_metrics": sorted_result, "date_array": sorted_date_array}
 
 
-def get_metrics_by_date(metricType, date, streaming, input_type):
+def get_metrics_by_date(metricType, date, streaming, input_type, caching=True):
     try:
         start_date = datetime.strptime(date, "%d-%m-%Y")
         end_date = start_date + timedelta(days=1)
@@ -143,6 +155,7 @@ def get_metrics_by_date(metricType, date, streaming, input_type):
     key_condition = Key('model_key').eq('common') & Key('timestamp').between(start_date_str, end_date_str)
     filter_exp = Attr("streaming").eq(streaming)
     filter_exp = apply_input_type_filter(filter_exp, input_type)
+    filter_exp = apply_caching_filter(filter_exp, caching)
     items = query_all_items(
         IndexName='ModelKey-Timestamp-Index',
         KeyConditionExpression=key_condition,
@@ -202,11 +215,12 @@ def lambda_handler(event, context):
         timeRange = params.get("timeRange")
         streaming = params.get("streaming", "true").lower() == "true"
         input_type = params.get("inputType", "static").lower()
+        caching = params.get("caching", "true").lower() == "true"
 
         if not metricType or not timeRange:
             return {"statusCode": 400, "body": json.dumps({"error": "Missing metricType or timeRange parameter"})}
 
-        response = get_metrics_period(metricType, timeRange, streaming, input_type)
+        response = get_metrics_period(metricType, timeRange, streaming, input_type, caching)
         return {"statusCode": 200, "body": json.dumps(response)}
 
     elif path == "/default/metrics/date":
@@ -214,11 +228,12 @@ def lambda_handler(event, context):
         date = params.get("date")
         streaming = params.get("streaming", "true").lower() == "true"
         input_type = params.get("inputType", "static").lower()
+        caching = params.get("caching", "true").lower() == "true"
 
         if not metricType or not date:
             return {"statusCode": 400, "body": json.dumps({"error": "Missing metricType or date parameter"})}
 
-        response = get_metrics_by_date(metricType, date, streaming, input_type)
+        response = get_metrics_by_date(metricType, date, streaming, input_type, caching)
         return {"statusCode": 200, "body": json.dumps(response)}
     elif path == "/default/metrics/vllm":
         streaming = params.get("streaming", "true").lower() == "true"
