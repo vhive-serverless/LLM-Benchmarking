@@ -25,13 +25,14 @@ def apply_input_type_filter(filter_exp, input_type):
 def apply_caching_filter(filter_exp, caching):
     """
     Helper to append caching filter.
-    For caching=True: includes items where caching is True OR caching attr is missing (backward compat).
-    For caching=False: strict match on caching=False.
+    Convention: caching attr missing means no cache applied (same as input_type missing means static).
+    For caching=True: strict match on caching=True.
+    For caching=False: includes items where caching is False OR caching attr is missing.
     """
     if caching:
-        return filter_exp & (Attr("caching").eq(True) | Attr("caching").not_exists())
+        return filter_exp & Attr("caching").eq(True)
     else:
-        return filter_exp & Attr("caching").eq(False)
+        return filter_exp & (Attr("caching").eq(False) | Attr("caching").not_exists())
 
 def query_all_items(**query_kwargs):
 
@@ -215,7 +216,7 @@ def lambda_handler(event, context):
         timeRange = params.get("timeRange")
         streaming = params.get("streaming", "true").lower() == "true"
         input_type = params.get("inputType", "static").lower()
-        caching = params.get("caching", "true").lower() == "true"
+        caching = params.get("caching", "false").lower() == "true"
 
         if not metricType or not timeRange:
             return {"statusCode": 400, "body": json.dumps({"error": "Missing metricType or timeRange parameter"})}
@@ -228,7 +229,7 @@ def lambda_handler(event, context):
         date = params.get("date")
         streaming = params.get("streaming", "true").lower() == "true"
         input_type = params.get("inputType", "static").lower()
-        caching = params.get("caching", "true").lower() == "true"
+        caching = params.get("caching", "false").lower() == "true"
 
         if not metricType or not date:
             return {"statusCode": 400, "body": json.dumps({"error": "Missing metricType or date parameter"})}

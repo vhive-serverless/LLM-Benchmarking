@@ -19,7 +19,7 @@ const AppMetricsPage = ({ metricType, streaming = true, title = "Metrics Dashboa
     const [loadingPeriodMetrics, setLoadingPeriodMetrics] = useState(true);
     const [error, setError] = useState(false);
     const [inputType, setInputType] = useState("static");
-    const [cachingEnabled, setCachingEnabled] = useState(true);
+    const [cachingEnabled, setCachingEnabled] = useState(false);
     const [dateRange, setDateRange] = useState("three-month");
     const [selectedDate, setSelectedDate] = useState(null); // Initially null to ensure correct fetch order
 
@@ -89,7 +89,7 @@ const AppMetricsPage = ({ metricType, streaming = true, title = "Metrics Dashboa
     const handleInputTypeChange = (event) => {
         setInputType(event.target.value);
         if (event.target.value !== "multiturn") {
-            setCachingEnabled(true);
+            setCachingEnabled(false);
         }
     }
 
