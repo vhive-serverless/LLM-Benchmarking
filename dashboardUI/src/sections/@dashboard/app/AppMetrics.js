@@ -41,7 +41,7 @@ const AppMetrics = ({ title, metricType, subheader, metrics, min, logScale = tru
     const maxLatency = Math.max(...allLatencies);
     const minLatency = Math.min(...allLatencies);
     let suggestedMin = minLatency;
-    if (min != null) {
+    if (min != null && (!logScale || min > 0)) {
         suggestedMin = logScale ? Math.log10(min) : min;
     }
     const computedMin = Math.min(suggestedMin, minLatency);

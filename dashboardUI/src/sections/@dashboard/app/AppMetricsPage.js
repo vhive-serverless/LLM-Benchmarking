@@ -19,6 +19,7 @@ const AppMetricsPage = ({ metricType, streaming = true, title = "Metrics Dashboa
     const [loadingPeriodMetrics, setLoadingPeriodMetrics] = useState(true);
     const [error, setError] = useState(false);
     const [inputType, setInputType] = useState("static");
+    const [cachingEnabled, setCachingEnabled] = useState(true);
     const [dateRange, setDateRange] = useState("three-month");
     const [selectedDate, setSelectedDate] = useState(null); // Initially null to ensure correct fetch order
 
@@ -42,7 +43,7 @@ const AppMetricsPage = ({ metricType, streaming = true, title = "Metrics Dashboa
         setLoadingPeriodMetrics(true);
         try {
             const response = await axios.get(`${baseURL}/metrics/period`, {
-                params: { timeRange: dateRange, metricType: effectiveMetricType, streaming, inputType },
+                params: { timeRange: dateRange, metricType: effectiveMetricType, streaming, inputType, caching: cachingEnabled },
             });
             setPeriodMetrics(response.data.aggregated_metrics);
             setDateList(response.data.date_array);
@@ -57,14 +58,14 @@ const AppMetricsPage = ({ metricType, streaming = true, title = "Metrics Dashboa
         } finally {
             setLoadingPeriodMetrics(false);
         }
-    }, [baseURL, dateRange, effectiveMetricType, streaming, inputType]);
+    }, [baseURL, dateRange, effectiveMetricType, streaming, inputType, cachingEnabled]);
 
     const fetchMetrics = useCallback(async () => {
         if (!selectedDate) return; // Ensure selectedDate is set before fetching metrics
         setLoadingMetrics(true);
         try {
             const response = await axios.get(`${baseURL}/metrics/date`, {
-                params: { date: selectedDate, metricType: effectiveMetricType, streaming, inputType },
+                params: { date: selectedDate, metricType: effectiveMetricType, streaming, inputType, caching: cachingEnabled },
             });
             setMetrics(response.data.metrics);
         } catch (error) {
@@ -73,7 +74,7 @@ const AppMetricsPage = ({ metricType, streaming = true, title = "Metrics Dashboa
         } finally {
             setLoadingMetrics(false);
         }
-    }, [baseURL, selectedDate, effectiveMetricType, streaming, inputType]);
+    }, [baseURL, selectedDate, effectiveMetricType, streaming, inputType, cachingEnabled]);
 
     useEffect(() => {
         fetchPeriodMetrics();
@@ -86,7 +87,10 @@ const AppMetricsPage = ({ metricType, streaming = true, title = "Metrics Dashboa
     }, [selectedDate, fetchMetrics, cdf]);
 
     const handleInputTypeChange = (event) => {
-        setInputType(event.target.value)
+        setInputType(event.target.value);
+        if (event.target.value !== "multiturn") {
+            setCachingEnabled(true);
+        }
     }
 
     const handleDateRangeChange = (event) => {
@@ -153,6 +157,20 @@ const AppMetricsPage = ({ metricType, streaming = true, title = "Metrics Dashboa
                                     <MenuItem value="trace">Trace</MenuItem>
                                     <MenuItem value="multiturn">Multiturn</MenuItem>
                                     <MenuItem value="vqa">VQA</MenuItem>
+                                </Select>
+                            </Stack>
+                        )}
+
+                        {/* Third Dropdown: Caching (only for Multiturn) */}
+                        {showInputType && inputType === "multiturn" && (
+                            <Stack direction="row" alignItems="center">
+                                <InputLabel sx={{ mr: 3 }}>Caching:</InputLabel>
+                                <Select
+                                    value={cachingEnabled}
+                                    onChange={(e) => setCachingEnabled(e.target.value)}
+                                >
+                                    <MenuItem value={true}>Cache</MenuItem>
+                                    <MenuItem value={false}>No-Cache</MenuItem>
                                 </Select>
                             </Stack>
                         )}
