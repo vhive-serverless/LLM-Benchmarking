@@ -73,6 +73,27 @@ export default function LLMetrics() {
               </Box>
 
               <Typography variant="h5" marginTop={4} marginBottom={2}>
+                Input Types
+              </Typography>
+              <Box sx={{ ml: 5, my: 2 }}>
+                <ListItem sx={{ display: 'list-item' }}>
+                  <b>Static:</b> A fixed prompt with configurable input token counts (10–100k) and max output sizes (100–5000 tokens). Provides a controlled baseline for measuring raw provider latency. Runs every <b>Monday</b>.
+                </ListItem>
+                <ListItem sx={{ display: 'list-item' }}>
+                  <b>Trace:</b> Replays real production traffic patterns through a proxy server and load generator, capturing provider performance under realistic workloads. Runs every <b>Tuesday</b>.
+                </ListItem>
+                <ListItem sx={{ display: 'list-item' }}>
+                  <b>Multiturn (Cache):</b> Streams multi-turn conversations from a JSONL dataset with prompt caching enabled. Context is accumulated turn-by-turn with provider-specific cache markers to measure the latency benefit of caching. Runs every <b>Wednesday</b>.
+                </ListItem>
+                <ListItem sx={{ display: 'list-item' }}>
+                  <b>Multiturn (No-Cache):</b> Uses the same conversation dataset but sends each conversation as a single pre-built request with no caching applied, measuring cold-start TTFT. Runs every <b>Thursday</b>.
+                </ListItem>
+                <ListItem sx={{ display: 'list-item' }}>
+                  <b>VQA (Vision Question Answering):</b> Runs two-pass inference per sample — first multimodal (image + text), then text-only — to isolate the vision encoder's contribution to TTFT. Runs every <b>Friday</b>.
+                </ListItem>
+              </Box>
+
+              <Typography variant="h5" marginTop={4} marginBottom={2}>
                 Benchmarked Providers
               </Typography>
               <Box sx={{ ml: 5, my: 2 }}>
@@ -95,7 +116,11 @@ export default function LLMetrics() {
                 Models Used
               </Typography>
               <Typography variant="p">
-                The following table summarizes the specific models being used for benchmarking by each provider.
+                The following tables summarize the specific models used for benchmarking by each provider. Static and Trace benchmarks use the <b>common model</b>; Multiturn and VQA benchmarks use the <b>cache model</b>.
+              </Typography>
+
+              <Typography variant="h6" marginTop={3} marginBottom={1}>
+                Static &amp; Trace (common model)
               </Typography>
               <Box sx={{ my: 2 }}>
                 <TableContainer component={Paper}>
@@ -106,16 +131,16 @@ export default function LLMetrics() {
                         <TableCell><b>Model</b></TableCell>
                       </TableRow>
                       <TableRow>
-                        <TableCell>AWS Bedrock</TableCell>
-                        <TableCell>meta.llama3-70b-instruct-v1:0</TableCell>
+                        <TableCell>Anthropic</TableCell>
+                        <TableCell>claude-haiku-4-5-20251001</TableCell>
                       </TableRow>
                       <TableRow>
-                        <TableCell>Anthropic</TableCell>
-                        <TableCell>claude-3-5-sonnet-20241022</TableCell>
+                        <TableCell>AWS Bedrock</TableCell>
+                        <TableCell>us.meta.llama3-3-70b-instruct-v1:0</TableCell>
                       </TableRow>
                       <TableRow>
                         <TableCell>Azure</TableCell>
-                        <TableCell>Meta-Llama-3.1-8B-Instruct</TableCell>
+                        <TableCell>Llama-3.3-70B-Instruct</TableCell>
                       </TableRow>
                       <TableRow>
                         <TableCell>Cloudflare</TableCell>
@@ -123,7 +148,7 @@ export default function LLMetrics() {
                       </TableRow>
                       <TableRow>
                         <TableCell>Google Gemini</TableCell>
-                        <TableCell>gemini-1.5-flash</TableCell>
+                        <TableCell>gemini-2.0-flash-001</TableCell>
                       </TableRow>
                       <TableRow>
                         <TableCell>Groq</TableCell>
@@ -131,7 +156,7 @@ export default function LLMetrics() {
                       </TableRow>
                       <TableRow>
                         <TableCell>Hyperbolic</TableCell>
-                        <TableCell>Qwen/Qwen2.5-VL-7B-Instruct</TableCell>
+                        <TableCell>Qwen/Qwen3-Next-80B-A3B-Instruct</TableCell>
                       </TableRow>
                       <TableRow>
                         <TableCell>OpenAI</TableCell>
@@ -148,6 +173,112 @@ export default function LLMetrics() {
                       <TableRow>
                         <TableCell>vLLM (Local)</TableCell>
                         <TableCell>../scratch/models--meta-llama--Llama-3.3-70B-Instruct/snapshots/6f6073b423013f6a7d4d9f39144961bfbfbc386b</TableCell>
+                      </TableRow>
+                    </TableBody>
+                  </Table>
+                </TableContainer>
+              </Box>
+
+              <Typography variant="h6" marginTop={3} marginBottom={1}>
+                Multiturn &amp; VQA (cache model)
+              </Typography>
+              <Box sx={{ my: 2 }}>
+                <TableContainer component={Paper}>
+                  <Table>
+                    <TableBody>
+                      <TableRow>
+                        <TableCell><b>Provider</b></TableCell>
+                        <TableCell><b>Model</b></TableCell>
+                      </TableRow>
+                      <TableRow>
+                        <TableCell>Anthropic</TableCell>
+                        <TableCell>claude-haiku-4-5-20251001</TableCell>
+                      </TableRow>
+                      <TableRow>
+                        <TableCell>AWS Bedrock</TableCell>
+                        <TableCell>us.anthropic.claude-sonnet-4-5-20250929-v1:0</TableCell>
+                      </TableRow>
+                      <TableRow>
+                        <TableCell>Azure</TableCell>
+                        <TableCell>gpt-4o</TableCell>
+                      </TableRow>
+                      <TableRow>
+                        <TableCell>Cloudflare</TableCell>
+                        <TableCell>@cf/meta/llama-3.3-70b-instruct-fp8-fast</TableCell>
+                      </TableRow>
+                      <TableRow>
+                        <TableCell>Google Gemini</TableCell>
+                        <TableCell>gemini-2.5-flash</TableCell>
+                      </TableRow>
+                      <TableRow>
+                        <TableCell>Groq</TableCell>
+                        <TableCell>llama-3.3-70b-versatile</TableCell>
+                      </TableRow>
+                      <TableRow>
+                        <TableCell>Hyperbolic</TableCell>
+                        <TableCell>meta-llama/Llama-3.3-70B-Instruct</TableCell>
+                      </TableRow>
+                      <TableRow>
+                        <TableCell>OpenAI</TableCell>
+                        <TableCell>gpt-4o</TableCell>
+                      </TableRow>
+                      <TableRow>
+                        <TableCell>Perplexity AI</TableCell>
+                        <TableCell>sonar-pro</TableCell>
+                      </TableRow>
+                      <TableRow>
+                        <TableCell>Together AI</TableCell>
+                        <TableCell>meta-llama/Llama-3.3-70B-Instruct-Turbo</TableCell>
+                      </TableRow>
+                    </TableBody>
+                  </Table>
+                </TableContainer>
+              </Box>
+
+              <Typography variant="h5" marginTop={4} marginBottom={2}>
+                Prompt Caching Support
+              </Typography>
+              <Typography variant="p">
+                Prompt caching reduces TTFT for repeated prefixes by reusing cached KV states. LLMetrics benchmarks both caching-enabled and no-cache modes for multiturn runs. Provider support varies:
+              </Typography>
+              <Box sx={{ my: 2 }}>
+                <TableContainer component={Paper}>
+                  <Table>
+                    <TableBody>
+                      <TableRow>
+                        <TableCell><b>Provider</b></TableCell>
+                        <TableCell><b>Caching Mechanism</b></TableCell>
+                        <TableCell><b>Threshold</b></TableCell>
+                      </TableRow>
+                      <TableRow>
+                        <TableCell>Anthropic</TableCell>
+                        <TableCell>Explicit <code>cache_control</code> markers on user messages</TableCell>
+                        <TableCell>~4,000 tokens</TableCell>
+                      </TableRow>
+                      <TableRow>
+                        <TableCell>AWS Bedrock</TableCell>
+                        <TableCell>Explicit <code>cachePoint</code> entries in message content</TableCell>
+                        <TableCell>~1,200 tokens</TableCell>
+                      </TableRow>
+                      <TableRow>
+                        <TableCell>Google Gemini</TableCell>
+                        <TableCell>Explicit cache resource created via <code>caches.create()</code> API (300s TTL)</TableCell>
+                        <TableCell>~1,200 tokens</TableCell>
+                      </TableRow>
+                      <TableRow>
+                        <TableCell>Azure / OpenAI</TableCell>
+                        <TableCell>Automatic server-side prefix caching (no explicit markers needed)</TableCell>
+                        <TableCell>≥1,024 shared prefix tokens</TableCell>
+                      </TableRow>
+                      <TableRow>
+                        <TableCell>Groq</TableCell>
+                        <TableCell>Automatic KV caching on LPU hardware (not reported in API response)</TableCell>
+                        <TableCell>—</TableCell>
+                      </TableRow>
+                      <TableRow>
+                        <TableCell>Cloudflare, Hyperbolic, Perplexity AI, Together AI</TableCell>
+                        <TableCell>No caching support</TableCell>
+                        <TableCell>—</TableCell>
                       </TableRow>
                     </TableBody>
                   </Table>
@@ -184,7 +315,7 @@ export default function LLMetrics() {
               </Typography>
               <Box sx={{ ml: 5, my: 2 }}>
                 <ListItem sx={{ display: 'list-item' }}>
-                  <b>Automation with GitHub Actions:</b> Weekly benchmarking runs are scheduled via GitHub Actions, ensuring regular and consistent evaluations.
+                  <b>Automation with GitHub Actions:</b> Daily benchmarking runs are scheduled via GitHub Actions (Monday–Friday), each day targeting a different input type: Static (Mon), Trace (Tue), Multiturn Cache (Wed), Multiturn No-Cache (Thu), VQA (Fri).
                 </ListItem>
                 <ListItem sx={{ display: 'list-item' }}>
                   <b>CI Pipeline:</b> GitHub Actions also supports running CI tests and linters to maintain code quality and reliability.

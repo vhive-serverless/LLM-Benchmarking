@@ -8,6 +8,7 @@
         "cache-model"
     ],
     "input_type": "multiturn",
+    "caching": true,
     "num_requests": 100,
     "streaming": true,
     "verbose": true,

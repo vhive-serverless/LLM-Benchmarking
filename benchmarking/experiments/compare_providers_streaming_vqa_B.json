@@ -1,7 +1,6 @@
 {
     "providers": [
-        "Google",
-        "TogetherAI"
+        "Google"
     ],
     "models": [
         "vision-model-01"

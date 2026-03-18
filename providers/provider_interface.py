@@ -174,7 +174,11 @@ class ProviderInterface(ABC):
 
     def perform_multiturn(self, model, time_interval, streaming, num_requests, verbosity, caching_enabled=False):
         """
-        Perform using multiturn input
+        Perform using multiturn input.
+        When caching_enabled=True: turn-by-turn mode — iterates turns within each conversation,
+        calls apply_cache_markers before each inference, appends actual model response to context.
+        When caching_enabled=False: whole-conversation mode — each JSONL line is a pre-built
+        conversation sent as one request, no cache markers applied.
         """
         def _load_conversation_iterator(path):
             """
@@ -199,43 +203,167 @@ class ProviderInterface(ABC):
 
         # Initialize log file
         safe_model_name = self.get_model_name(model).replace("/", "_").replace(":", "_")
-        csv_filename = f"multiturn_usage_{self.__class__.__name__}_{safe_model_name}.csv"
-        print(f"Initializing log file: {csv_filename}")
         os.makedirs(self.multiturn_log_path, exist_ok=True)
-        with open(os.path.join(self.multiturn_log_path, csv_filename), mode='w', newline='', encoding='utf-8') as f:
-            writer = csv.writer(f)
-            writer.writerow(["conversation", "turn", "total_input", "output", "cache_read", "cache_write"])
 
-        request_id = 0
-        max_retries = 3
-        for i, conversation in enumerate(conv_iter):
-            self._cache_write_confirmed = False  # reset per conversation
-            print(f"============ Conversation: {i + 1} ============")
+        if caching_enabled:
+            # ------------------------------------------------------------------
+            # CACHE mode: turn-by-turn, incremental context, apply_cache_markers
+            # ------------------------------------------------------------------
+            csv_filename = f"multiturn_usage_{self.__class__.__name__}_{safe_model_name}.csv"
+            print(f"Initializing log file: {csv_filename}")
+            with open(os.path.join(self.multiturn_log_path, csv_filename), mode='w', newline='', encoding='utf-8') as f:
+                writer = csv.writer(f)
+                writer.writerow(["conversation", "turn", "total_input", "output", "cache_read", "cache_write"])
 
-            current_messages = []
+            request_id = 0
+            max_retries = 3
+            for i, conversation in enumerate(conv_iter):
+                self._cache_write_confirmed = False  # reset per conversation
+                print(f"============ Conversation: {i + 1} ============")
 
-            idx = 0
-            while idx < len(conversation):
-                # Safety check for pairs
-                if idx + 1 >= len(conversation):
-                    break
+                current_messages = []
 
-                turn_input = conversation[idx]
-                turn_target = conversation[idx + 1]
+                idx = 0
+                while idx < len(conversation):
+                    # Safety check for pairs
+                    if idx + 1 >= len(conversation):
+                        break
 
-                if turn_input['role'] == 'human':
+                    turn_input = conversation[idx]
+                    turn_target = conversation[idx + 1]
+
+                    if turn_input['role'] == 'human':
+                        current_messages.append({
+                            "role": "user",
+                            "content": turn_input['value']
+                        })
+                    else:
+                        print(f"Unexpected role: {turn_input['role']}")
+
+                    target_tokens = turn_target['generated_tokens']
+
+                    # Perform Inference
+                    print(f"------------ Turn: {(idx // 2) + 1}/{len(conversation) // 2} ------------")
+                    messages_to_send = self.apply_cache_markers(current_messages)
+                    for attempt in range(max_retries):
+                        if attempt > 0:
+                            print(f"Retrying... (Attempt {attempt + 1}/{max_retries})")
+                            time.sleep(5)
+
+                        if streaming:
+                            response = self.perform_inference_streaming(
+                                model,
+                                messages_to_send,
+                                target_tokens,
+                                verbosity
+                            )
+                        else:
+                            response = self.perform_inference(
+                                model,
+                                messages_to_send,
+                                target_tokens,
+                                verbosity
+                            )
+
+                        if isinstance(response, Exception):
+                            print(f"\nAttempt {attempt + 1} failed: {response}")
+                            continue
+
+                        break  # Turn success. EXIT for loop, SKIP else to next turn
+                    else:
+                        print("Turn failed. Skipping conversation...\n")
+                        break  # Turn failed. SKIP conversation
+
+                    # Log usage and advance cache phase when a write is confirmed
+                    usage = self.get_response_usage(response, streaming)
+                    print(f"\nProvider Usage: {usage}\n")
+                    if usage.get('cache_write', 0) > 0:
+                        self._cache_write_confirmed = True
+
+                    with open(os.path.join(self.multiturn_log_path, csv_filename), mode='a', newline='', encoding='utf-8') as f:
+                        writer = csv.writer(f)
+                        writer.writerow([
+                            i + 1,
+                            (idx // 2) + 1,
+                            usage.get('total_input', 0),
+                            usage.get('output', 0),
+                            usage.get('cache_read', 0),
+                            usage.get('cache_write', 0),
+                        ])
+
+                    # Update Context with actual response
                     current_messages.append({
-                        "role": "user",
-                        "content": turn_input['value']
+                        "role": "assistant",
+                        "content": self.construct_text_response(response)
                     })
-                else:
-                    print(f"Unexpected role: {turn_input['role']}")
 
-                target_tokens = turn_target['generated_tokens']
+                    request_id += 1
+
+                    # Check num requests limit
+                    if request_id == num_requests:
+                        print("\nRequest limit hit. Stopping...\n")
+                        return
+
+                    # Move to next pair
+                    idx += 2
+
+                    # Mimic when human pauses to read response
+                    time.sleep(time_interval)
+
+        else:
+            # ------------------------------------------------------------------
+            # NO-CACHE mode: whole-conversation, pre-built context, no markers
+            # ------------------------------------------------------------------
+            csv_filename = f"multiturn_nocache_usage_{self.__class__.__name__}_{safe_model_name}.csv"
+            print(f"Initializing log file: {csv_filename}")
+            with open(os.path.join(self.multiturn_log_path, csv_filename), mode='w', newline='', encoding='utf-8') as f:
+                writer = csv.writer(f)
+                writer.writerow(["request", "total_input", "output", "cache_read", "cache_write"])
+
+            max_retries = 3
+            for i, conversation in enumerate(conv_iter):
+                if i == num_requests:
+                    print("\nRequest limit hit. Stopping...\n")
+                    return
+
+                print(f"============ Request: {i + 1} ============")
+
+                # Build full messages list from pre-built conversation
+                messages = []
+                target_tokens = 0
+                idx = 0
+                while idx < len(conversation):
+                    if idx + 1 >= len(conversation):
+                        print(f"Unexpected length: {len(conversation)}")
+                        break
+
+                    turn_input = conversation[idx]
+                    turn_response = conversation[idx + 1]
+
+                    if turn_input['role'] == 'human':
+                        messages.append({
+                            "role": "user",
+                            "content": turn_input['value']
+                        })
+                    else:
+                        print(f"Unexpected role: {turn_input['role']}")
+
+                    if turn_response['role'] == 'gpt':
+                        if 'value' in turn_response:
+                            messages.append({
+                                "role": "assistant",
+                                "content": turn_response['value']
+                            })
+                        elif 'generated_tokens' in turn_response:
+                            target_tokens = turn_response['generated_tokens']
+                        else:
+                            print("Missing keys: value and generated_tokens")
+                    else:
+                        print(f"Unexpected role: {turn_response['role']}")
+
+                    idx += 2
 
                 # Perform Inference
-                print(f"------------ Turn: {(idx // 2) + 1}/{len(conversation) // 2} ------------")
-                messages_to_send = self.apply_cache_markers(current_messages) if caching_enabled else current_messages
                 for attempt in range(max_retries):
                     if attempt > 0:
                         print(f"Retrying... (Attempt {attempt + 1}/{max_retries})")
@@ -244,14 +372,14 @@ class ProviderInterface(ABC):
                     if streaming:
                         response = self.perform_inference_streaming(
                             model,
-                            messages_to_send,
+                            messages,
                             target_tokens,
                             verbosity
                         )
                     else:
                         response = self.perform_inference(
                             model,
-                            messages_to_send,
+                            messages,
                             target_tokens,
                             verbosity
                         )
@@ -260,45 +388,26 @@ class ProviderInterface(ABC):
                         print(f"\nAttempt {attempt + 1} failed: {response}")
                         continue
 
-                    break  # Turn success. EXIT for loop, SKIP else to next turn
+                    break
                 else:
-                    print("Turn failed. Skipping conversation...\n")
-                    break  # Turn failed. SKIP conversation
+                    print("Request failed. Skipping request...\n")
+                    time.sleep(time_interval)
+                    continue
 
-                # Log usage and advance cache phase when a write is confirmed
+                # Log usage
                 usage = self.get_response_usage(response, streaming)
                 print(f"\nProvider Usage: {usage}\n")
-                if caching_enabled and usage.get('cache_write', 0) > 0:
-                    self._cache_write_confirmed = True
-
                 with open(os.path.join(self.multiturn_log_path, csv_filename), mode='a', newline='', encoding='utf-8') as f:
                     writer = csv.writer(f)
                     writer.writerow([
                         i + 1,
-                        (idx // 2) + 1,
                         usage.get('total_input', 0),
                         usage.get('output', 0),
                         usage.get('cache_read', 0),
                         usage.get('cache_write', 0),
                     ])
 
-                # Update Context with actual response
-                current_messages.append({
-                    "role": "assistant",
-                    "content": self.construct_text_response(response)
-                })
-
-                request_id += 1
-
-                # Check num requests limit
-                if request_id == num_requests:
-                    print("\nRequest limit hit. Stopping...\n")
-                    return
-
-                # Move to next pair
-                idx += 2
-
-                # Mimic when human pauses to read response
+                # Mimic human behaviour
                 time.sleep(time_interval)
 
     def get_vqa_dummy_text(self, model_id, total_tokens):

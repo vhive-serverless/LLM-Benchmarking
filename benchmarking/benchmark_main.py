@@ -33,7 +33,8 @@ class Benchmark:
         input_type="static",
         verbosity=False,
         vllm_ip=None,
-        dataset=None
+        dataset=None,
+        caching=False,
     ):
         """
         Initializes the Benchmark instance with provided parameters.
@@ -46,6 +47,7 @@ class Benchmark:
             prompt (str): The input prompt to use for benchmarking.
             streaming (bool, optional): Flag to indicate streaming mode. Defaults to False.
             verbosity (bool, optional): Flag to enable verbose output. Defaults to False.
+            caching (bool, optional): Whether to use caching for multiturn runs. Defaults to False.
         """
         self.providers = providers
         self.num_requests = num_requests
@@ -57,6 +59,7 @@ class Benchmark:
         self.verbosity = verbosity
         self.vllm_ip = vllm_ip
         self.dataset = dataset
+        self.caching = caching
 
         base_dir = "streaming" if streaming else "end_to_end"
 
@@ -328,7 +331,7 @@ class Benchmark:
                 if provider_name == "vLLM":
                     provider.perform_multiturn(model, time_interval, self.streaming, self.num_requests, self.verbosity, self.vllm_ip)
                 else:
-                    provider.perform_multiturn(model, time_interval, self.streaming, self.num_requests, self.verbosity, caching_enabled=True)
+                    provider.perform_multiturn(model, time_interval, self.streaming, self.num_requests, self.verbosity, caching_enabled=self.caching)
 
                 # --- FINISH TIME & DURATION ---
                 end_time = datetime.now()

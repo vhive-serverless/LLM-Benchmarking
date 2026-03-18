@@ -163,6 +163,7 @@ def run_benchmark(config, vllm_ip=None):
     verbose = config.get("verbose", False)
     backend = config.get("backend", False)
     dataset = config.get("dataset", False)
+    caching = config.get("caching", False)
     
     # Select Benchmark class based on backend flag
     if backend:
@@ -235,6 +236,7 @@ def run_benchmark(config, vllm_ip=None):
         verbosity=verbose,
         vllm_ip=vllm_ip,
         dataset=dataset,
+        caching=caching,
     )
 
     print(f"\nRunning benchmark with {input_type} input...")

@@ -1,0 +1,10 @@
+{
+    "providers": ["Anthropic", "AWSBedrock", "Azure"],
+    "models": ["cache-model"],
+    "input_type": "multiturn",
+    "caching": false,
+    "num_requests": 100,
+    "streaming": true,
+    "verbose": true,
+    "backend": true
+}
