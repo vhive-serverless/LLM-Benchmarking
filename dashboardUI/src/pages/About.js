@@ -116,7 +116,7 @@ export default function LLMetrics() {
                 Models Used
               </Typography>
               <Typography variant="p">
-                The following tables summarize the specific models used for benchmarking by each provider. Static and Trace benchmarks use the <b>common model</b>; Multiturn and VQA benchmarks use the <b>cache model</b>.
+                The following tables summarize the specific models used for benchmarking by each provider. Static and Trace benchmarks use the <b>common model</b>, Multiturn benchmarks use the <b>cache model</b>, and VQA benchmarks use the <b>vision model</b>.
               </Typography>
 
               <Typography variant="h6" marginTop={3} marginBottom={1}>
@@ -180,7 +180,7 @@ export default function LLMetrics() {
               </Box>
 
               <Typography variant="h6" marginTop={3} marginBottom={1}>
-                Multiturn &amp; VQA (cache model)
+                Multiturn (cache model)
               </Typography>
               <Box sx={{ my: 2 }}>
                 <TableContainer component={Paper}>
@@ -235,11 +235,8 @@ export default function LLMetrics() {
                 </TableContainer>
               </Box>
 
-              <Typography variant="h5" marginTop={4} marginBottom={2}>
-                Prompt Caching Support
-              </Typography>
-              <Typography variant="p">
-                Prompt caching reduces TTFT for repeated prefixes by reusing cached KV states. LLMetrics benchmarks both caching-enabled and no-cache modes for multiturn runs. Provider support varies:
+              <Typography variant="h6" marginTop={3} marginBottom={1}>
+                VQA (vision model)
               </Typography>
               <Box sx={{ my: 2 }}>
                 <TableContainer component={Paper}>
@@ -247,38 +244,19 @@ export default function LLMetrics() {
                     <TableBody>
                       <TableRow>
                         <TableCell><b>Provider</b></TableCell>
-                        <TableCell><b>Caching Mechanism</b></TableCell>
-                        <TableCell><b>Threshold</b></TableCell>
-                      </TableRow>
-                      <TableRow>
-                        <TableCell>Anthropic</TableCell>
-                        <TableCell>Explicit <code>cache_control</code> markers on user messages</TableCell>
-                        <TableCell>~4,000 tokens</TableCell>
+                        <TableCell><b>Model</b></TableCell>
                       </TableRow>
                       <TableRow>
                         <TableCell>AWS Bedrock</TableCell>
-                        <TableCell>Explicit <code>cachePoint</code> entries in message content</TableCell>
-                        <TableCell>~1,200 tokens</TableCell>
+                        <TableCell>us.meta.llama4-maverick-17b-instruct-v1:0</TableCell>
                       </TableRow>
                       <TableRow>
-                        <TableCell>Google Gemini</TableCell>
-                        <TableCell>Explicit cache resource created via <code>caches.create()</code> API (300s TTL)</TableCell>
-                        <TableCell>~1,200 tokens</TableCell>
+                        <TableCell>Azure</TableCell>
+                        <TableCell>Llama-4-Maverick-17B-128E-Instruct-FP8</TableCell>
                       </TableRow>
                       <TableRow>
-                        <TableCell>Azure / OpenAI</TableCell>
-                        <TableCell>Automatic server-side prefix caching (no explicit markers needed)</TableCell>
-                        <TableCell>≥1,024 shared prefix tokens</TableCell>
-                      </TableRow>
-                      <TableRow>
-                        <TableCell>Groq</TableCell>
-                        <TableCell>Automatic KV caching on LPU hardware (not reported in API response)</TableCell>
-                        <TableCell>—</TableCell>
-                      </TableRow>
-                      <TableRow>
-                        <TableCell>Cloudflare, Hyperbolic, Perplexity AI, Together AI</TableCell>
-                        <TableCell>No caching support</TableCell>
-                        <TableCell>—</TableCell>
+                        <TableCell>Google Vertex AI</TableCell>
+                        <TableCell>meta/llama-4-maverick-17b-128e-instruct-maas</TableCell>
                       </TableRow>
                     </TableBody>
                   </Table>
