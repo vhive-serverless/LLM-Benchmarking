@@ -169,7 +169,7 @@ const AppMetricsPage = ({ metricType, streaming = true, title = "Metrics Dashboa
                                     value={cachingEnabled}
                                     onChange={(e) => setCachingEnabled(e.target.value)}
                                 >
-                                    <MenuItem value={true}>Cache</MenuItem>
+                                    <MenuItem value>Cache</MenuItem>
                                     <MenuItem value={false}>No-Cache</MenuItem>
                                 </Select>
                             </Stack>
