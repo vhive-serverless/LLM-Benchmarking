@@ -35,12 +35,16 @@ const AppMetricsDate = ({ title, subheader, metrics, dateArray, yaxis, logScale 
     // Prepare chart data with normalized dates; log-transform values when logScale is enabled
     const transformedMetrics = {};
 
+    const transformValue = (val) => {
+        if (val == null) return null;
+        if (!logScale) return val;
+        return val > 0 ? Math.log10(val) : null;
+    };
+
     Object.keys(metrics).forEach((provider) => {
         transformedMetrics[provider] = metrics[provider].map((metric) => ({
             ...metric,
-            aggregated_metric: metric.aggregated_metric != null
-                ? (logScale ? (metric.aggregated_metric > 0 ? Math.log10(metric.aggregated_metric) : null) : metric.aggregated_metric)
-                : null,
+            aggregated_metric: transformValue(metric.aggregated_metric),
         }));
     });
     const sortedProviders = Object.keys(transformedMetrics).sort();
@@ -74,18 +78,22 @@ const AppMetricsDate = ({ title, subheader, metrics, dateArray, yaxis, logScale 
         },
         yaxis: {
             title: {
-                text: yaxis === "Accuracy"
-                    ? (logScale ? "Accuracy (Log Scale)" : "Accuracy")
-                    : (logScale ? "Latency ms (Log Scale)" : "Latency ms"),
+                text: (() => {
+                    const base = yaxis === "Accuracy" ? "Accuracy" : "Latency ms";
+                    return logScale ? `${base} (Log Scale)` : base;
+                })(),
             },
             labels: {
                 formatter: (value) => {
-                    if (value == null || isNaN(value)) return "N/A";
+                    if (value == null || Number.isNaN(value)) return "N/A";
                     return logScale ? `${(10 ** value).toFixed(3)}` : `${value.toFixed(3)}`;
                 },
             },
             type: "linear",
-            max: (max) => yaxis === "Accuracy" ? (logScale ? 0 : 1) : max + 0.1,
+            max: (max) => {
+                    if (yaxis !== "Accuracy") return max + 0.1;
+                    return logScale ? 0 : 1;
+                },
         },
         tooltip: {
             shared: true,
@@ -95,7 +103,7 @@ const AppMetricsDate = ({ title, subheader, metrics, dateArray, yaxis, logScale 
             },
             y: {
                 formatter: (value) => {
-                    if (value == null || isNaN(value)) return "N/A";
+                    if (value == null || Number.isNaN(value)) return "N/A";
                     return logScale ? `${(10 ** value).toFixed(3)}` : `${value.toFixed(3)}`;
                 },
             },
