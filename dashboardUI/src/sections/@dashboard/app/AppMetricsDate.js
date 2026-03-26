@@ -59,6 +59,11 @@ const AppMetricsDate = ({ title, subheader, metrics, dateArray, yaxis, logScale 
     }));
 
     const chartOptions = merge(BaseOptionChart(), {
+        grid: {
+            padding: {
+                left: 20,
+            },
+        },
         stroke: {
             curve: "straight",
             width: 2,
@@ -82,6 +87,7 @@ const AppMetricsDate = ({ title, subheader, metrics, dateArray, yaxis, logScale 
                     const base = yaxis === "Accuracy" ? "Accuracy" : "Latency ms";
                     return logScale ? `${base} (Log Scale)` : base;
                 })(),
+                offsetX: 5,
             },
             labels: {
                 formatter: (value) => {

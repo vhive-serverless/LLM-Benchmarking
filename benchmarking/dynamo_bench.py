@@ -126,6 +126,7 @@ class Benchmark:
         for provider_name, models in self.benchmark_data["providers"].items():
             for model_name, metrics in models.items():
                 model_key = "common" if self.models[0] in ["common-model", "vision-model", "cache-model", "vision-model-01", "vision-model-02"] else "multi"
+                query_key = f"{model_key}#{self.streaming}#{self.input_type}#{self.caching}"
                 item = {
                     "id": str(uuid.uuid4()),
                     "run_id": self.benchmark_data["run_id"],
@@ -133,6 +134,7 @@ class Benchmark:
                     "provider_name": provider_name,
                     "model_name": model_name,
                     "model_key": model_key,
+                    "query_key": query_key,
                     "prompt": self.benchmark_data["prompt"],
                     "metrics": json.dumps(metrics),  # Serialize metrics as JSON string
                     "streaming": self.streaming,
