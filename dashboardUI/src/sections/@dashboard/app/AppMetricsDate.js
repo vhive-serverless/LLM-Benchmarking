@@ -85,7 +85,7 @@ const AppMetricsDate = ({ title, subheader, metrics, dateArray, yaxis, logScale 
                 },
             },
             type: "linear",
-            max: (max) => yaxis === "Accuracy" ? 0 : max + 0.1,
+            max: (max) => yaxis === "Accuracy" ? (logScale ? 0 : 1) : max + 0.1,
         },
         tooltip: {
             shared: true,
