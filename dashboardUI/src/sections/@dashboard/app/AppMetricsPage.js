@@ -183,6 +183,7 @@ const AppMetricsPage = ({ metricType, streaming = true, title = "Metrics Dashboa
                             metrics={periodMetrics}
                             dateArray={dateList}
                             yaxis={yaxis}
+                            logScale={inputType !== 'vqa'}
                         />
                     </Grid>
                     {cdf &&

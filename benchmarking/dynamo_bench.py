@@ -341,7 +341,8 @@ class Benchmark:
                             f"{provider_name} - {model_name}",
                             model_name,
                             "aime_2024_accuracy",
-                            [acc_summary.get("accuracy")]
+                            [acc_summary.get("accuracy")],
+                            track='accuracy'
                         )
                         print(f"[SUMMARY] {provider_name} - {model_name}: {acc_summary}")
                     except Exception as e:

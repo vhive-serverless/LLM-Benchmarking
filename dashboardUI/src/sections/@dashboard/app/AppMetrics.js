@@ -55,7 +55,7 @@ const AppMetrics = ({ title, metricType, subheader, metrics, min, logScale = tru
         xaxis: {
             type: "numeric", // Logarithmic X-axis for latency
             title: {
-                text: "Latency (ms)",
+                text: logScale ? "Latency ms (Log Scale)" : "Latency (ms)",
             },
             min: computedMin,
             max: maxLatency,
