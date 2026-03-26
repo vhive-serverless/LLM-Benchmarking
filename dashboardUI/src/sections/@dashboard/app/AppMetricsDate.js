@@ -31,23 +31,25 @@ const getProviderColor = (fullName) => {
   return match ? match[1] : "#999999";
 };
 
-const AppMetricsDate = ({ title, subheader, metrics, dateArray, yaxis }) => {
-    // Prepare chart data with normalized dates and log-transform values
-    const logTransformedMetrics = {};
+const AppMetricsDate = ({ title, subheader, metrics, dateArray, yaxis, logScale = true }) => {
+    // Prepare chart data with normalized dates; log-transform values when logScale is enabled
+    const transformedMetrics = {};
 
     Object.keys(metrics).forEach((provider) => {
-        logTransformedMetrics[provider] = metrics[provider].map((metric) => ({
+        transformedMetrics[provider] = metrics[provider].map((metric) => ({
             ...metric,
-            aggregated_metric: metric.aggregated_metric > 0 ? Math.log10(metric.aggregated_metric) : null,
+            aggregated_metric: metric.aggregated_metric != null
+                ? (logScale ? (metric.aggregated_metric > 0 ? Math.log10(metric.aggregated_metric) : null) : metric.aggregated_metric)
+                : null,
         }));
     });
-    const sortedProviders = Object.keys(logTransformedMetrics).sort();
+    const sortedProviders = Object.keys(transformedMetrics).sort();
 
     const chartData = sortedProviders.map((provider) => ({
         name: provider,
         type: "line",
         data: dateArray.map((date) => {
-            const entry = logTransformedMetrics[provider].find((metric) => metric.date === date);
+            const entry = transformedMetrics[provider].find((metric) => metric.date === date);
             return entry ? entry.aggregated_metric : null;
         }),
     }));
@@ -72,12 +74,17 @@ const AppMetricsDate = ({ title, subheader, metrics, dateArray, yaxis }) => {
         },
         yaxis: {
             title: {
-                text: yaxis === "Accuracy" ? "Accuracy" : "Latency ms",
+                text: yaxis === "Accuracy"
+                    ? (logScale ? "Accuracy (Log Scale)" : "Accuracy")
+                    : (logScale ? "Latency ms (Log Scale)" : "Latency ms"),
             },
             labels: {
-                formatter: (value) => (value !== null ? `${(10 ** value).toFixed(3)}` : "N/A"),
+                formatter: (value) => {
+                    if (value == null || isNaN(value)) return "N/A";
+                    return logScale ? `${(10 ** value).toFixed(3)}` : `${value.toFixed(3)}`;
+                },
             },
-            type: "linear", // Since we've manually log-transformed, keep this linear
+            type: "linear",
             max: (max) => yaxis === "Accuracy" ? 0 : max + 0.1,
         },
         tooltip: {
@@ -87,7 +94,10 @@ const AppMetricsDate = ({ title, subheader, metrics, dateArray, yaxis }) => {
                 formatter: (value) => value,
             },
             y: {
-                formatter: (value) => (value !== null ? `${(10 ** value).toFixed(3)}` : "N/A"),
+                formatter: (value) => {
+                    if (value == null || isNaN(value)) return "N/A";
+                    return logScale ? `${(10 ** value).toFixed(3)}` : `${value.toFixed(3)}`;
+                },
             },
         },
     });
@@ -122,6 +132,7 @@ AppMetricsDate.propTypes = {
     metrics: PropTypes.object.isRequired,
     dateArray: PropTypes.arrayOf(PropTypes.string).isRequired,
     yaxis: PropTypes.string.isRequired,
+    logScale: PropTypes.bool,
 };
 
 export default AppMetricsDate;
