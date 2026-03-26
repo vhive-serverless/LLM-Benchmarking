@@ -96,15 +96,12 @@ def get_metrics_period(metricType, timeRange, streaming, input_type, caching=Tru
     start_date_str = start_date.strftime("%Y-%m-%d %H:%M:%S")
     end_date_str = end_date.strftime("%Y-%m-%d %H:%M:%S")
 
-    # Query
-    key_condition = Key('model_key').eq('common') & Key('timestamp').between(start_date_str, end_date_str)
-    filter_exp = Attr("streaming").eq(streaming)
-    filter_exp = apply_input_type_filter(filter_exp, input_type)
-    filter_exp = apply_caching_filter(filter_exp, caching)
+    # Query using composite key GSI to avoid filter overhead
+    query_key = f"common#{streaming}#{input_type}#{caching}"
+    key_condition = Key('query_key').eq(query_key) & Key('timestamp').between(start_date_str, end_date_str)
     items = query_all_items(
-        IndexName='ModelKey-Timestamp-Index',
+        IndexName='QueryKey-Timestamp-Index',
         KeyConditionExpression=key_condition,
-        FilterExpression=filter_exp
     )
 
     aggregated_metrics = {}
@@ -152,15 +149,12 @@ def get_metrics_by_date(metricType, date, streaming, input_type, caching=True):
     start_date_str = start_date.strftime("%Y-%m-%d %H:%M:%S")
     end_date_str = end_date.strftime("%Y-%m-%d %H:%M:%S")
 
-    # Query
-    key_condition = Key('model_key').eq('common') & Key('timestamp').between(start_date_str, end_date_str)
-    filter_exp = Attr("streaming").eq(streaming)
-    filter_exp = apply_input_type_filter(filter_exp, input_type)
-    filter_exp = apply_caching_filter(filter_exp, caching)
+    # Query using composite key GSI to avoid filter overhead
+    query_key = f"common#{streaming}#{input_type}#{caching}"
+    key_condition = Key('query_key').eq(query_key) & Key('timestamp').between(start_date_str, end_date_str)
     items = query_all_items(
-        IndexName='ModelKey-Timestamp-Index',
+        IndexName='QueryKey-Timestamp-Index',
         KeyConditionExpression=key_condition,
-        FilterExpression=filter_exp
     )
 
     metrics_by_provider = {}
