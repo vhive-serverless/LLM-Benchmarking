@@ -190,7 +190,11 @@ class Cloudflare(AccuracyMixin, ProviderInterface):
                             print(f"##### Total Response Time: {total_time:.4f} seconds")
                         break
                     else:
-                        response_list.append(json.loads(line_str[6:]))
+                        try:
+                            response_list.append(json.loads(line_str[6:]))
+                        except json.JSONDecodeError:
+                            print(f"[WARN] Skipping malformed SSE frame: {line_str[:80]}")
+                            continue
 
                     time_to_next_token = time.perf_counter()
                     inter_token_latency = time_to_next_token - prev_token_time

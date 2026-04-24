@@ -142,13 +142,22 @@ class GoogleGemini(ProviderInterface):
             self._google_cache_name = None
             return messages
 
+    def _extract_text_from_candidate(self, candidate):
+        parts = (candidate.get('content') or {}).get('parts')
+        if not parts:
+            return ""
+        return parts[0].get('text', "")
+
     def construct_text_response(self, raw_response):
         if isinstance(raw_response, dict):
-            text_response = raw_response['candidates'][0]['content']['parts'][0]['text']
+            text_response = self._extract_text_from_candidate(
+                raw_response['candidates'][0]
+            )
         elif isinstance(raw_response, list):
             text_response = "".join(
-                block['candidates'][0]['content']['parts'][0]['text']
+                self._extract_text_from_candidate(block['candidates'][0])
                 for block in raw_response
+                if block.get('candidates')
             )
 
         return text_response
