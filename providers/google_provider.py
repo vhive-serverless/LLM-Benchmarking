@@ -237,15 +237,19 @@ class GoogleGemini(ProviderInterface):
 
             self._set_client_by_model(model_id)
 
+            http_opts = types.HttpOptions(timeout=120_000)
+
             start_time = timer()
             response = self._client.models.generate_content_stream(
                 model=model_id,
                 contents=self.normalize_messages(messages),
                 config=types.GenerateContentConfig(
+                    http_options=http_opts,
                     cached_content=self._google_cache_name,
                     max_output_tokens=max_output,
                     thinking_config=types.ThinkingConfig(thinking_budget=0)
                 ) if self._google_cache_name else types.GenerateContentConfig(
+                    http_options=http_opts,
                     system_instruction=self.system_prompt,
                     max_output_tokens=max_output,
                     thinking_config=types.ThinkingConfig(thinking_budget=0)
